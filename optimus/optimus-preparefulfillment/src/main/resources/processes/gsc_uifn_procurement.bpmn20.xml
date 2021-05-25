@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <process id="gsc_uifn_procurement" name="gsc_uifn_procurement" isExecutable="true">
+    <startEvent id="service_implementation_stage_start">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${updateCaseAttributesListener}"></flowable:executionListener>
+        <flowable:executionListener event="start" delegateExpression="${ stageStartListener }"></flowable:executionListener>
+      </extensionElements>
+    </startEvent>
+    <userTask id="gsc-uifn-procure" name="Procure UIFN numbers">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <endEvent id="service_implementation_stage_end">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ stageEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </endEvent>
+    <parallelGateway id="sid-AA2C6D3C-825D-4315-9654-A96DF4C2305F"></parallelGateway>
+    <parallelGateway id="sid-65036D50-F717-4A96-90C6-772A48692019"></parallelGateway>
+    <sequenceFlow id="gsc_number_provisioning_process_start" sourceRef="service_implementation_stage_start" targetRef="sid-65036D50-F717-4A96-90C6-772A48692019">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ processStartListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="gsc_number_provisioning_process_end" sourceRef="sid-AA2C6D3C-825D-4315-9654-A96DF4C2305F" targetRef="service_implementation_stage_end">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ processEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="gsc_number_provisioning_activity_start" sourceRef="sid-65036D50-F717-4A96-90C6-772A48692019" targetRef="gsc-uifn-procure">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ activityStartListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="gsc_number_provisioning_activity_end" sourceRef="gsc-uifn-procure" targetRef="sid-AA2C6D3C-825D-4315-9654-A96DF4C2305F">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ activityEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_gsc_uifn_procurement">
+    <bpmndi:BPMNPlane bpmnElement="gsc_uifn_procurement" id="BPMNPlane_gsc_uifn_procurement">
+      <bpmndi:BPMNShape bpmnElement="service_implementation_stage_start" id="BPMNShape_service_implementation_stage_start">
+        <omgdc:Bounds height="30.0" width="30.0" x="30.0" y="170.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="gsc-uifn-procure" id="BPMNShape_gsc-uifn-procure">
+        <omgdc:Bounds height="80.0" width="100.0" x="175.0" y="138.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="service_implementation_stage_end" id="BPMNShape_service_implementation_stage_end">
+        <omgdc:Bounds height="28.0" width="28.0" x="390.0" y="164.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-AA2C6D3C-825D-4315-9654-A96DF4C2305F" id="BPMNShape_sid-AA2C6D3C-825D-4315-9654-A96DF4C2305F">
+        <omgdc:Bounds height="40.0" width="40.0" x="314.0" y="158.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-65036D50-F717-4A96-90C6-772A48692019" id="BPMNShape_sid-65036D50-F717-4A96-90C6-772A48692019">
+        <omgdc:Bounds height="40.0" width="40.0" x="105.0" y="165.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="gsc_number_provisioning_process_end" id="BPMNEdge_gsc_number_provisioning_process_end">
+        <omgdi:waypoint x="353.57340810419674" y="178.3623188405797"></omgdi:waypoint>
+        <omgdi:waypoint x="390.000352329988" y="178.1003573605348"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="gsc_number_provisioning_activity_start" id="BPMNEdge_gsc_number_provisioning_activity_start">
+        <omgdi:waypoint x="144.05163551401864" y="184.0981308411215"></omgdi:waypoint>
+        <omgdi:waypoint x="175.0" y="181.7650753768844"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="gsc_number_provisioning_process_start" id="BPMNEdge_gsc_number_provisioning_process_start">
+        <omgdi:waypoint x="59.94965881104672" y="185.09285545292158"></omgdi:waypoint>
+        <omgdi:waypoint x="105.375" y="185.375"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="gsc_number_provisioning_activity_end" id="BPMNEdge_gsc_number_provisioning_activity_end">
+        <omgdi:waypoint x="274.94999999999857" y="178.00785123966946"></omgdi:waypoint>
+        <omgdi:waypoint x="314.33333333333337" y="178.33333333333337"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

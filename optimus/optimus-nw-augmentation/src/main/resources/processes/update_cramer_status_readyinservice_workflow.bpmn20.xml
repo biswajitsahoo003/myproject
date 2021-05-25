@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <process id="update_cramer_status_readyinservice_workflow" name="update_cramer_status_readyinservice_workflow" isExecutable="true">
+    <startEvent id="startEvent1" flowable:formFieldValidation="true"></startEvent>
+    <exclusiveGateway id="sid-4F8E0514-3E90-4BDA-9F9D-37EE8F1AD703"></exclusiveGateway>
+    <userTask id="update_cramer_status_readyinservice_retry_task" name="Update Device Status Retry/Manual" flowable:formFieldValidation="true">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${taskCreateListener}"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${taskCompleteListener}"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <exclusiveGateway id="sid-C2EC76BE-4246-433B-BB2D-196768EB084B"></exclusiveGateway>
+    <serviceTask id="update_device_status_read_in_service_cramer_task" name="Update Cramer Device Status &quot;ReadInService&quot;" flowable:delegateExpression="${createDeviceInCramerDelegate}"></serviceTask>
+    <endEvent id="update_cramer_status_readyinservice_activity_end">
+      <extensionElements>
+        <flowable:executionListener event="end" delegateExpression="${activityEndListener}"></flowable:executionListener>
+      </extensionElements>
+    </endEvent>
+    <sequenceFlow id="update_cramer_status_readyinservice_activity_start" sourceRef="startEvent1" targetRef="update_device_status_read_in_service_cramer_task">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${activityStartListener}"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="sid-83C25F0D-1387-4FF9-A074-474E681A2FF5" sourceRef="update_device_status_read_in_service_cramer_task" targetRef="sid-4F8E0514-3E90-4BDA-9F9D-37EE8F1AD703"></sequenceFlow>
+    <sequenceFlow id="sid-F4A575A4-D9B4-4542-9FBA-C7719EAF77DB" sourceRef="update_cramer_status_readyinservice_retry_task" targetRef="sid-C2EC76BE-4246-433B-BB2D-196768EB084B"></sequenceFlow>
+    <sequenceFlow id="sid-3ADA7447-DB6B-4A6D-9954-4EE34752B1CD" sourceRef="sid-4F8E0514-3E90-4BDA-9F9D-37EE8F1AD703" targetRef="update_cramer_status_readyinservice_activity_end">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${isError==false}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-BC93257A-FAA2-4F6F-8256-A05572DA4809" sourceRef="sid-4F8E0514-3E90-4BDA-9F9D-37EE8F1AD703" targetRef="update_cramer_status_readyinservice_retry_task">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${isError==true}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-63D79732-1DCC-46FE-946C-A7A556ADBFD6" sourceRef="sid-C2EC76BE-4246-433B-BB2D-196768EB084B" targetRef="update_device_status_read_in_service_cramer_task">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${retry==true}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-6803F6B2-B27B-4DC9-8853-61FB2E927D7B" sourceRef="sid-C2EC76BE-4246-433B-BB2D-196768EB084B" targetRef="update_cramer_status_readyinservice_activity_end">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${retry==false}]]></conditionExpression>
+    </sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_update_cramer_status_readyinservice_workflow">
+    <bpmndi:BPMNPlane bpmnElement="update_cramer_status_readyinservice_workflow" id="BPMNPlane_update_cramer_status_readyinservice_workflow">
+      <bpmndi:BPMNShape bpmnElement="startEvent1" id="BPMNShape_startEvent1">
+        <omgdc:Bounds height="30.0" width="30.0" x="100.0" y="163.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-4F8E0514-3E90-4BDA-9F9D-37EE8F1AD703" id="BPMNShape_sid-4F8E0514-3E90-4BDA-9F9D-37EE8F1AD703">
+        <omgdc:Bounds height="40.0" width="40.0" x="435.0" y="158.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="update_cramer_status_readyinservice_retry_task" id="BPMNShape_update_cramer_status_readyinservice_retry_task">
+        <omgdc:Bounds height="80.0" width="100.0" x="405.0" y="265.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-C2EC76BE-4246-433B-BB2D-196768EB084B" id="BPMNShape_sid-C2EC76BE-4246-433B-BB2D-196768EB084B">
+        <omgdc:Bounds height="40.0" width="40.0" x="205.0" y="285.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="update_device_status_read_in_service_cramer_task" id="BPMNShape_update_device_status_read_in_service_cramer_task">
+        <omgdc:Bounds height="80.0" width="100.0" x="175.0" y="138.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="update_cramer_status_readyinservice_activity_end" id="BPMNShape_update_cramer_status_readyinservice_activity_end">
+        <omgdc:Bounds height="28.0" width="28.0" x="660.0" y="164.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-3ADA7447-DB6B-4A6D-9954-4EE34752B1CD" id="BPMNEdge_sid-3ADA7447-DB6B-4A6D-9954-4EE34752B1CD">
+        <omgdi:waypoint x="474.48909903713894" y="178.4564220183486"></omgdi:waypoint>
+        <omgdi:waypoint x="660.0000322614225" y="178.03192227090477"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-83C25F0D-1387-4FF9-A074-474E681A2FF5" id="BPMNEdge_sid-83C25F0D-1387-4FF9-A074-474E681A2FF5">
+        <omgdi:waypoint x="274.9499999999142" y="178.0"></omgdi:waypoint>
+        <omgdi:waypoint x="435.0" y="178.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-6803F6B2-B27B-4DC9-8853-61FB2E927D7B" id="BPMNEdge_sid-6803F6B2-B27B-4DC9-8853-61FB2E927D7B">
+        <omgdi:waypoint x="225.49999999999994" y="324.4368402766622"></omgdi:waypoint>
+        <omgdi:waypoint x="225.5" y="377.3999938964844"></omgdi:waypoint>
+        <omgdi:waypoint x="674.0" y="377.3999938964844"></omgdi:waypoint>
+        <omgdi:waypoint x="674.0" y="191.9499240987246"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-63D79732-1DCC-46FE-946C-A7A556ADBFD6" id="BPMNEdge_sid-63D79732-1DCC-46FE-946C-A7A556ADBFD6">
+        <omgdi:waypoint x="225.0" y="285.0"></omgdi:waypoint>
+        <omgdi:waypoint x="225.0" y="217.95000000000002"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="update_cramer_status_readyinservice_activity_start" id="BPMNEdge_update_cramer_status_readyinservice_activity_start">
+        <omgdi:waypoint x="129.9499984899576" y="178.0"></omgdi:waypoint>
+        <omgdi:waypoint x="174.9999999999917" y="178.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-F4A575A4-D9B4-4542-9FBA-C7719EAF77DB" id="BPMNEdge_sid-F4A575A4-D9B4-4542-9FBA-C7719EAF77DB">
+        <omgdi:waypoint x="404.9999999999547" y="305.0"></omgdi:waypoint>
+        <omgdi:waypoint x="244.90431709406735" y="305.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-BC93257A-FAA2-4F6F-8256-A05572DA4809" id="BPMNEdge_sid-BC93257A-FAA2-4F6F-8256-A05572DA4809">
+        <omgdi:waypoint x="455.0" y="197.94215184893787"></omgdi:waypoint>
+        <omgdi:waypoint x="455.0" y="265.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <process id="gsc_deliver_numbers" name="gsc_deliver_numbers" isExecutable="true">
+    <startEvent id="service_activation_stage_start">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${updateCaseAttributesListener}"></flowable:executionListener>
+        <flowable:executionListener event="start" delegateExpression="${ stageStartListener }"></flowable:executionListener>
+      </extensionElements>
+    </startEvent>
+    <userTask id="gsc-validate-supplier-internal-db" name="Validate Supplier/ Internal DB">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <userTask id="gsc-test-numbers" name="Test Numbers for I/B Services">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="sid-0991E923-1BCA-41DF-AE2E-9008625687AE" sourceRef="gsc-validate-supplier-internal-db" targetRef="gsc-test-numbers"></sequenceFlow>
+    <endEvent id="service_activation_stage_end">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ stageEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </endEvent>
+    <sequenceFlow id="sid-91208D17-96DE-43F2-9B9D-8083B7E2A97C" sourceRef="gsc-test-numbers" targetRef="gsc-trigger-service-acceptence"></sequenceFlow>
+    <exclusiveGateway id="sid-7A446488-9C09-44BC-870A-CED9C8F7AC57" default="gsc_number_activation_activity_end"></exclusiveGateway>
+    <sequenceFlow id="sid-1C434728-FA7E-4D76-A48C-FE6C907C3D75" sourceRef="gsc-trigger-service-acceptence" targetRef="sid-7A446488-9C09-44BC-870A-CED9C8F7AC57"></sequenceFlow>
+    <sequenceFlow id="sid-2DC8108F-C9C7-4849-A68A-6F0F13ABBE89" sourceRef="sid-7A446488-9C09-44BC-870A-CED9C8F7AC57" targetRef="gsc-test-numbers">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${var:get(atleastOneNumTestPending) == 'yes'}]]></conditionExpression>
+    </sequenceFlow>
+    <serviceTask id="gsc-trigger-service-acceptence" name="Trigger Service Acceptence" flowable:delegateExpression="${TriggerServiceAcceptenceWorkflow}"></serviceTask>
+    <parallelGateway id="sid-52A31568-81C9-406C-81DA-B0AF46665BCB"></parallelGateway>
+    <parallelGateway id="sid-B8E45CC3-9424-4EAF-8EB4-1AE19AE89417"></parallelGateway>
+    <sequenceFlow id="gsc_number_activation_process_end" sourceRef="sid-B8E45CC3-9424-4EAF-8EB4-1AE19AE89417" targetRef="service_activation_stage_end">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ processEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="gsc_number_activation_process_start" sourceRef="service_activation_stage_start" targetRef="sid-52A31568-81C9-406C-81DA-B0AF46665BCB">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ processStartListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="gsc_number_activation_activity_end" sourceRef="sid-7A446488-9C09-44BC-870A-CED9C8F7AC57" targetRef="sid-B8E45CC3-9424-4EAF-8EB4-1AE19AE89417">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ activityEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="gsc_number_activation_activity_start" sourceRef="sid-52A31568-81C9-406C-81DA-B0AF46665BCB" targetRef="gsc-validate-supplier-internal-db">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ activityStartListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_gsc_deliver_numbers">
+    <bpmndi:BPMNPlane bpmnElement="gsc_deliver_numbers" id="BPMNPlane_gsc_deliver_numbers">
+      <bpmndi:BPMNShape bpmnElement="service_activation_stage_start" id="BPMNShape_service_activation_stage_start">
+        <omgdc:Bounds height="30.0" width="30.0" x="195.0" y="160.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="gsc-validate-supplier-internal-db" id="BPMNShape_gsc-validate-supplier-internal-db">
+        <omgdc:Bounds height="80.0" width="100.0" x="330.0" y="135.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="gsc-test-numbers" id="BPMNShape_gsc-test-numbers">
+        <omgdc:Bounds height="80.0" width="100.0" x="485.0" y="135.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="service_activation_stage_end" id="BPMNShape_service_activation_stage_end">
+        <omgdc:Bounds height="28.0" width="28.0" x="945.0" y="161.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-7A446488-9C09-44BC-870A-CED9C8F7AC57" id="BPMNShape_sid-7A446488-9C09-44BC-870A-CED9C8F7AC57">
+        <omgdc:Bounds height="40.0" width="40.0" x="775.0" y="155.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="gsc-trigger-service-acceptence" id="BPMNShape_gsc-trigger-service-acceptence">
+        <omgdc:Bounds height="80.0" width="100.0" x="630.0" y="135.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-52A31568-81C9-406C-81DA-B0AF46665BCB" id="BPMNShape_sid-52A31568-81C9-406C-81DA-B0AF46665BCB">
+        <omgdc:Bounds height="40.0" width="40.0" x="255.0" y="155.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-B8E45CC3-9424-4EAF-8EB4-1AE19AE89417" id="BPMNShape_sid-B8E45CC3-9424-4EAF-8EB4-1AE19AE89417">
+        <omgdc:Bounds height="40.0" width="40.0" x="860.0" y="155.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="gsc_number_activation_activity_end" id="BPMNEdge_gsc_number_activation_activity_end">
+        <omgdi:waypoint x="814.4388660399505" y="175.5"></omgdi:waypoint>
+        <omgdi:waypoint x="860.5" y="175.5"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="gsc_number_activation_activity_start" id="BPMNEdge_gsc_number_activation_activity_start">
+        <omgdi:waypoint x="293.7244369369369" y="176.2124060150376"></omgdi:waypoint>
+        <omgdi:waypoint x="329.9999999999994" y="177.62890625000003"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="gsc_number_activation_process_end" id="BPMNEdge_gsc_number_activation_process_end">
+        <omgdi:waypoint x="899.5591869398207" y="175.37820512820508"></omgdi:waypoint>
+        <omgdi:waypoint x="945.0002755524838" y="175.08885188426407"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-0991E923-1BCA-41DF-AE2E-9008625687AE" id="BPMNEdge_sid-0991E923-1BCA-41DF-AE2E-9008625687AE">
+        <omgdi:waypoint x="429.949999999976" y="175.0"></omgdi:waypoint>
+        <omgdi:waypoint x="485.0" y="175.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-1C434728-FA7E-4D76-A48C-FE6C907C3D75" id="BPMNEdge_sid-1C434728-FA7E-4D76-A48C-FE6C907C3D75">
+        <omgdi:waypoint x="729.9499999999978" y="175.21623376623376"></omgdi:waypoint>
+        <omgdi:waypoint x="775.4130434782609" y="175.41304347826087"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="gsc_number_activation_process_start" id="BPMNEdge_gsc_number_activation_process_start">
+        <omgdi:waypoint x="224.94948474133443" y="175.1141190626725"></omgdi:waypoint>
+        <omgdi:waypoint x="255.346153846153" y="175.34615384615384"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-2DC8108F-C9C7-4849-A68A-6F0F13ABBE89" id="BPMNEdge_sid-2DC8108F-C9C7-4849-A68A-6F0F13ABBE89">
+        <omgdi:waypoint x="795.5" y="194.43905889145503"></omgdi:waypoint>
+        <omgdi:waypoint x="795.5" y="262.0"></omgdi:waypoint>
+        <omgdi:waypoint x="535.0" y="262.0"></omgdi:waypoint>
+        <omgdi:waypoint x="535.0" y="214.95000000000002"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-91208D17-96DE-43F2-9B9D-8083B7E2A97C" id="BPMNEdge_sid-91208D17-96DE-43F2-9B9D-8083B7E2A97C">
+        <omgdi:waypoint x="584.9499999999907" y="175.0"></omgdi:waypoint>
+        <omgdi:waypoint x="629.9999999999807" y="175.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

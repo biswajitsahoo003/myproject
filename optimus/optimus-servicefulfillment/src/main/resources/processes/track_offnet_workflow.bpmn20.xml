@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <process id="track_offnet_workflow" name="track_offnet_workflow" isExecutable="true">
+    <documentation>track_offnet_workflow</documentation>
+    <startEvent id="track_offnet_activity_start">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ activityStartListener }"></flowable:executionListener>
+      </extensionElements>
+    </startEvent>
+    <userTask id="track-offnet-lm-delivery" name="Track &amp; Complete LM Delivery">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <endEvent id="track_offnet_activity_end">
+      <extensionElements>
+        <flowable:executionListener event="end" delegateExpression="${ activityEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </endEvent>
+    <sequenceFlow id="sid-38C8E4A6-7585-454B-BBBD-AB64C1AD184C" sourceRef="track_offnet_activity_start" targetRef="sid-A296DBA1-E8DA-4E75-AC93-D17AC7B9C487"></sequenceFlow>
+    <parallelGateway id="sid-A296DBA1-E8DA-4E75-AC93-D17AC7B9C487"></parallelGateway>
+    <userTask id="mast-installation-permission-offnet" name="Provide Mast Installation Permission">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <exclusiveGateway id="sid-F34C9BC2-AFC8-4A3F-B6BC-77131E6BB66B" default="sid-F82C30AF-6763-4B23-AE30-8F9C203E9369"></exclusiveGateway>
+    <sequenceFlow id="sid-E66DBF08-96F2-423C-9422-570EF91E26AD" sourceRef="sid-A296DBA1-E8DA-4E75-AC93-D17AC7B9C487" targetRef="sid-F34C9BC2-AFC8-4A3F-B6BC-77131E6BB66B"></sequenceFlow>
+    <sequenceFlow id="sid-97B4A2BD-BC04-4C24-94E4-C200AACAF5FF" sourceRef="track-offnet-lm-delivery" targetRef="sid-EC3D9843-CB24-4471-B16D-2728B8901466"></sequenceFlow>
+    <parallelGateway id="sid-EC3D9843-CB24-4471-B16D-2728B8901466"></parallelGateway>
+    <sequenceFlow id="sid-73BA314D-F3A5-4E73-9046-D00291240E82" sourceRef="sid-EC3D9843-CB24-4471-B16D-2728B8901466" targetRef="track_offnet_activity_end"></sequenceFlow>
+    <exclusiveGateway id="sid-0F2FCF3D-3F95-4B85-830F-4B4D6AD0DC7A"></exclusiveGateway>
+    <sequenceFlow id="sid-656B91B3-57CA-4FF4-A3F2-B506A5A0BEC3" sourceRef="sid-0F2FCF3D-3F95-4B85-830F-4B4D6AD0DC7A" targetRef="sid-EC3D9843-CB24-4471-B16D-2728B8901466"></sequenceFlow>
+    <userTask id="approve-mast-commercials-offnet" name="Approve MAST Commercials">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="sid-1433B3CB-63E8-487F-B374-7846DE463EF4" sourceRef="mast-installation-permission-offnet" targetRef="approve-mast-commercials-offnet"></sequenceFlow>
+    <userTask id="po-mast-vendor-offnet" name="Provide PO to MAST Vendor">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <userTask id="mast-installation-plan-offnet" name="Provide Installation Plan &amp; FE Details">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <userTask id="install-mast-offnet" name="Install Mast">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="sid-1E1181B4-22D8-44C3-945F-0503C16A8A48" sourceRef="approve-mast-commercials-offnet" targetRef="po-mast-vendor-offnet"></sequenceFlow>
+    <sequenceFlow id="sid-DEA4E94A-1700-4094-8AB9-99A72AB2FF5F" sourceRef="po-mast-vendor-offnet" targetRef="mast-installation-plan-offnet"></sequenceFlow>
+    <sequenceFlow id="sid-5B25C622-FF82-4F18-B979-C4F03BFA4F09" sourceRef="sid-A296DBA1-E8DA-4E75-AC93-D17AC7B9C487" targetRef="track-offnet-lm-delivery"></sequenceFlow>
+    <sequenceFlow id="sid-3350836D-9A1E-4A62-9579-8B17CE0E18DC" sourceRef="install-mast-offnet" targetRef="sid-0F2FCF3D-3F95-4B85-830F-4B4D6AD0DC7A"></sequenceFlow>
+    <sequenceFlow id="sid-117CB31A-CE8A-4DE2-BA23-15BD22CB0F80" sourceRef="mast-installation-plan-offnet" targetRef="install-mast-offnet"></sequenceFlow>
+    <sequenceFlow id="sid-969137EC-911A-47A0-BD24-DEAB8C6DD6C2" name="Yes" sourceRef="sid-F34C9BC2-AFC8-4A3F-B6BC-77131E6BB66B" targetRef="mast-installation-permission-offnet">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ var:get(offnetMastRequired) == "Yes" }]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-F82C30AF-6763-4B23-AE30-8F9C203E9369" name="No" sourceRef="sid-F34C9BC2-AFC8-4A3F-B6BC-77131E6BB66B" targetRef="sid-0F2FCF3D-3F95-4B85-830F-4B4D6AD0DC7A"></sequenceFlow>
+    <textAnnotation id="sid-B99A550B-F649-483C-ABF9-1A7FD0DE528B">
+      <text>Mast Required?</text>
+    </textAnnotation>
+    <association id="sid-BDE2E8B7-EC4D-4D4F-95D0-2161B343FDEE" sourceRef="sid-F34C9BC2-AFC8-4A3F-B6BC-77131E6BB66B" targetRef="sid-B99A550B-F649-483C-ABF9-1A7FD0DE528B" associationDirection="None"></association>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_track_offnet_workflow">
+    <bpmndi:BPMNPlane bpmnElement="track_offnet_workflow" id="BPMNPlane_track_offnet_workflow">
+      <bpmndi:BPMNShape bpmnElement="track_offnet_activity_start" id="BPMNShape_track_offnet_activity_start">
+        <omgdc:Bounds height="30.0" width="30.0" x="60.0" y="70.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="track-offnet-lm-delivery" id="BPMNShape_track-offnet-lm-delivery">
+        <omgdc:Bounds height="80.0" width="100.0" x="255.0" y="180.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="track_offnet_activity_end" id="BPMNShape_track_offnet_activity_end">
+        <omgdc:Bounds height="28.0" width="28.0" x="990.0" y="141.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-A296DBA1-E8DA-4E75-AC93-D17AC7B9C487" id="BPMNShape_sid-A296DBA1-E8DA-4E75-AC93-D17AC7B9C487">
+        <omgdc:Bounds height="40.0" width="40.0" x="135.0" y="65.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="mast-installation-permission-offnet" id="BPMNShape_mast-installation-permission-offnet">
+        <omgdc:Bounds height="75.0" width="91.0" x="300.0" y="45.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-F34C9BC2-AFC8-4A3F-B6BC-77131E6BB66B" id="BPMNShape_sid-F34C9BC2-AFC8-4A3F-B6BC-77131E6BB66B">
+        <omgdc:Bounds height="40.0" width="40.0" x="210.0" y="65.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-B99A550B-F649-483C-ABF9-1A7FD0DE528B" id="BPMNShape_sid-B99A550B-F649-483C-ABF9-1A7FD0DE528B">
+        <omgdc:Bounds height="32.0" width="101.0" x="195.0" y="15.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-EC3D9843-CB24-4471-B16D-2728B8901466" id="BPMNShape_sid-EC3D9843-CB24-4471-B16D-2728B8901466">
+        <omgdc:Bounds height="40.0" width="40.0" x="930.0" y="135.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-BDE2E8B7-EC4D-4D4F-95D0-2161B343FDEE" id="BPMNShape_sid-BDE2E8B7-EC4D-4D4F-95D0-2161B343FDEE">
+        <omgdc:Bounds height="25.874383570960312" width="16.184394076213664" x="206.24061546189316" y="46.71593321451984"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-0F2FCF3D-3F95-4B85-830F-4B4D6AD0DC7A" id="BPMNShape_sid-0F2FCF3D-3F95-4B85-830F-4B4D6AD0DC7A">
+        <omgdc:Bounds height="40.0" width="40.0" x="854.5" y="135.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="approve-mast-commercials-offnet" id="BPMNShape_approve-mast-commercials-offnet">
+        <omgdc:Bounds height="72.0" width="106.0" x="420.0" y="45.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="po-mast-vendor-offnet" id="BPMNShape_po-mast-vendor-offnet">
+        <omgdc:Bounds height="72.0" width="94.0" x="555.0" y="45.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="mast-installation-plan-offnet" id="BPMNShape_mast-installation-plan-offnet">
+        <omgdc:Bounds height="75.0" width="106.0" x="686.0" y="43.5"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="install-mast-offnet" id="BPMNShape_install-mast-offnet">
+        <omgdc:Bounds height="64.0" width="99.0" x="825.0" y="45.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-656B91B3-57CA-4FF4-A3F2-B506A5A0BEC3" id="BPMNEdge_sid-656B91B3-57CA-4FF4-A3F2-B506A5A0BEC3">
+        <omgdi:waypoint x="894.0643096514722" y="155.37248322147653"></omgdi:waypoint>
+        <omgdi:waypoint x="930.1324503311258" y="155.13211920529804"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-1433B3CB-63E8-487F-B374-7846DE463EF4" id="BPMNEdge_sid-1433B3CB-63E8-487F-B374-7846DE463EF4">
+        <omgdi:waypoint x="390.9499999999985" y="81.96470588235294"></omgdi:waypoint>
+        <omgdi:waypoint x="419.9999999999993" y="81.6229411764706"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-F82C30AF-6763-4B23-AE30-8F9C203E9369" id="BPMNEdge_sid-F82C30AF-6763-4B23-AE30-8F9C203E9369">
+        <omgdi:waypoint x="230.5" y="104.43648359486447"></omgdi:waypoint>
+        <omgdi:waypoint x="230.5" y="155.5"></omgdi:waypoint>
+        <omgdi:waypoint x="855.0" y="155.5"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-3350836D-9A1E-4A62-9579-8B17CE0E18DC" id="BPMNEdge_sid-3350836D-9A1E-4A62-9579-8B17CE0E18DC">
+        <omgdi:waypoint x="874.5" y="108.94999999999999"></omgdi:waypoint>
+        <omgdi:waypoint x="874.5" y="135.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-BDE2E8B7-EC4D-4D4F-95D0-2161B343FDEE" id="BPMNEdge_sid-BDE2E8B7-EC4D-4D4F-95D0-2161B343FDEE">
+        <omgdi:waypoint x="222.41911190449628" y="72.57818608287724"></omgdi:waypoint>
+        <omgdi:waypoint x="206.3870239390642" y="46.95"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-DEA4E94A-1700-4094-8AB9-99A72AB2FF5F" id="BPMNEdge_sid-DEA4E94A-1700-4094-8AB9-99A72AB2FF5F">
+        <omgdi:waypoint x="648.9499999999999" y="81.0"></omgdi:waypoint>
+        <omgdi:waypoint x="685.9999999999986" y="81.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-E66DBF08-96F2-423C-9422-570EF91E26AD" id="BPMNEdge_sid-E66DBF08-96F2-423C-9422-570EF91E26AD">
+        <omgdi:waypoint x="174.43738348868177" y="85.5"></omgdi:waypoint>
+        <omgdi:waypoint x="210.5" y="85.5"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-38C8E4A6-7585-454B-BBBD-AB64C1AD184C" id="BPMNEdge_sid-38C8E4A6-7585-454B-BBBD-AB64C1AD184C">
+        <omgdi:waypoint x="89.9496588110467" y="85.0928554529216"></omgdi:waypoint>
+        <omgdi:waypoint x="135.375" y="85.375"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-969137EC-911A-47A0-BD24-DEAB8C6DD6C2" id="BPMNEdge_sid-969137EC-911A-47A0-BD24-DEAB8C6DD6C2">
+        <omgdi:waypoint x="249.9427966101695" y="84.99152542372882"></omgdi:waypoint>
+        <omgdi:waypoint x="299.9999999999999" y="83.68565217391304"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-1E1181B4-22D8-44C3-945F-0503C16A8A48" id="BPMNEdge_sid-1E1181B4-22D8-44C3-945F-0503C16A8A48">
+        <omgdi:waypoint x="525.9499999999911" y="81.0"></omgdi:waypoint>
+        <omgdi:waypoint x="554.9999999999734" y="81.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-117CB31A-CE8A-4DE2-BA23-15BD22CB0F80" id="BPMNEdge_sid-117CB31A-CE8A-4DE2-BA23-15BD22CB0F80">
+        <omgdi:waypoint x="791.9499999999997" y="79.43542435424354"></omgdi:waypoint>
+        <omgdi:waypoint x="824.9999999999998" y="78.45977859778598"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-97B4A2BD-BC04-4C24-94E4-C200AACAF5FF" id="BPMNEdge_sid-97B4A2BD-BC04-4C24-94E4-C200AACAF5FF">
+        <omgdi:waypoint x="354.9499999996259" y="220.0"></omgdi:waypoint>
+        <omgdi:waypoint x="950.5" y="220.0"></omgdi:waypoint>
+        <omgdi:waypoint x="950.5" y="174.41463509316776"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-73BA314D-F3A5-4E73-9046-D00291240E82" id="BPMNEdge_sid-73BA314D-F3A5-4E73-9046-D00291240E82">
+        <omgdi:waypoint x="969.610593220339" y="155.32075471698113"></omgdi:waypoint>
+        <omgdi:waypoint x="990.0005965277774" y="155.13036841872307"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-5B25C622-FF82-4F18-B979-C4F03BFA4F09" id="BPMNEdge_sid-5B25C622-FF82-4F18-B979-C4F03BFA4F09">
+        <omgdi:waypoint x="155.5" y="104.44296062407132"></omgdi:waypoint>
+        <omgdi:waypoint x="155.5" y="220.0"></omgdi:waypoint>
+        <omgdi:waypoint x="255.0" y="220.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

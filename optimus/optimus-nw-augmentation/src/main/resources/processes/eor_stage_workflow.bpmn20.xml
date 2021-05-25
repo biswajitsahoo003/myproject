@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <process id="eor_stage_workflow" name="eor_stage_workflow" isExecutable="true">
+    <documentation>eor_stage_workflow</documentation>
+    <startEvent id="eor_stage_workflow_start" name="start_eor_stage_workflow" flowable:formKey="start_eor_stage_workflow">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${stageStartListener}"></flowable:executionListener>
+      </extensionElements>
+    </startEvent>
+    <callActivity id="eor-ipprov" name="EOR Equip IP Provisioning" calledElement="eor_equip_ip_provisioning_workflow5" flowable:calledElementType="key" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false"></callActivity>
+    <endEvent id="eor_stage_workflow_end">
+      <extensionElements>
+        <flowable:executionListener event="end" delegateExpression="${stageEndListener}"></flowable:executionListener>
+      </extensionElements>
+    </endEvent>
+    <callActivity id="eor-cardprov" name="EOR IP Card Provisioning" calledElement="eor_ip_card_provisioning_workflow" flowable:calledElementType="key" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${myProcessListener}"></flowable:executionListener>
+      </extensionElements>
+    </callActivity>
+    <exclusiveGateway id="sid-1BF5322C-02FD-4E58-8DED-356BF946067B"></exclusiveGateway>
+    <callActivity id="eor-iptermination" name="EOR IP Termination" calledElement="eor_ip_termination_workflow" flowable:calledElementType="key" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false"></callActivity>
+    <sequenceFlow id="sid-49E1E160-11CE-495B-8495-96482E61DA9F" sourceRef="eor-iptermination" targetRef="eor_stage_workflow_end"></sequenceFlow>
+    <callActivity id="eor-txprovisioning" name="EOR Tx Provisioning" calledElement="eor_equip_tx_provisioning" flowable:calledElementType="key" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false"></callActivity>
+    <callActivity id="eor-txcardpro" name="EOR Tx Card Provisioning" calledElement="eor-txcardpro" flowable:calledElementType="key" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${myProcessListener}"></flowable:executionListener>
+      </extensionElements>
+    </callActivity>
+    <callActivity id="eor-eqp-wirelesspro" name="EOR EQUIP WIRELESS PROVISIONING" calledElement="eor_equip_wireless_provisioning" flowable:calledElementType="key" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false"></callActivity>
+    <sequenceFlow id="sid-908B543B-B90A-4747-A0E6-BC422229BAF8" sourceRef="eor-txcardpro" targetRef="eor_stage_workflow_end"></sequenceFlow>
+    <sequenceFlow id="sid-1E6848E1-1EB2-462C-BEBE-38D2C5202146" sourceRef="eor-txprovisioning" targetRef="eor_stage_workflow_end"></sequenceFlow>
+    <callActivity id="eor-wl-ipalloc" name="EOR WIRELESS IP  POOL ALLOCATION" calledElement="eor_wireless_ip_pool_allocation" flowable:calledElementType="key" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false"></callActivity>
+    <sequenceFlow id="sid-72C3464A-DD95-47C5-8B62-6CE1E4B37D3C" sourceRef="eor-wl-ipalloc" targetRef="eor_stage_workflow_end"></sequenceFlow>
+    <sequenceFlow id="sid-6B25BCC9-8016-4957-A2E3-0C1199F077EE" sourceRef="eor-cardprov" targetRef="eor_stage_workflow_end"></sequenceFlow>
+    <sequenceFlow id="sid-CC75E4D9-32DE-4BFE-B54C-682A3292E802" sourceRef="eor-ipprov" targetRef="eor_stage_workflow_end"></sequenceFlow>
+    <callActivity id="eor-cardremoval" name="EOR IP CARD REMOVAL" calledElement="eor_ip_card_removal" flowable:calledElementType="key" flowable:fallbackToDefaultTenant="false"></callActivity>
+    <sequenceFlow id="sid-6B5021F9-AE51-451E-9035-93B1FF6E0976" sourceRef="eor-cardremoval" targetRef="eor_stage_workflow_end"></sequenceFlow>
+    <callActivity id="eor-ethprovisioning" name="EOR Equip Eth Provisioning" calledElement="eor_equip_eth_provisioning" flowable:calledElementType="key" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false"></callActivity>
+    <sequenceFlow id="sid-4A2B4BD0-9506-4343-AD6E-E51A5005A32D" sourceRef="eor-eqp-wirelesspro" targetRef="eor_stage_workflow_end"></sequenceFlow>
+    <sequenceFlow id="sid-F76980DF-5608-4EDA-8BEB-970678A4FF10" sourceRef="eor-ethprovisioning" targetRef="eor_stage_workflow_end"></sequenceFlow>
+    <sequenceFlow id="sid-3DAD6911-8614-4F4E-9BC8-AF45372790F7" sourceRef="eor_stage_workflow_start" targetRef="sid-1BF5322C-02FD-4E58-8DED-356BF946067B"></sequenceFlow>
+    <sequenceFlow id="sid-D0185F99-7262-4582-B858-7A3B86A2C0A1" sourceRef="sid-1BF5322C-02FD-4E58-8DED-356BF946067B" targetRef="eor-ipprov">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ var:get(eorEquipIp) == true }]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-2BC02A31-B295-4069-AA08-3F6D44D87A73" sourceRef="sid-1BF5322C-02FD-4E58-8DED-356BF946067B" targetRef="eor-wl-ipalloc">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ var:get(eorwlipPoolalloc) == true }]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-7B43ACA8-A392-4ECD-8889-CB2ABDF94BDF" sourceRef="sid-1BF5322C-02FD-4E58-8DED-356BF946067B" targetRef="eor-cardremoval">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ var:get(eorIpCardRemoval) == true }]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-CE644A81-D210-4B27-8B3B-1DE276645BCD" sourceRef="sid-1BF5322C-02FD-4E58-8DED-356BF946067B" targetRef="eor-cardprov">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ var:get(eorIpCard) == true }]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-5A3C9B7C-DE2C-47CF-9366-9C1DE8AFA3E9" sourceRef="sid-1BF5322C-02FD-4E58-8DED-356BF946067B" targetRef="eor-iptermination">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ var:get(eorIpTermination) == true }]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-3541F9D4-5671-4E51-98C5-3FB4190FA76B" sourceRef="sid-1BF5322C-02FD-4E58-8DED-356BF946067B" targetRef="eor-txprovisioning">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ var:get(eorTxProvisioning) == true }]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-F701CD7E-0626-4394-9307-E9EEA6D98C9E" sourceRef="sid-1BF5322C-02FD-4E58-8DED-356BF946067B" targetRef="eor-txcardpro">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ var:get(eorTxCardPro) == true }]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-1A6CDBD8-14FD-4FDA-9C24-F80557B6750B" sourceRef="sid-1BF5322C-02FD-4E58-8DED-356BF946067B" targetRef="eor-eqp-wirelesspro">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ var:get(eorEqpWirelessPro) == true }]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-30D75F07-0FA1-4FAC-BF22-EC467F306F6D" sourceRef="sid-1BF5322C-02FD-4E58-8DED-356BF946067B" targetRef="eor-ethprovisioning">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ var:get(eorEThProvisioning) == true }]]></conditionExpression>
+    </sequenceFlow>
+    <callActivity id="eor-ethcardpro" name="EOR Equip Eth Card Provisioning" calledElement="eor-ethcardpro" flowable:calledElementType="key" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false"></callActivity>
+    <sequenceFlow id="sid-D9D94115-8F37-41A9-9C28-8FE595628281" sourceRef="eor-ethcardpro" targetRef="eor_stage_workflow_end"></sequenceFlow>
+    <sequenceFlow id="sid-3404200C-460A-44DF-8D5E-85D010A6105E" sourceRef="sid-1BF5322C-02FD-4E58-8DED-356BF946067B" targetRef="eor-ethcardpro">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ var:get(eorEThCard) == true }]]></conditionExpression>
+    </sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_eor_stage_workflow">
+    <bpmndi:BPMNPlane bpmnElement="eor_stage_workflow" id="BPMNPlane_eor_stage_workflow">
+      <bpmndi:BPMNShape bpmnElement="eor_stage_workflow_start" id="BPMNShape_eor_stage_workflow_start">
+        <omgdc:Bounds height="30.0" width="30.000000000000014" x="125.40262985577856" y="462.24733740401393"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="eor-ipprov" id="BPMNShape_eor-ipprov">
+        <omgdc:Bounds height="80.0" width="100.0" x="490.0" y="120.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="eor_stage_workflow_end" id="BPMNShape_eor_stage_workflow_end">
+        <omgdc:Bounds height="28.0" width="28.0" x="655.0" y="292.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="eor-cardprov" id="BPMNShape_eor-cardprov">
+        <omgdc:Bounds height="80.0" width="100.0" x="490.0" y="266.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-1BF5322C-02FD-4E58-8DED-356BF946067B" id="BPMNShape_sid-1BF5322C-02FD-4E58-8DED-356BF946067B">
+        <omgdc:Bounds height="40.0" width="40.0" x="250.0" y="457.24733740401393"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="eor-iptermination" id="BPMNShape_eor-iptermination">
+        <omgdc:Bounds height="80.0" width="100.0" x="490.0" y="389.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="eor-txprovisioning" id="BPMNShape_eor-txprovisioning">
+        <omgdc:Bounds height="80.0" width="100.0" x="490.0" y="510.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="eor-txcardpro" id="BPMNShape_eor-txcardpro">
+        <omgdc:Bounds height="80.0" width="100.0" x="490.0" y="615.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="eor-eqp-wirelesspro" id="BPMNShape_eor-eqp-wirelesspro">
+        <omgdc:Bounds height="80.0" width="100.0" x="490.0" y="749.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="eor-wl-ipalloc" id="BPMNShape_eor-wl-ipalloc">
+        <omgdc:Bounds height="80.0" width="100.0" x="910.0" y="195.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="eor-cardremoval" id="BPMNShape_eor-cardremoval">
+        <omgdc:Bounds height="80.0" width="100.0" x="910.0" y="330.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="eor-ethprovisioning" id="BPMNShape_eor-ethprovisioning">
+        <omgdc:Bounds height="80.0" width="100.00000000000006" x="470.41910012853776" y="878.1156535732705"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="eor-ethcardpro" id="BPMNShape_eor-ethcardpro">
+        <omgdc:Bounds height="80.0" width="99.99999999999994" x="473.2510467606224" y="1003.5607469408806"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-30D75F07-0FA1-4FAC-BF22-EC467F306F6D" id="BPMNEdge_sid-30D75F07-0FA1-4FAC-BF22-EC467F306F6D">
+        <omgdi:waypoint x="270.5" y="496.69518628447776"></omgdi:waypoint>
+        <omgdi:waypoint x="270.5" y="918.1156535732705"></omgdi:waypoint>
+        <omgdi:waypoint x="470.41910012853776" y="918.1156535732705"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-6B25BCC9-8016-4957-A2E3-0C1199F077EE" id="BPMNEdge_sid-6B25BCC9-8016-4957-A2E3-0C1199F077EE">
+        <omgdi:waypoint x="589.949999999939" y="306.0"></omgdi:waypoint>
+        <omgdi:waypoint x="655.0" y="306.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-7B43ACA8-A392-4ECD-8889-CB2ABDF94BDF" id="BPMNEdge_sid-7B43ACA8-A392-4ECD-8889-CB2ABDF94BDF">
+        <omgdi:waypoint x="270.0" y="457.24733740401393"></omgdi:waypoint>
+        <omgdi:waypoint x="270.0" y="370.0"></omgdi:waypoint>
+        <omgdi:waypoint x="910.0" y="370.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-D0185F99-7262-4582-B858-7A3B86A2C0A1" id="BPMNEdge_sid-D0185F99-7262-4582-B858-7A3B86A2C0A1">
+        <omgdi:waypoint x="270.0" y="457.24733740401393"></omgdi:waypoint>
+        <omgdi:waypoint x="270.0" y="160.0"></omgdi:waypoint>
+        <omgdi:waypoint x="490.0" y="160.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-5A3C9B7C-DE2C-47CF-9366-9C1DE8AFA3E9" id="BPMNEdge_sid-5A3C9B7C-DE2C-47CF-9366-9C1DE8AFA3E9">
+        <omgdi:waypoint x="270.0" y="457.24733740401393"></omgdi:waypoint>
+        <omgdi:waypoint x="270.0" y="429.0"></omgdi:waypoint>
+        <omgdi:waypoint x="489.99999999987426" y="429.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-F701CD7E-0626-4394-9307-E9EEA6D98C9E" id="BPMNEdge_sid-F701CD7E-0626-4394-9307-E9EEA6D98C9E">
+        <omgdi:waypoint x="270.0" y="497.1917288289976"></omgdi:waypoint>
+        <omgdi:waypoint x="270.0" y="655.0"></omgdi:waypoint>
+        <omgdi:waypoint x="490.0" y="655.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-908B543B-B90A-4747-A0E6-BC422229BAF8" id="BPMNEdge_sid-908B543B-B90A-4747-A0E6-BC422229BAF8">
+        <omgdi:waypoint x="589.9499999999957" y="655.0"></omgdi:waypoint>
+        <omgdi:waypoint x="669.0" y="655.0"></omgdi:waypoint>
+        <omgdi:waypoint x="669.0" y="319.94991914178814"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-1E6848E1-1EB2-462C-BEBE-38D2C5202146" id="BPMNEdge_sid-1E6848E1-1EB2-462C-BEBE-38D2C5202146">
+        <omgdi:waypoint x="589.9499999997024" y="550.0"></omgdi:waypoint>
+        <omgdi:waypoint x="669.0" y="550.0"></omgdi:waypoint>
+        <omgdi:waypoint x="669.0" y="319.9499220040283"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-72C3464A-DD95-47C5-8B62-6CE1E4B37D3C" id="BPMNEdge_sid-72C3464A-DD95-47C5-8B62-6CE1E4B37D3C">
+        <omgdi:waypoint x="960.0" y="274.95000000000005"></omgdi:waypoint>
+        <omgdi:waypoint x="960.0" y="306.0"></omgdi:waypoint>
+        <omgdi:waypoint x="682.9499199852064" y="306.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-F76980DF-5608-4EDA-8BEB-970678A4FF10" id="BPMNEdge_sid-F76980DF-5608-4EDA-8BEB-970678A4FF10">
+        <omgdi:waypoint x="570.3691001284325" y="918.1156535732705"></omgdi:waypoint>
+        <omgdi:waypoint x="669.0" y="918.1156535732705"></omgdi:waypoint>
+        <omgdi:waypoint x="669.0" y="319.9499162316108"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-CC75E4D9-32DE-4BFE-B54C-682A3292E802" id="BPMNEdge_sid-CC75E4D9-32DE-4BFE-B54C-682A3292E802">
+        <omgdi:waypoint x="589.95" y="160.0"></omgdi:waypoint>
+        <omgdi:waypoint x="669.0" y="160.0"></omgdi:waypoint>
+        <omgdi:waypoint x="669.0" y="292.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-3404200C-460A-44DF-8D5E-85D010A6105E" id="BPMNEdge_sid-3404200C-460A-44DF-8D5E-85D010A6105E">
+        <omgdi:waypoint x="270.5" y="496.6956631196022"></omgdi:waypoint>
+        <omgdi:waypoint x="270.5" y="1043.5607469408806"></omgdi:waypoint>
+        <omgdi:waypoint x="473.25104675971824" y="1043.5607469408806"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-D9D94115-8F37-41A9-9C28-8FE595628281" id="BPMNEdge_sid-D9D94115-8F37-41A9-9C28-8FE595628281">
+        <omgdi:waypoint x="573.2010467606224" y="1043.5607469408806"></omgdi:waypoint>
+        <omgdi:waypoint x="669.0" y="1043.5607469408806"></omgdi:waypoint>
+        <omgdi:waypoint x="669.0" y="319.94991556801745"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-CE644A81-D210-4B27-8B3B-1DE276645BCD" id="BPMNEdge_sid-CE644A81-D210-4B27-8B3B-1DE276645BCD">
+        <omgdi:waypoint x="270.0" y="457.24733740401393"></omgdi:waypoint>
+        <omgdi:waypoint x="270.0" y="401.62366870200697"></omgdi:waypoint>
+        <omgdi:waypoint x="540.0" y="401.62366870200697"></omgdi:waypoint>
+        <omgdi:waypoint x="540.0" y="345.95000000000005"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-4A2B4BD0-9506-4343-AD6E-E51A5005A32D" id="BPMNEdge_sid-4A2B4BD0-9506-4343-AD6E-E51A5005A32D">
+        <omgdi:waypoint x="589.9499999999957" y="789.0"></omgdi:waypoint>
+        <omgdi:waypoint x="669.0" y="789.0"></omgdi:waypoint>
+        <omgdi:waypoint x="669.0" y="319.94991726933995"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-49E1E160-11CE-495B-8495-96482E61DA9F" id="BPMNEdge_sid-49E1E160-11CE-495B-8495-96482E61DA9F">
+        <omgdi:waypoint x="589.95" y="429.0"></omgdi:waypoint>
+        <omgdi:waypoint x="669.0" y="429.0"></omgdi:waypoint>
+        <omgdi:waypoint x="669.0" y="319.9499310050648"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-6B5021F9-AE51-451E-9035-93B1FF6E0976" id="BPMNEdge_sid-6B5021F9-AE51-451E-9035-93B1FF6E0976">
+        <omgdi:waypoint x="909.9999999999999" y="359.0034364261168"></omgdi:waypoint>
+        <omgdi:waypoint x="682.6194576613846" y="308.99706300674785"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-1A6CDBD8-14FD-4FDA-9C24-F80557B6750B" id="BPMNEdge_sid-1A6CDBD8-14FD-4FDA-9C24-F80557B6750B">
+        <omgdi:waypoint x="270.0" y="497.19413877812525"></omgdi:waypoint>
+        <omgdi:waypoint x="270.0" y="789.0"></omgdi:waypoint>
+        <omgdi:waypoint x="489.9999999998174" y="789.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-2BC02A31-B295-4069-AA08-3F6D44D87A73" id="BPMNEdge_sid-2BC02A31-B295-4069-AA08-3F6D44D87A73">
+        <omgdi:waypoint x="270.0" y="457.24733740401393"></omgdi:waypoint>
+        <omgdi:waypoint x="270.0" y="235.0"></omgdi:waypoint>
+        <omgdi:waypoint x="910.0" y="235.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-3DAD6911-8614-4F4E-9BC8-AF45372790F7" id="BPMNEdge_sid-3DAD6911-8614-4F4E-9BC8-AF45372790F7">
+        <omgdi:waypoint x="155.35262876774317" y="477.24733740401393"></omgdi:waypoint>
+        <omgdi:waypoint x="250.0" y="477.24733740401393"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-3541F9D4-5671-4E51-98C5-3FB4190FA76B" id="BPMNEdge_sid-3541F9D4-5671-4E51-98C5-3FB4190FA76B">
+        <omgdi:waypoint x="270.0" y="497.1836453855694"></omgdi:waypoint>
+        <omgdi:waypoint x="270.0" y="550.0"></omgdi:waypoint>
+        <omgdi:waypoint x="490.0" y="550.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

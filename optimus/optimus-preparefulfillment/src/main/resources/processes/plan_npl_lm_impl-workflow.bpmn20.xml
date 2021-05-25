@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <process id="plan_npl_lm_impl-workflow" name="plan_npl_lm_impl-workflow" isExecutable="true">
+    <documentation>plan_npl_lm_impl-workflow</documentation>
+    <startEvent id="startEvent1"></startEvent>
+    <callActivity id="lm_impl_onnet_wireline_near_connect_process" name="LM Implementation Onnet Wireline Near  Connet" calledElement="plan_lm_impl_onnet_wireline_near_connect_workflow" flowable:calledElementType="key" flowable:processInstanceName="LM-Implementation-Onnet-Wireline" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false">
+      <extensionElements>
+        <flowable:in source="lm-integrate-mux-activity_end_plan_endDate" target="lm-integrate-mux-activity_end_plan_endDate"></flowable:in>
+        <flowable:in source="customerDelayProcess" target="customerDelayProcess"></flowable:in>
+        <flowable:in source="startTrackingProcess" target="startTrackingProcess"></flowable:in>
+        <flowable:out source="lm-integrate-mux-activity_end_plan_endDate" target="lm-integrate-mux-activity_end_plan_endDate"></flowable:out>
+        <flowable:out source="customerDelayProcess" target="customerDelayProcess"></flowable:out>
+        <flowable:out source="startTrackingProcess" target="startTrackingProcess"></flowable:out>
+      </extensionElements>
+    </callActivity>
+    <exclusiveGateway id="sid-F443AA3E-5711-46E3-81D6-FF800003AFFA"></exclusiveGateway>
+    <exclusiveGateway id="sid-1A5423F5-93D5-4AF2-9249-F4ABD0365C35" default="sid-67892266-22A2-473E-AE0F-745285CD627F"></exclusiveGateway>
+    <callActivity id="lm_impl_onnet_wireline_fast_connect_process" name="Get MUX Info" calledElement="plan_lm_impl_onnet_wireline_fast_connect_workflow" flowable:calledElementType="key" flowable:processInstanceName="LM-Implementation-Onnet-Wireline" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false">
+      <extensionElements>
+        <flowable:in source="select_mux_activity_end_plan_endDate" target="select_mux_activity_end_plan_endDate"></flowable:in>
+        <flowable:in source="customerDelayProcess" target="customerDelayProcess"></flowable:in>
+        <flowable:in source="startTrackingProcess" target="startTrackingProcess"></flowable:in>
+        <flowable:in source="lm_impl_process_start_plan_endDate" target="lm_impl_process_start_plan_endDate"></flowable:in>
+        <flowable:out source="select_mux_activity_end_plan_endDate" target="select_mux_activity_end_plan_endDate"></flowable:out>
+        <flowable:out source="customerDelayProcess" target="customerDelayProcess"></flowable:out>
+        <flowable:out source="startTrackingProcess" target="startTrackingProcess"></flowable:out>
+      </extensionElements>
+    </callActivity>
+    <sequenceFlow id="sid-0BFB99B6-9999-4A5C-9794-5BADC1C21E62" sourceRef="lm_impl_onnet_wireline_fast_connect_process" targetRef="sid-F443AA3E-5711-46E3-81D6-FF800003AFFA"></sequenceFlow>
+    <sequenceFlow id="sid-D424F234-87D1-4AB3-93C5-ABD4AE093E50" sourceRef="startEvent1" targetRef="lm_impl_process_start_plan"></sequenceFlow>
+    <sequenceFlow id="sid-67892266-22A2-473E-AE0F-745285CD627F" name="Near Connect" sourceRef="sid-1A5423F5-93D5-4AF2-9249-F4ABD0365C35" targetRef="lm_impl_onnet_wireline_near_connect_process"></sequenceFlow>
+    <serviceTask id="lm_impl_process_start_plan" name="LM Implementation Start" flowable:delegateExpression="${processPlanStartDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[create_service_process_end_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="lm_impl_process_end_plan" name="LM Implementation End" flowable:delegateExpression="${processPlanEndDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[select_mux_activity_end_plan,lm-wireless-implementation-activity_end_plan,lm_impl_offnet_activity_end_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="sid-B83DEB60-AF1C-4E6A-BEC1-BE57F4DDB585" sourceRef="sid-F443AA3E-5711-46E3-81D6-FF800003AFFA" targetRef="lm_impl_process_end_plan"></sequenceFlow>
+    <exclusiveGateway id="sid-4944E443-61B2-41F3-9F3A-21AC173FE39F"></exclusiveGateway>
+    <sequenceFlow id="sid-E42F8087-7177-48C4-96CC-653EE3C47F62" sourceRef="lm_impl_onnet_wireline_near_connect_process" targetRef="sid-4944E443-61B2-41F3-9F3A-21AC173FE39F"></sequenceFlow>
+    <sequenceFlow id="sid-6ED1C555-CFBD-4F1B-ABD0-5F214CFB3F1E" sourceRef="sid-4944E443-61B2-41F3-9F3A-21AC173FE39F" targetRef="lm_impl_onnet_wireline_fast_connect_process"></sequenceFlow>
+    <sequenceFlow id="sid-49058C0E-1D9B-487F-9290-25BC283F0319" sourceRef="sid-B728EF1F-72A1-4064-B63A-39C5C9EB4057" targetRef="sid-F443AA3E-5711-46E3-81D6-FF800003AFFA"></sequenceFlow>
+    <exclusiveGateway id="sid-7DF897BD-9363-40CD-951C-FE3F49320DE9" default="sid-72F126F1-1C34-471D-B4E2-62EC8C7B5171"></exclusiveGateway>
+    <callActivity id="sid-B728EF1F-72A1-4064-B63A-39C5C9EB4057" name="LM Implementation Onnet Wireless" calledElement="plan_lm_impl_offnet_process" flowable:calledElementType="key" flowable:processInstanceName="lm_impl_onnet_wireless_workflow" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false">
+      <extensionElements>
+        <flowable:in source="lm_impl_offnet_activity_end_plan_endDate" target="lm_impl_offnet_activity_end_plan_endDate"></flowable:in>
+        <flowable:in source="customerDelayProcess" target="customerDelayProcess"></flowable:in>
+        <flowable:in source="startTrackingProcess" target="startTrackingProcess"></flowable:in>
+        <flowable:out source="lm_impl_offnet_activity_end_plan_endDate" target="lm_impl_offnet_activity_end_plan_endDate"></flowable:out>
+        <flowable:out source="customerDelayProcess" target="customerDelayProcess"></flowable:out>
+        <flowable:out source="startTrackingProcess" target="startTrackingProcess"></flowable:out>
+      </extensionElements>
+    </callActivity>
+    <endEvent id="sid-416B2323-96DC-4073-B9B0-ADC4628DF943"></endEvent>
+    <sequenceFlow id="sid-CBDA16B5-FBA2-48B0-AD0F-06632D79836A" sourceRef="lm_impl_process_end_plan" targetRef="sid-416B2323-96DC-4073-B9B0-ADC4628DF943"></sequenceFlow>
+    <sequenceFlow id="sid-EB86E810-02CD-4B10-9A27-B8CBD79605A3" sourceRef="lm_impl_process_start_plan" targetRef="sid-7DF897BD-9363-40CD-951C-FE3F49320DE9"></sequenceFlow>
+    <sequenceFlow id="sid-72F126F1-1C34-471D-B4E2-62EC8C7B5171" name="On-net" sourceRef="sid-7DF897BD-9363-40CD-951C-FE3F49320DE9" targetRef="sid-1A5423F5-93D5-4AF2-9249-F4ABD0365C35"></sequenceFlow>
+    <sequenceFlow id="sid-D7294C38-9955-4BBF-B217-1F09ADB81474" name="Off-net" sourceRef="sid-7DF897BD-9363-40CD-951C-FE3F49320DE9" targetRef="sid-B728EF1F-72A1-4064-B63A-39C5C9EB4057">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ lmType == "offnet" }]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-E1332603-A7D3-47FE-B0C1-851E657F0809" name="Fast Connect" sourceRef="sid-1A5423F5-93D5-4AF2-9249-F4ABD0365C35" targetRef="sid-4944E443-61B2-41F3-9F3A-21AC173FE39F">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ isConnectedSite == true }]]></conditionExpression>
+    </sequenceFlow>
+    <association id="sid-8A23DB2F-A27D-4402-9416-2E8AD7E8706B" sourceRef="sid-7DF897BD-9363-40CD-951C-FE3F49320DE9" targetRef="sid-1D1B713D-647B-4947-B17B-45DFDAB96200" associationDirection="None"></association>
+    <textAnnotation id="sid-1D1B713D-647B-4947-B17B-45DFDAB96200">
+      <text>Is it On-net or Off-net case?</text>
+    </textAnnotation>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_plan_npl_lm_impl-workflow">
+    <bpmndi:BPMNPlane bpmnElement="plan_npl_lm_impl-workflow" id="BPMNPlane_plan_npl_lm_impl-workflow">
+      <bpmndi:BPMNShape bpmnElement="startEvent1" id="BPMNShape_startEvent1">
+        <omgdc:Bounds height="30.0" width="30.0" x="90.0" y="199.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="lm_impl_onnet_wireline_near_connect_process" id="BPMNShape_lm_impl_onnet_wireline_near_connect_process">
+        <omgdc:Bounds height="68.0" width="115.0" x="525.0" y="90.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-F443AA3E-5711-46E3-81D6-FF800003AFFA" id="BPMNShape_sid-F443AA3E-5711-46E3-81D6-FF800003AFFA">
+        <omgdc:Bounds height="40.0" width="40.0" x="785.0" y="198.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-1A5423F5-93D5-4AF2-9249-F4ABD0365C35" id="BPMNShape_sid-1A5423F5-93D5-4AF2-9249-F4ABD0365C35">
+        <omgdc:Bounds height="40.0" width="40.0" x="467.0" y="57.5"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="lm_impl_onnet_wireline_fast_connect_process" id="BPMNShape_lm_impl_onnet_wireline_fast_connect_process">
+        <omgdc:Bounds height="65.0" width="106.0" x="752.0" y="45.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="lm_impl_process_start_plan" id="BPMNShape_lm_impl_process_start_plan">
+        <omgdc:Bounds height="61.0" width="113.0" x="195.0" y="183.5"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="lm_impl_process_end_plan" id="BPMNShape_lm_impl_process_end_plan">
+        <omgdc:Bounds height="63.0" width="111.0" x="855.0" y="186.5"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-4944E443-61B2-41F3-9F3A-21AC173FE39F" id="BPMNShape_sid-4944E443-61B2-41F3-9F3A-21AC173FE39F">
+        <omgdc:Bounds height="40.0" width="40.0" x="675.0" y="57.5"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-8A23DB2F-A27D-4402-9416-2E8AD7E8706B" id="BPMNShape_sid-8A23DB2F-A27D-4402-9416-2E8AD7E8706B">
+        <omgdc:Bounds height="18.160807623790447" width="17.6828916336907" x="390.52574168315465" y="227.81022118810478"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-7DF897BD-9363-40CD-951C-FE3F49320DE9" id="BPMNShape_sid-7DF897BD-9363-40CD-951C-FE3F49320DE9">
+        <omgdc:Bounds height="40.0" width="40.0" x="360.0" y="197.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-1D1B713D-647B-4947-B17B-45DFDAB96200" id="BPMNShape_sid-1D1B713D-647B-4947-B17B-45DFDAB96200">
+        <omgdc:Bounds height="42.0" width="92.0" x="405.0" y="246.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-B728EF1F-72A1-4064-B63A-39C5C9EB4057" id="BPMNShape_sid-B728EF1F-72A1-4064-B63A-39C5C9EB4057">
+        <omgdc:Bounds height="68.0" width="115.0" x="540.0" y="183.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-416B2323-96DC-4073-B9B0-ADC4628DF943" id="BPMNShape_sid-416B2323-96DC-4073-B9B0-ADC4628DF943">
+        <omgdc:Bounds height="28.0" width="28.0" x="1005.0" y="203.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-D424F234-87D1-4AB3-93C5-ABD4AE093E50" id="BPMNEdge_sid-D424F234-87D1-4AB3-93C5-ABD4AE093E50">
+        <omgdi:waypoint x="119.94999879189574" y="214.0"></omgdi:waypoint>
+        <omgdi:waypoint x="195.0" y="214.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-72F126F1-1C34-471D-B4E2-62EC8C7B5171" id="BPMNEdge_sid-72F126F1-1C34-471D-B4E2-62EC8C7B5171">
+        <omgdi:waypoint x="380.0" y="197.0"></omgdi:waypoint>
+        <omgdi:waypoint x="380.0" y="78.0"></omgdi:waypoint>
+        <omgdi:waypoint x="467.5" y="78.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-6ED1C555-CFBD-4F1B-ABD0-5F214CFB3F1E" id="BPMNEdge_sid-6ED1C555-CFBD-4F1B-ABD0-5F214CFB3F1E">
+        <omgdi:waypoint x="714.5281622364772" y="77.91284403669725"></omgdi:waypoint>
+        <omgdi:waypoint x="751.9999999999992" y="77.7417808219178"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-49058C0E-1D9B-487F-9290-25BC283F0319" id="BPMNEdge_sid-49058C0E-1D9B-487F-9290-25BC283F0319">
+        <omgdi:waypoint x="654.9499999999334" y="218.66166980064492"></omgdi:waypoint>
+        <omgdi:waypoint x="785.521461304771" y="218.5214076515091"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-0BFB99B6-9999-4A5C-9794-5BADC1C21E62" id="BPMNEdge_sid-0BFB99B6-9999-4A5C-9794-5BADC1C21E62">
+        <omgdi:waypoint x="805.1150709219858" y="109.95"></omgdi:waypoint>
+        <omgdi:waypoint x="805.4288256227758" y="198.4288256227758"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-8A23DB2F-A27D-4402-9416-2E8AD7E8706B" id="BPMNEdge_sid-8A23DB2F-A27D-4402-9416-2E8AD7E8706B">
+        <omgdi:waypoint x="389.842" y="227.1078229027963"></omgdi:waypoint>
+        <omgdi:waypoint x="408.2368421052632" y="246.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-67892266-22A2-473E-AE0F-745285CD627F" id="BPMNEdge_sid-67892266-22A2-473E-AE0F-745285CD627F">
+        <omgdi:waypoint x="487.0" y="97.42859442060085"></omgdi:waypoint>
+        <omgdi:waypoint x="487.0" y="124.0"></omgdi:waypoint>
+        <omgdi:waypoint x="525.0" y="124.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-EB86E810-02CD-4B10-9A27-B8CBD79605A3" id="BPMNEdge_sid-EB86E810-02CD-4B10-9A27-B8CBD79605A3">
+        <omgdi:waypoint x="307.9499999999997" y="215.31789883268482"></omgdi:waypoint>
+        <omgdi:waypoint x="360.4158434650444" y="216.54372623574147"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-E42F8087-7177-48C4-96CC-653EE3C47F62" id="BPMNEdge_sid-E42F8087-7177-48C4-96CC-653EE3C47F62">
+        <omgdi:waypoint x="639.9499999999894" y="124.0"></omgdi:waypoint>
+        <omgdi:waypoint x="695.5" y="124.0"></omgdi:waypoint>
+        <omgdi:waypoint x="695.5" y="96.92053376906318"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-CBDA16B5-FBA2-48B0-AD0F-06632D79836A" id="BPMNEdge_sid-CBDA16B5-FBA2-48B0-AD0F-06632D79836A">
+        <omgdi:waypoint x="965.9499999999938" y="217.4884792626728"></omgdi:waypoint>
+        <omgdi:waypoint x="1005.0005796705206" y="217.12856624467446"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-E1332603-A7D3-47FE-B0C1-851E657F0809" id="BPMNEdge_sid-E1332603-A7D3-47FE-B0C1-851E657F0809">
+        <omgdi:waypoint x="506.8975251076022" y="77.54772727272726"></omgdi:waypoint>
+        <omgdi:waypoint x="675.4519230769231" y="77.95192307692308"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-D7294C38-9955-4BBF-B217-1F09ADB81474" id="BPMNEdge_sid-D7294C38-9955-4BBF-B217-1F09ADB81474">
+        <omgdi:waypoint x="399.94516011636017" y="217.0"></omgdi:waypoint>
+        <omgdi:waypoint x="539.9999999998724" y="217.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-B83DEB60-AF1C-4E6A-BEC1-BE57F4DDB585" id="BPMNEdge_sid-B83DEB60-AF1C-4E6A-BEC1-BE57F4DDB585">
+        <omgdi:waypoint x="824.4394252231125" y="218.5"></omgdi:waypoint>
+        <omgdi:waypoint x="854.999999999991" y="218.5"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

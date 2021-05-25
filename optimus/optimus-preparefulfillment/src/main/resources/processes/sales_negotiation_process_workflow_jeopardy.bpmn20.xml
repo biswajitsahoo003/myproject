@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <process id="sales_negotiation_process_workflow_jeopardy" name="sales_negotiation_process_workflow_jeopardy" isExecutable="true">
+    <documentation>sales_negotiation_process_workflow_jeopardy</documentation>
+    <startEvent id="sales_negotiation_activity_start">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ activityStartListener}"></flowable:executionListener>
+      </extensionElements>
+    </startEvent>
+    <endEvent id="sales_negotiation_activity_end">
+      <extensionElements>
+        <flowable:executionListener event="end" delegateExpression="${ activityEndListener}"></flowable:executionListener>
+      </extensionElements>
+    </endEvent>
+    <userTask id="sales-negotiation-jeopardy" name="Sales Negotiation Jeopardy">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="sid-1D59C5F9-50ED-44FF-9367-6EBA87CE06B8" sourceRef="sales_negotiation_activity_start" targetRef="sales-negotiation-jeopardy"></sequenceFlow>
+    <userTask id="sales-assist-ordering" name="Sales Assist Order">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <exclusiveGateway id="sid-4119CB37-7BAE-45DC-8C62-328A3F12D9AE" default="sid-7294A26C-8673-4B27-9C80-7071CD427682"></exclusiveGateway>
+    <exclusiveGateway id="sid-0D694EC2-BC2E-4D41-8FD8-5A83FBCAF542"></exclusiveGateway>
+    <sequenceFlow id="sid-EC3EB74D-11BE-4A1B-992D-246A42CBC10C" sourceRef="sid-0D694EC2-BC2E-4D41-8FD8-5A83FBCAF542" targetRef="sales_negotiation_activity_end"></sequenceFlow>
+    <sequenceFlow id="sid-B2438E34-082A-48C6-8599-169AFAA930CA" sourceRef="sales-assist-ordering" targetRef="sid-0D694EC2-BC2E-4D41-8FD8-5A83FBCAF542"></sequenceFlow>
+    <sequenceFlow id="sid-C6F5A1A3-19A3-4E43-B7AA-AB52A60FB320" sourceRef="sales-negotiation-jeopardy" targetRef="sid-4119CB37-7BAE-45DC-8C62-328A3F12D9AE"></sequenceFlow>
+    <sequenceFlow id="sid-7294A26C-8673-4B27-9C80-7071CD427682" sourceRef="sid-4119CB37-7BAE-45DC-8C62-328A3F12D9AE" targetRef="sales-assist-ordering"></sequenceFlow>
+    <sequenceFlow id="sid-34F3B897-CC9D-4FC5-B5DE-E6AF5A4632A3" sourceRef="sid-4119CB37-7BAE-45DC-8C62-328A3F12D9AE" targetRef="sid-0D694EC2-BC2E-4D41-8FD8-5A83FBCAF542">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${var:get(salesNegotiationJeopardyResolve)==true}]]></conditionExpression>
+    </sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_sales_negotiation_process_workflow_jeopardy">
+    <bpmndi:BPMNPlane bpmnElement="sales_negotiation_process_workflow_jeopardy" id="BPMNPlane_sales_negotiation_process_workflow_jeopardy">
+      <bpmndi:BPMNShape bpmnElement="sales_negotiation_activity_start" id="BPMNShape_sales_negotiation_activity_start">
+        <omgdc:Bounds height="30.0" width="30.0" x="120.0" y="85.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sales_negotiation_activity_end" id="BPMNShape_sales_negotiation_activity_end">
+        <omgdc:Bounds height="28.0" width="28.0" x="765.0" y="86.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sales-negotiation-jeopardy" id="BPMNShape_sales-negotiation-jeopardy">
+        <omgdc:Bounds height="80.0" width="100.0" x="240.0" y="60.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sales-assist-ordering" id="BPMNShape_sales-assist-ordering">
+        <omgdc:Bounds height="80.0" width="100.0" x="480.0" y="60.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-4119CB37-7BAE-45DC-8C62-328A3F12D9AE" id="BPMNShape_sid-4119CB37-7BAE-45DC-8C62-328A3F12D9AE">
+        <omgdc:Bounds height="40.0" width="40.0" x="375.0" y="80.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-0D694EC2-BC2E-4D41-8FD8-5A83FBCAF542" id="BPMNShape_sid-0D694EC2-BC2E-4D41-8FD8-5A83FBCAF542">
+        <omgdc:Bounds height="40.0" width="40.0" x="660.0" y="80.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-B2438E34-082A-48C6-8599-169AFAA930CA" id="BPMNEdge_sid-B2438E34-082A-48C6-8599-169AFAA930CA">
+        <omgdi:waypoint x="579.95" y="100.0"></omgdi:waypoint>
+        <omgdi:waypoint x="660.0" y="100.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-1D59C5F9-50ED-44FF-9367-6EBA87CE06B8" id="BPMNEdge_sid-1D59C5F9-50ED-44FF-9367-6EBA87CE06B8">
+        <omgdi:waypoint x="149.9499992392744" y="100.0"></omgdi:waypoint>
+        <omgdi:waypoint x="240.0" y="100.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-C6F5A1A3-19A3-4E43-B7AA-AB52A60FB320" id="BPMNEdge_sid-C6F5A1A3-19A3-4E43-B7AA-AB52A60FB320">
+        <omgdi:waypoint x="339.94999999999794" y="100.2367298578199"></omgdi:waypoint>
+        <omgdi:waypoint x="375.40476190476045" y="100.4047619047619"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-34F3B897-CC9D-4FC5-B5DE-E6AF5A4632A3" id="BPMNEdge_sid-34F3B897-CC9D-4FC5-B5DE-E6AF5A4632A3">
+        <omgdi:waypoint x="395.5" y="80.5"></omgdi:waypoint>
+        <omgdi:waypoint x="395.5" y="24.0"></omgdi:waypoint>
+        <omgdi:waypoint x="679.3441941848645" y="24.0"></omgdi:waypoint>
+        <omgdi:waypoint x="680.1931931311656" y="80.19319313116559"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-EC3EB74D-11BE-4A1B-992D-246A42CBC10C" id="BPMNEdge_sid-EC3EB74D-11BE-4A1B-992D-246A42CBC10C">
+        <omgdi:waypoint x="699.5369266054981" y="100.4030612244898"></omgdi:waypoint>
+        <omgdi:waypoint x="765.0001739538759" y="100.07081148673626"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-7294A26C-8673-4B27-9C80-7071CD427682" id="BPMNEdge_sid-7294A26C-8673-4B27-9C80-7071CD427682">
+        <omgdi:waypoint x="414.5135906040215" y="100.42910447761194"></omgdi:waypoint>
+        <omgdi:waypoint x="479.99999999999847" y="100.18568773234202"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

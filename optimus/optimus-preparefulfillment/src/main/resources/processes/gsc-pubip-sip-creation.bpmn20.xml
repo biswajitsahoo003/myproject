@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <process id="gsc-pubip-sip-creation" name="gsc-pubip-sip-creation" isExecutable="true">
+    <documentation>gsc-pubip-sip-creation</documentation>
+    <startEvent id="service_implementation_stage_start" flowable:formFieldValidation="true">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${updateCaseAttributesListener}"></flowable:executionListener>
+        <flowable:executionListener event="start" delegateExpression="${ stageStartListener }"></flowable:executionListener>
+      </extensionElements>
+    </startEvent>
+    <endEvent id="service_implementation_stage_end">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ stageEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </endEvent>
+    <serviceTask id="gsc-sip-get-sites" name="Get Sites" flowable:delegateExpression="${getSitesDelegate}"></serviceTask>
+    <userTask id="gsc-sip-select-site" name="Site Selection" flowable:formFieldValidation="true">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="sid-E64C1D07-D831-4FB2-A2D0-D35E4678B238" sourceRef="gsc-sip-select-site" targetRef="gsc-sip-db-creation"></sequenceFlow>
+    <userTask id="gsc-sip-db-creation" name="SIP DB creation" flowable:formFieldValidation="true">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <userTask id="gsc-sip-trunk-config" name="Configure SIP Trunk" flowable:formFieldValidation="true">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="sid-0F221DD3-A40E-4C1A-A5CF-DE973377402C" sourceRef="gsc-sip-db-creation" targetRef="gsc-sip-trunk-config"></sequenceFlow>
+    <userTask id="gsc-sip-routelabel-creation" name="Rout Label Creation" flowable:formFieldValidation="true">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <userTask id="gsc-sip-get-sites-jeopardy" name="Get Sites - Jeopardy" flowable:formFieldValidation="true">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <exclusiveGateway id="sid-49AAF845-AF53-4EF3-AE7C-CA71A90B506E" default="sid-20159AC1-6282-43C1-93CA-DF0CCD39B5EE"></exclusiveGateway>
+    <sequenceFlow id="sid-11FEA13E-045E-47DD-BD9C-DAB36995E1BE" sourceRef="gsc-sip-get-sites" targetRef="sid-49AAF845-AF53-4EF3-AE7C-CA71A90B506E"></sequenceFlow>
+    <sequenceFlow id="sid-312512AC-1610-455D-8980-17C067A9F8C2" sourceRef="gsc-sip-get-sites-jeopardy" targetRef="gsc-sip-get-sites"></sequenceFlow>
+    <sequenceFlow id="sid-C2E438A6-B896-4D48-B6B5-49BCDB1EA158" sourceRef="gsc-sip-trunk-config" targetRef="gsc-sip-routelabel-creation"></sequenceFlow>
+    <sequenceFlow id="sid-B4C80990-1635-4247-9EBE-40EF8F1CD0DB" sourceRef="sid-49AAF845-AF53-4EF3-AE7C-CA71A90B506E" targetRef="gsc-sip-select-site">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${var:get(getSitesStatus) == 'success'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-20159AC1-6282-43C1-93CA-DF0CCD39B5EE" sourceRef="sid-49AAF845-AF53-4EF3-AE7C-CA71A90B506E" targetRef="gsc-sip-get-sites-jeopardy"></sequenceFlow>
+    <parallelGateway id="sid-4EB95190-EF46-48A5-AFF8-26EAB647CCEF"></parallelGateway>
+    <parallelGateway id="sid-D7EC35EB-DAD7-4E02-B363-82986763BF7F"></parallelGateway>
+    <sequenceFlow id="gsc_sip_provisioning_process_start" sourceRef="service_implementation_stage_start" targetRef="sid-4EB95190-EF46-48A5-AFF8-26EAB647CCEF">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ processStartListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="gsc_sip_provisioning_process_end" sourceRef="sid-D7EC35EB-DAD7-4E02-B363-82986763BF7F" targetRef="service_implementation_stage_end">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ processEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="gsc_sip_provisioning_activity_start" sourceRef="sid-4EB95190-EF46-48A5-AFF8-26EAB647CCEF" targetRef="gsc-sip-get-sites">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ activityStartListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="gsc_sip_provisioning_activity_end" sourceRef="gsc-sip-service-acceptance" targetRef="sid-D7EC35EB-DAD7-4E02-B363-82986763BF7F">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ activityEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="sid-7C8C5B41-3839-4E4C-AFFE-A374D192AA57" sourceRef="gsc-sip-routelabel-creation" targetRef="gsc-sip-handover-note"></sequenceFlow>
+    <serviceTask id="gsc-sip-handover-note" name="Generate SIP Handover Note" flowable:delegateExpression="${sipHandoverNoteDelegate}"></serviceTask>
+    <userTask id="gsc-sip-service-acceptance" name="SIP Servcie Acceptence" flowable:formFieldValidation="true">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="sid-4D3E8EFC-F8CD-4E15-B33D-A066AF925756" sourceRef="gsc-sip-handover-note" targetRef="gsc-sip-service-acceptance"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_gsc-pubip-sip-creation">
+    <bpmndi:BPMNPlane bpmnElement="gsc-pubip-sip-creation" id="BPMNPlane_gsc-pubip-sip-creation">
+      <bpmndi:BPMNShape bpmnElement="service_implementation_stage_start" id="BPMNShape_service_implementation_stage_start">
+        <omgdc:Bounds height="30.0" width="30.0" x="225.0" y="228.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="service_implementation_stage_end" id="BPMNShape_service_implementation_stage_end">
+        <omgdc:Bounds height="28.0" width="28.0" x="1620.0" y="236.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="gsc-sip-get-sites" id="BPMNShape_gsc-sip-get-sites">
+        <omgdc:Bounds height="80.0" width="100.0" x="407.0" y="203.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="gsc-sip-select-site" id="BPMNShape_gsc-sip-select-site">
+        <omgdc:Bounds height="80.0" width="100.0" x="630.0" y="204.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="gsc-sip-db-creation" id="BPMNShape_gsc-sip-db-creation">
+        <omgdc:Bounds height="80.0" width="100.0" x="783.0" y="206.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="gsc-sip-trunk-config" id="BPMNShape_gsc-sip-trunk-config">
+        <omgdc:Bounds height="80.0" width="100.0" x="948.0" y="206.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="gsc-sip-routelabel-creation" id="BPMNShape_gsc-sip-routelabel-creation">
+        <omgdc:Bounds height="80.0" width="100.0" x="1098.0" y="206.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="gsc-sip-get-sites-jeopardy" id="BPMNShape_gsc-sip-get-sites-jeopardy">
+        <omgdc:Bounds height="80.0" width="100.0" x="525.0" y="325.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-49AAF845-AF53-4EF3-AE7C-CA71A90B506E" id="BPMNShape_sid-49AAF845-AF53-4EF3-AE7C-CA71A90B506E">
+        <omgdc:Bounds height="40.0" width="40.0" x="552.0" y="224.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-4EB95190-EF46-48A5-AFF8-26EAB647CCEF" id="BPMNShape_sid-4EB95190-EF46-48A5-AFF8-26EAB647CCEF">
+        <omgdc:Bounds height="40.0" width="40.0" x="300.0" y="223.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-D7EC35EB-DAD7-4E02-B363-82986763BF7F" id="BPMNShape_sid-D7EC35EB-DAD7-4E02-B363-82986763BF7F">
+        <omgdc:Bounds height="40.0" width="40.0" x="1530.0" y="230.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="gsc-sip-handover-note" id="BPMNShape_gsc-sip-handover-note">
+        <omgdc:Bounds height="80.0" width="100.0" x="1245.0" y="210.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="gsc-sip-service-acceptance" id="BPMNShape_gsc-sip-service-acceptance">
+        <omgdc:Bounds height="80.0" width="100.0" x="1380.0" y="210.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-E64C1D07-D831-4FB2-A2D0-D35E4678B238" id="BPMNEdge_sid-E64C1D07-D831-4FB2-A2D0-D35E4678B238">
+        <omgdi:waypoint x="729.9499999999999" y="244.6529411764706"></omgdi:waypoint>
+        <omgdi:waypoint x="782.9999999999969" y="245.34640522875813"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-4D3E8EFC-F8CD-4E15-B33D-A066AF925756" id="BPMNEdge_sid-4D3E8EFC-F8CD-4E15-B33D-A066AF925756">
+        <omgdi:waypoint x="1344.95" y="250.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1380.0" y="250.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="gsc_sip_provisioning_process_end" id="BPMNEdge_gsc_sip_provisioning_process_end">
+        <omgdi:waypoint x="1569.9381391200868" y="250.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1620.0" y="250.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-7C8C5B41-3839-4E4C-AFFE-A374D192AA57" id="BPMNEdge_sid-7C8C5B41-3839-4E4C-AFFE-A374D192AA57">
+        <omgdi:waypoint x="1197.9499999999994" y="247.3591836734694"></omgdi:waypoint>
+        <omgdi:waypoint x="1244.9999999999998" y="248.63945578231292"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-0F221DD3-A40E-4C1A-A5CF-DE973377402C" id="BPMNEdge_sid-0F221DD3-A40E-4C1A-A5CF-DE973377402C">
+        <omgdi:waypoint x="882.9499999998898" y="246.0"></omgdi:waypoint>
+        <omgdi:waypoint x="947.9999999999847" y="246.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="gsc_sip_provisioning_process_start" id="BPMNEdge_gsc_sip_provisioning_process_start">
+        <omgdi:waypoint x="254.94999714606843" y="243.0"></omgdi:waypoint>
+        <omgdi:waypoint x="300.0" y="243.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-312512AC-1610-455D-8980-17C067A9F8C2" id="BPMNEdge_sid-312512AC-1610-455D-8980-17C067A9F8C2">
+        <omgdi:waypoint x="525.0" y="365.0"></omgdi:waypoint>
+        <omgdi:waypoint x="457.0" y="365.0"></omgdi:waypoint>
+        <omgdi:waypoint x="457.0" y="282.95000000000005"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-C2E438A6-B896-4D48-B6B5-49BCDB1EA158" id="BPMNEdge_sid-C2E438A6-B896-4D48-B6B5-49BCDB1EA158">
+        <omgdi:waypoint x="1047.95" y="246.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1097.9999999999363" y="246.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-B4C80990-1635-4247-9EBE-40EF8F1CD0DB" id="BPMNEdge_sid-B4C80990-1635-4247-9EBE-40EF8F1CD0DB">
+        <omgdi:waypoint x="591.9407724328278" y="244.0"></omgdi:waypoint>
+        <omgdi:waypoint x="629.9999999999732" y="244.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-11FEA13E-045E-47DD-BD9C-DAB36995E1BE" id="BPMNEdge_sid-11FEA13E-045E-47DD-BD9C-DAB36995E1BE">
+        <omgdi:waypoint x="506.95000000000005" y="243.0"></omgdi:waypoint>
+        <omgdi:waypoint x="529.0" y="243.0"></omgdi:waypoint>
+        <omgdi:waypoint x="552.4285714285714" y="243.54545454545456"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="gsc_sip_provisioning_activity_end" id="BPMNEdge_gsc_sip_provisioning_activity_end">
+        <omgdi:waypoint x="1479.949999999991" y="250.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1530.0" y="250.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-20159AC1-6282-43C1-93CA-DF0CCD39B5EE" id="BPMNEdge_sid-20159AC1-6282-43C1-93CA-DF0CCD39B5EE">
+        <omgdi:waypoint x="572.4826612903225" y="263.4596897663175"></omgdi:waypoint>
+        <omgdi:waypoint x="574.00826446281" y="325.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="gsc_sip_provisioning_activity_start" id="BPMNEdge_gsc_sip_provisioning_activity_start">
+        <omgdi:waypoint x="339.94272428875246" y="243.0"></omgdi:waypoint>
+        <omgdi:waypoint x="406.9999999998793" y="243.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

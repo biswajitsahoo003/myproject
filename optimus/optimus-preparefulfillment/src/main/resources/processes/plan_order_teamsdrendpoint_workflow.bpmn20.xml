@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <signal id="additional-tech-details-signal" name="additional-tech-details-signal" flowable:scope="global"></signal>
+  <signal id="site-readiness-signal" name="site-readiness-signal" flowable:scope="global"></signal>
+  <signal id="reopen-site-readiness-signal" name="reopen-site-readiness-signal" flowable:scope="global"></signal>
+  <process id="plan_order_teamsdrendpoint_workflow" name="plan_order_teamsdrendpoint_workflow" isExecutable="true">
+    <documentation>plan_order_teamsdrendpoint_workflow</documentation>
+    <serviceTask id="order_teamsdrendpoint_activity_start_plan" name="Order TeamsDR Endpoint Activity Start" flowable:delegateExpression="${activityPlanStartDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[order_teamsdrendpoint_process_start_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <endEvent id="sid-875D3CE0-0919-445A-BFBE-7C8E64EEFB4A"></endEvent>
+    <serviceTask id="teamsdr-provide-wbsglcc-details-endpoint_plan" name="Provide WBS for TeamsDR Endpoint" flowable:delegateExpression="${ taskPlanDelegate }">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[order_teamsdrendpoint_activity_start_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="order_teamsdrendpoint_activity_end_plan" name="Order TeamsDR Endpoint Activity End" flowable:delegateExpression="${activityPlanEndDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[teamsdr-confirm-material-availability_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <startEvent id="sid-BED3C988-B697-4629-83BB-44B56E9AF78A"></startEvent>
+    <sequenceFlow id="sid-75B6EADC-56AF-46CF-B9D0-9851213BCBB4" sourceRef="sid-BED3C988-B697-4629-83BB-44B56E9AF78A" targetRef="order_teamsdrendpoint_activity_start_plan"></sequenceFlow>
+    <serviceTask id="teamsdr-pr-endpoint_plan" name="Prepare PR for TeamsDR Endpoint" flowable:delegateExpression="${ taskPlanDelegate }">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[teamsdr-provide-wbsglcc-details-endpoint_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="teamsdr-po-endpoint_plan" name="Prepare PO for TeamsDR Endpoint" flowable:delegateExpression="${ taskPlanDelegate }">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[teamsdr-pr-endpoint_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="teamsdr-po-endpoint-release_plan" name="Release PO for TeamsDR Endpoint" flowable:delegateExpression="${ taskPlanDelegate }">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[teamsdr-po-endpoint_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <parallelGateway id="sid-6164993A-D136-408E-A44F-681974FD80B3"></parallelGateway>
+    <parallelGateway id="sid-304FFBAE-FF58-491B-962E-BFAB67B304F0"></parallelGateway>
+    <sequenceFlow id="sid-2E864ABA-1FC3-4621-B06A-CAFB57CEF36E" sourceRef="teamsdr-provide-wbsglcc-details-endpoint_plan" targetRef="sid-6164993A-D136-408E-A44F-681974FD80B3"></sequenceFlow>
+    <sequenceFlow id="sid-6BD50EF9-EA65-419F-9604-4B0721A37CD3" sourceRef="sid-6164993A-D136-408E-A44F-681974FD80B3" targetRef="teamsdr-pr-endpoint_plan"></sequenceFlow>
+    <sequenceFlow id="sid-BF4977BC-6347-476B-8321-8DF2BB0161E4" sourceRef="teamsdr-pr-endpoint_plan" targetRef="teamsdr-po-endpoint_plan"></sequenceFlow>
+    <sequenceFlow id="sid-59181F3E-881E-436C-A7DD-A677FE573537" sourceRef="teamsdr-po-endpoint_plan" targetRef="teamsdr-po-endpoint-release_plan"></sequenceFlow>
+    <serviceTask id="teamsdr-pr-endpoint-install-support_plan" name="Prepare PR for TeamsDR Endpoint" flowable:delegateExpression="${ taskPlanDelegate }">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[teamsdr-provide-wbsglcc-details-endpoint_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="teamsdr-po-endpoint-install-support_plan" name="Prepare PO for TeamsDR Endpoint" flowable:delegateExpression="${ taskPlanDelegate }">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[teamsdr-pr-endpoint-install-support_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="teamsdr-po-endpoint-release-install-support_plan" name="Release PO for TeamsDR Endpoint" flowable:delegateExpression="${ taskPlanDelegate }">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[teamsdr-po-endpoint-install-support_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <exclusiveGateway id="sid-9BD0D844-4FE4-463A-8A64-56CE4BDA1B73" default="sid-620823A1-C423-44E6-A5C7-E59BFAE574B3"></exclusiveGateway>
+    <sequenceFlow id="sid-4AF515E6-2830-4ED7-868D-2278F3B3A274" sourceRef="teamsdr-pr-endpoint-install-support_plan" targetRef="teamsdr-po-endpoint-install-support_plan"></sequenceFlow>
+    <sequenceFlow id="sid-ADAB28EC-D8AA-4BAD-A627-626398135770" sourceRef="teamsdr-po-endpoint-install-support_plan" targetRef="teamsdr-po-endpoint-release-install-support_plan"></sequenceFlow>
+    <exclusiveGateway id="sid-AECF46DF-ED49-40CD-B676-9955412C033E"></exclusiveGateway>
+    <serviceTask id="teamsdr-confirm-material-availability_plan" name="confirm Material Availability" flowable:delegateExpression="${ taskPlanDelegate }">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[teamsdr-po-endpoint-release_plan,teamsdr-po-endpoint-release-install-support_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="sid-E7C9D72D-D748-40A5-A312-65DFE7E68AA4" sourceRef="sid-6164993A-D136-408E-A44F-681974FD80B3" targetRef="sid-9BD0D844-4FE4-463A-8A64-56CE4BDA1B73"></sequenceFlow>
+    <sequenceFlow id="sid-23CE43ED-1E13-44EC-B7F0-11F06E83D896" name="Yes" sourceRef="sid-9BD0D844-4FE4-463A-8A64-56CE4BDA1B73" targetRef="teamsdr-pr-endpoint-install-support_plan">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ var:containsAny(cpeSiScope,"Installation","Support") }]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-A3A3A92A-D1D0-4B2E-9753-D5B951B32095" sourceRef="order_teamsdrendpoint_activity_end_plan" targetRef="sid-875D3CE0-0919-445A-BFBE-7C8E64EEFB4A"></sequenceFlow>
+    <sequenceFlow id="sid-D480DC20-428F-47F3-8CFD-90FDB9F7E07B" sourceRef="teamsdr-confirm-material-availability_plan" targetRef="order_teamsdrendpoint_activity_end_plan"></sequenceFlow>
+    <sequenceFlow id="sid-C9BEDBC7-54D5-4374-B5C7-6CB940CB7A53" sourceRef="order_teamsdrendpoint_activity_start_plan" targetRef="teamsdr-provide-wbsglcc-details-endpoint_plan"></sequenceFlow>
+    <sequenceFlow id="sid-620823A1-C423-44E6-A5C7-E59BFAE574B3" sourceRef="sid-9BD0D844-4FE4-463A-8A64-56CE4BDA1B73" targetRef="sid-AECF46DF-ED49-40CD-B676-9955412C033E"></sequenceFlow>
+    <sequenceFlow id="sid-818850B6-03FA-4879-A0CF-B8F37D49EFE1" sourceRef="teamsdr-po-endpoint-release-install-support_plan" targetRef="sid-AECF46DF-ED49-40CD-B676-9955412C033E"></sequenceFlow>
+    <sequenceFlow id="sid-B9493982-DCAB-42AC-A8C6-EB543ED8007B" sourceRef="teamsdr-po-endpoint-release_plan" targetRef="sid-304FFBAE-FF58-491B-962E-BFAB67B304F0"></sequenceFlow>
+    <sequenceFlow id="sid-81633D46-A4E7-44FC-BDD5-79F3C6CFE473" sourceRef="sid-AECF46DF-ED49-40CD-B676-9955412C033E" targetRef="sid-304FFBAE-FF58-491B-962E-BFAB67B304F0"></sequenceFlow>
+    <sequenceFlow id="sid-81C0A098-727E-49B9-9373-4E65601AA44B" sourceRef="sid-304FFBAE-FF58-491B-962E-BFAB67B304F0" targetRef="teamsdr-confirm-material-availability_plan"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_plan_order_teamsdrendpoint_workflow">
+    <bpmndi:BPMNPlane bpmnElement="plan_order_teamsdrendpoint_workflow" id="BPMNPlane_plan_order_teamsdrendpoint_workflow">
+      <bpmndi:BPMNShape bpmnElement="order_teamsdrendpoint_activity_start_plan" id="BPMNShape_order_teamsdrendpoint_activity_start_plan">
+        <omgdc:Bounds height="80.0" width="100.0" x="135.0" y="105.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-875D3CE0-0919-445A-BFBE-7C8E64EEFB4A" id="BPMNShape_sid-875D3CE0-0919-445A-BFBE-7C8E64EEFB4A">
+        <omgdc:Bounds height="28.0" width="28.0" x="1470.0" y="132.08498191770775"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="teamsdr-provide-wbsglcc-details-endpoint_plan" id="BPMNShape_teamsdr-provide-wbsglcc-details-endpoint_plan">
+        <omgdc:Bounds height="80.0" width="116.99999999999989" x="300.0" y="106.08498191770775"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="order_teamsdrendpoint_activity_end_plan" id="BPMNShape_order_teamsdrendpoint_activity_end_plan">
+        <omgdc:Bounds height="80.0" width="100.0" x="1305.0" y="106.08498191770775"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-BED3C988-B697-4629-83BB-44B56E9AF78A" id="BPMNShape_sid-BED3C988-B697-4629-83BB-44B56E9AF78A">
+        <omgdc:Bounds height="30.0" width="30.0" x="60.0" y="131.08498191770775"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="teamsdr-pr-endpoint_plan" id="BPMNShape_teamsdr-pr-endpoint_plan">
+        <omgdc:Bounds height="80.0" width="116.99999999999989" x="540.0" y="106.08498191770775"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="teamsdr-po-endpoint_plan" id="BPMNShape_teamsdr-po-endpoint_plan">
+        <omgdc:Bounds height="80.0" width="116.99999999999989" x="705.0" y="106.08498191770775"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="teamsdr-po-endpoint-release_plan" id="BPMNShape_teamsdr-po-endpoint-release_plan">
+        <omgdc:Bounds height="80.0" width="116.99999999999989" x="870.0" y="106.08498191770775"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-6164993A-D136-408E-A44F-681974FD80B3" id="BPMNShape_sid-6164993A-D136-408E-A44F-681974FD80B3">
+        <omgdc:Bounds height="40.0" width="40.0" x="462.49999999999983" y="126.12747287656163"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-304FFBAE-FF58-491B-962E-BFAB67B304F0" id="BPMNShape_sid-304FFBAE-FF58-491B-962E-BFAB67B304F0">
+        <omgdc:Bounds height="40.0" width="40.0" x="1035.0" y="126.08498191770775"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="teamsdr-pr-endpoint-install-support_plan" id="BPMNShape_teamsdr-pr-endpoint-install-support_plan">
+        <omgdc:Bounds height="80.0" width="116.99999999999989" x="540.0" y="225.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="teamsdr-po-endpoint-install-support_plan" id="BPMNShape_teamsdr-po-endpoint-install-support_plan">
+        <omgdc:Bounds height="80.0" width="116.99999999999989" x="705.0" y="225.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="teamsdr-po-endpoint-release-install-support_plan" id="BPMNShape_teamsdr-po-endpoint-release-install-support_plan">
+        <omgdc:Bounds height="80.0" width="116.99999999999989" x="870.0" y="225.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-9BD0D844-4FE4-463A-8A64-56CE4BDA1B73" id="BPMNShape_sid-9BD0D844-4FE4-463A-8A64-56CE4BDA1B73">
+        <omgdc:Bounds height="40.0" width="40.0" x="462.49999999999983" y="245.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-AECF46DF-ED49-40CD-B676-9955412C033E" id="BPMNShape_sid-AECF46DF-ED49-40CD-B676-9955412C033E">
+        <omgdc:Bounds height="40.0" width="40.0" x="1035.0" y="245.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="teamsdr-confirm-material-availability_plan" id="BPMNShape_teamsdr-confirm-material-availability_plan">
+        <omgdc:Bounds height="80.0" width="117.0" x="1125.0" y="106.12747287656163"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-C9BEDBC7-54D5-4374-B5C7-6CB940CB7A53" id="BPMNEdge_sid-C9BEDBC7-54D5-4374-B5C7-6CB940CB7A53">
+        <omgdi:waypoint x="234.95000000000002" y="145.0"></omgdi:waypoint>
+        <omgdi:waypoint x="267.5" y="145.0"></omgdi:waypoint>
+        <omgdi:waypoint x="267.5" y="146.08498191770775"></omgdi:waypoint>
+        <omgdi:waypoint x="299.9999999999847" y="146.08498191770775"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-59181F3E-881E-436C-A7DD-A677FE573537" id="BPMNEdge_sid-59181F3E-881E-436C-A7DD-A677FE573537">
+        <omgdi:waypoint x="821.949999999966" y="146.08498191770775"></omgdi:waypoint>
+        <omgdi:waypoint x="870.0" y="146.08498191770775"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-E7C9D72D-D748-40A5-A312-65DFE7E68AA4" id="BPMNEdge_sid-E7C9D72D-D748-40A5-A312-65DFE7E68AA4">
+        <omgdi:waypoint x="482.49999999999983" y="166.06908858798576"></omgdi:waypoint>
+        <omgdi:waypoint x="482.49999999999983" y="245.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-ADAB28EC-D8AA-4BAD-A627-626398135770" id="BPMNEdge_sid-ADAB28EC-D8AA-4BAD-A627-626398135770">
+        <omgdi:waypoint x="821.9499999999998" y="265.0"></omgdi:waypoint>
+        <omgdi:waypoint x="870.0" y="265.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-B9493982-DCAB-42AC-A8C6-EB543ED8007B" id="BPMNEdge_sid-B9493982-DCAB-42AC-A8C6-EB543ED8007B">
+        <omgdi:waypoint x="986.9499999999408" y="146.08498191770775"></omgdi:waypoint>
+        <omgdi:waypoint x="1035.0" y="146.08498191770775"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-81C0A098-727E-49B9-9373-4E65601AA44B" id="BPMNEdge_sid-81C0A098-727E-49B9-9373-4E65601AA44B">
+        <omgdi:waypoint x="1074.9356564140248" y="146.0915765824199"></omgdi:waypoint>
+        <omgdi:waypoint x="1125.0" y="146.10812874354255"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-2E864ABA-1FC3-4621-B06A-CAFB57CEF36E" id="BPMNEdge_sid-2E864ABA-1FC3-4621-B06A-CAFB57CEF36E">
+        <omgdi:waypoint x="416.9499999999619" y="146.105010922103"></omgdi:waypoint>
+        <omgdi:waypoint x="462.49999999999983" y="146.12062184373806"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-BF4977BC-6347-476B-8321-8DF2BB0161E4" id="BPMNEdge_sid-BF4977BC-6347-476B-8321-8DF2BB0161E4">
+        <omgdi:waypoint x="656.949999999966" y="146.08498191770775"></omgdi:waypoint>
+        <omgdi:waypoint x="705.0" y="146.08498191770775"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-620823A1-C423-44E6-A5C7-E59BFAE574B3" id="BPMNEdge_sid-620823A1-C423-44E6-A5C7-E59BFAE574B3">
+        <omgdi:waypoint x="482.35185185185173" y="284.8022222222223"></omgdi:waypoint>
+        <omgdi:waypoint x="482.0" y="332.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1055.0" y="332.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1055.0" y="284.9148355754858"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-D480DC20-428F-47F3-8CFD-90FDB9F7E07B" id="BPMNEdge_sid-D480DC20-428F-47F3-8CFD-90FDB9F7E07B">
+        <omgdi:waypoint x="1241.95" y="146.11297887601964"></omgdi:waypoint>
+        <omgdi:waypoint x="1304.9999999999573" y="146.09735756432437"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-A3A3A92A-D1D0-4B2E-9753-D5B951B32095" id="BPMNEdge_sid-A3A3A92A-D1D0-4B2E-9753-D5B951B32095">
+        <omgdi:waypoint x="1404.9499999999389" y="146.08498191770775"></omgdi:waypoint>
+        <omgdi:waypoint x="1470.0" y="146.08498191770775"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-4AF515E6-2830-4ED7-868D-2278F3B3A274" id="BPMNEdge_sid-4AF515E6-2830-4ED7-868D-2278F3B3A274">
+        <omgdi:waypoint x="656.9499999999998" y="265.0"></omgdi:waypoint>
+        <omgdi:waypoint x="705.0" y="265.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-23CE43ED-1E13-44EC-B7F0-11F06E83D896" id="BPMNEdge_sid-23CE43ED-1E13-44EC-B7F0-11F06E83D896">
+        <omgdi:waypoint x="502.4414082686323" y="265.0"></omgdi:waypoint>
+        <omgdi:waypoint x="540.0" y="265.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-75B6EADC-56AF-46CF-B9D0-9851213BCBB4" id="BPMNEdge_sid-75B6EADC-56AF-46CF-B9D0-9851213BCBB4">
+        <omgdi:waypoint x="89.94998702926873" y="146.08498191770775"></omgdi:waypoint>
+        <omgdi:waypoint x="112.5" y="146.08498191770775"></omgdi:waypoint>
+        <omgdi:waypoint x="112.5" y="145.0"></omgdi:waypoint>
+        <omgdi:waypoint x="134.99999999998602" y="145.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-6BD50EF9-EA65-419F-9604-4B0721A37CD3" id="BPMNEdge_sid-6BD50EF9-EA65-419F-9604-4B0721A37CD3">
+        <omgdi:waypoint x="502.4426949635133" y="146.12014953172425"></omgdi:waypoint>
+        <omgdi:waypoint x="539.9999999999201" y="146.10639223275095"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-818850B6-03FA-4879-A0CF-B8F37D49EFE1" id="BPMNEdge_sid-818850B6-03FA-4879-A0CF-B8F37D49EFE1">
+        <omgdi:waypoint x="986.9499999998689" y="265.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1035.0" y="265.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-81633D46-A4E7-44FC-BDD5-79F3C6CFE473" id="BPMNEdge_sid-81633D46-A4E7-44FC-BDD5-79F3C6CFE473">
+        <omgdi:waypoint x="1055.0" y="245.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1055.0" y="165.99333523882845"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

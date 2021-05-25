@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <signal id="reopen-site-readiness-signal" name="reopen-site-readiness-signal" flowable:scope="global"></signal>
+  <process id="gsc_experience_survey_workflow" name="gsc_experience_survey_workflow" isExecutable="true">
+    <documentation>gsc_experience_survey_workflow</documentation>
+    <sequenceFlow id="sid-C25B93EE-E6F5-4F28-8380-AFD3F2308C83" sourceRef="sid-9388D333-B4DA-4AF8-A280-A53E1A3AB662" targetRef="customer-reminder-experience-survey"></sequenceFlow>
+    <userTask id="experience-survey" name="Experience Survey">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <startEvent id="experience_survey_activity_start">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ activityStartListener }"></flowable:executionListener>
+      </extensionElements>
+    </startEvent>
+    <serviceTask id="customer-reminder-experience-survey" name="reminder" flowable:async="true" flowable:delegateExpression="${ notificationDelegate }"></serviceTask>
+    <boundaryEvent id="sid-9388D333-B4DA-4AF8-A280-A53E1A3AB662" attachedToRef="experience-survey" cancelActivity="false">
+      <timerEventDefinition>
+        <timeCycle>${ remainderCycle }</timeCycle>
+      </timerEventDefinition>
+    </boundaryEvent>
+    <endEvent id="experience_survey_activity_end">
+      <extensionElements>
+        <flowable:executionListener event="end" delegateExpression="${ activityEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </endEvent>
+    <sequenceFlow id="sid-54368AFD-BB10-4261-96EB-43AB9FB94E64" sourceRef="experience-survey" targetRef="experience_survey_activity_end"></sequenceFlow>
+    <intermediateCatchEvent id="sid-0F8397D0-A58A-4D4B-A006-C929174E576C">
+      <timerEventDefinition>
+        <timeDuration>PT1M</timeDuration>
+      </timerEventDefinition>
+    </intermediateCatchEvent>
+    <sequenceFlow id="sid-1D8939A8-4F26-4B4E-997E-4EA39B1AD822" sourceRef="experience_survey_activity_start" targetRef="sid-0F8397D0-A58A-4D4B-A006-C929174E576C"></sequenceFlow>
+    <sequenceFlow id="sid-BAE49505-9BDD-4950-AF1C-EDAA3715197F" sourceRef="sid-0F8397D0-A58A-4D4B-A006-C929174E576C" targetRef="experience-survey"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_gsc_experience_survey_workflow">
+    <bpmndi:BPMNPlane bpmnElement="gsc_experience_survey_workflow" id="BPMNPlane_gsc_experience_survey_workflow">
+      <bpmndi:BPMNShape bpmnElement="experience-survey" id="BPMNShape_experience-survey">
+        <omgdc:Bounds height="80.0" width="117.0" x="290.0" y="102.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="experience_survey_activity_start" id="BPMNShape_experience_survey_activity_start">
+        <omgdc:Bounds height="30.0" width="30.0" x="90.0" y="127.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="customer-reminder-experience-survey" id="BPMNShape_customer-reminder-experience-survey">
+        <omgdc:Bounds height="44.0" width="82.99999999999989" x="281.6069821070427" y="15.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-9388D333-B4DA-4AF8-A280-A53E1A3AB662" id="BPMNShape_sid-9388D333-B4DA-4AF8-A280-A53E1A3AB662">
+        <omgdc:Bounds height="31.0" width="31.0" x="307.60698210704265" y="85.65194454545451"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="experience_survey_activity_end" id="BPMNShape_experience_survey_activity_end">
+        <omgdc:Bounds height="28.0" width="28.0" x="455.0" y="128.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-0F8397D0-A58A-4D4B-A006-C929174E576C" id="BPMNShape_sid-0F8397D0-A58A-4D4B-A006-C929174E576C">
+        <omgdc:Bounds height="31.0" width="31.0" x="195.0" y="126.5"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-54368AFD-BB10-4261-96EB-43AB9FB94E64" id="BPMNEdge_sid-54368AFD-BB10-4261-96EB-43AB9FB94E64">
+        <omgdi:waypoint x="406.95000000000005" y="142.0"></omgdi:waypoint>
+        <omgdi:waypoint x="455.0" y="142.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-BAE49505-9BDD-4950-AF1C-EDAA3715197F" id="BPMNEdge_sid-BAE49505-9BDD-4950-AF1C-EDAA3715197F">
+        <omgdi:waypoint x="226.94969500303705" y="142.40000191220625"></omgdi:waypoint>
+        <omgdi:waypoint x="289.99999999999903" y="142.00593750000002"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-1D8939A8-4F26-4B4E-997E-4EA39B1AD822" id="BPMNEdge_sid-1D8939A8-4F26-4B4E-997E-4EA39B1AD822">
+        <omgdi:waypoint x="119.9498031843834" y="142.07051832779834"></omgdi:waypoint>
+        <omgdi:waypoint x="195.0000337904714" y="142.42452912386432"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-C25B93EE-E6F5-4F28-8380-AFD3F2308C83" id="BPMNEdge_sid-C25B93EE-E6F5-4F28-8380-AFD3F2308C83">
+        <omgdi:waypoint x="323.10698210704265" y="85.65194454545451"></omgdi:waypoint>
+        <omgdi:waypoint x="323.1069821070427" y="58.95"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

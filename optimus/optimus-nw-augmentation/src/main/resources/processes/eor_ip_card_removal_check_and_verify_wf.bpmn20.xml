@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <process id="eor_ip_card_removal_check_and_verify_wf" name="eor_ip_card_removal_check_and_verify_wf" isExecutable="true">
+    <documentation>eor_ip_card_removal_check_and_verify_wf</documentation>
+    <startEvent id="startEvent1"></startEvent>
+    <userTask id="eor_ip_card_removal_check_and_verify_retry_task" name="Check And Verify retry">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${taskCreateListener}"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${taskCompleteListener}"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <serviceTask id="eor_ip_card_removal_check_and_verify_task" name="Check And Verify" flowable:delegateExpression="${createDeviceInCramerDelegate}"></serviceTask>
+    <exclusiveGateway id="sid-2D48F0D1-F0A7-4200-9AFF-1640F8CB694C"></exclusiveGateway>
+    <sequenceFlow id="sid-F330C027-5A7C-4909-B5AD-3987BC8D5DEB" sourceRef="eor_ip_card_removal_check_and_verify_task" targetRef="sid-2D48F0D1-F0A7-4200-9AFF-1640F8CB694C"></sequenceFlow>
+    <endEvent id="eor_ip_card_removal_check_and_verify_activity_end">
+      <extensionElements>
+        <flowable:executionListener event="end" delegateExpression="${activityEndListener}"></flowable:executionListener>
+      </extensionElements>
+    </endEvent>
+    <exclusiveGateway id="sid-2ED07846-490C-4ECE-9680-55A9C73ADC51"></exclusiveGateway>
+    <sequenceFlow id="sid-8822A57F-1B52-4F42-B7B3-7690B4545DC1" sourceRef="eor_ip_card_removal_check_and_verify_retry_task" targetRef="sid-2ED07846-490C-4ECE-9680-55A9C73ADC51"></sequenceFlow>
+    <sequenceFlow id="eor_ip_card_removal_check_and_verify_activity_start" sourceRef="startEvent1" targetRef="eor_ip_card_removal_check_and_verify_task">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${activityStartListener}"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="sid-3B87E6D9-3BF5-4F57-B49A-9F0BD347D79D" sourceRef="sid-2ED07846-490C-4ECE-9680-55A9C73ADC51" targetRef="eor_ip_card_removal_check_and_verify_activity_end">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${retry==false}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-C98B0E52-4225-4182-91C5-A92F541E5482" sourceRef="sid-2ED07846-490C-4ECE-9680-55A9C73ADC51" targetRef="eor_ip_card_removal_check_and_verify_task">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${retry==true}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-A597D869-43C3-40A7-9D9C-3CDB4B1D952A" sourceRef="sid-2D48F0D1-F0A7-4200-9AFF-1640F8CB694C" targetRef="eor_ip_card_removal_check_and_verify_retry_task">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${isError==true}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-8962F41A-F61C-4379-9663-B241BE7CEE33" sourceRef="sid-2D48F0D1-F0A7-4200-9AFF-1640F8CB694C" targetRef="eor_ip_card_removal_check_and_verify_activity_end">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${isError==false}]]></conditionExpression>
+    </sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_eor_ip_card_removal_check_and_verify_wf">
+    <bpmndi:BPMNPlane bpmnElement="eor_ip_card_removal_check_and_verify_wf" id="BPMNPlane_eor_ip_card_removal_check_and_verify_wf">
+      <bpmndi:BPMNShape bpmnElement="startEvent1" id="BPMNShape_startEvent1">
+        <omgdc:Bounds height="30.0" width="30.0" x="100.0" y="163.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="eor_ip_card_removal_check_and_verify_retry_task" id="BPMNShape_eor_ip_card_removal_check_and_verify_retry_task">
+        <omgdc:Bounds height="80.0" width="100.0" x="333.5" y="255.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="eor_ip_card_removal_check_and_verify_task" id="BPMNShape_eor_ip_card_removal_check_and_verify_task">
+        <omgdc:Bounds height="80.0" width="100.0" x="175.0" y="138.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-2D48F0D1-F0A7-4200-9AFF-1640F8CB694C" id="BPMNShape_sid-2D48F0D1-F0A7-4200-9AFF-1640F8CB694C">
+        <omgdc:Bounds height="40.0" width="40.0" x="363.5" y="158.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="eor_ip_card_removal_check_and_verify_activity_end" id="BPMNShape_eor_ip_card_removal_check_and_verify_activity_end">
+        <omgdc:Bounds height="28.0" width="28.0" x="524.5" y="164.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-2ED07846-490C-4ECE-9680-55A9C73ADC51" id="BPMNShape_sid-2ED07846-490C-4ECE-9680-55A9C73ADC51">
+        <omgdc:Bounds height="40.0" width="40.0" x="210.5" y="275.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-F330C027-5A7C-4909-B5AD-3987BC8D5DEB" id="BPMNEdge_sid-F330C027-5A7C-4909-B5AD-3987BC8D5DEB">
+        <omgdi:waypoint x="274.9499999999955" y="178.15707547169814"></omgdi:waypoint>
+        <omgdi:waypoint x="363.93690851735016" y="178.4369085173502"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-A597D869-43C3-40A7-9D9C-3CDB4B1D952A" id="BPMNEdge_sid-A597D869-43C3-40A7-9D9C-3CDB4B1D952A">
+        <omgdi:waypoint x="383.9181034482758" y="197.5234496124031"></omgdi:waypoint>
+        <omgdi:waypoint x="383.67145922746784" y="255.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-8822A57F-1B52-4F42-B7B3-7690B4545DC1" id="BPMNEdge_sid-8822A57F-1B52-4F42-B7B3-7690B4545DC1">
+        <omgdi:waypoint x="333.5" y="295.16377049180323"></omgdi:waypoint>
+        <omgdi:waypoint x="249.96825213955273" y="295.4375"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="eor_ip_card_removal_check_and_verify_activity_start" id="BPMNEdge_eor_ip_card_removal_check_and_verify_activity_start">
+        <omgdi:waypoint x="129.9499984899576" y="178.0"></omgdi:waypoint>
+        <omgdi:waypoint x="174.9999999999917" y="178.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-C98B0E52-4225-4182-91C5-A92F541E5482" id="BPMNEdge_sid-C98B0E52-4225-4182-91C5-A92F541E5482">
+        <omgdi:waypoint x="229.97975708502025" y="275.5125607779578"></omgdi:waypoint>
+        <omgdi:waypoint x="227.04" y="217.95000000000002"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-8962F41A-F61C-4379-9663-B241BE7CEE33" id="BPMNEdge_sid-8962F41A-F61C-4379-9663-B241BE7CEE33">
+        <omgdi:waypoint x="403.0053374432187" y="178.43831168831167"></omgdi:waypoint>
+        <omgdi:waypoint x="524.5000708192891" y="178.04514554857917"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-3B87E6D9-3BF5-4F57-B49A-9F0BD347D79D" id="BPMNEdge_sid-3B87E6D9-3BF5-4F57-B49A-9F0BD347D79D">
+        <omgdi:waypoint x="230.99999999999994" y="314.4405815109344"></omgdi:waypoint>
+        <omgdi:waypoint x="231.0" y="396.0"></omgdi:waypoint>
+        <omgdi:waypoint x="538.5" y="396.0"></omgdi:waypoint>
+        <omgdi:waypoint x="538.5" y="191.94992312444543"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <process id="wireless-p2p-rfconfig-workaround-workflow" name="wireless-p2p-rfconfig-workaround-workflow" isExecutable="true">
+    <documentation>wireless-p2p-rfconfig-workaround-workflow</documentation>
+    <startEvent id="sid-985A7369-CA4F-4620-8789-27ADAC996C09"></startEvent>
+    <callActivity id="customer_handover_process" name="Service Acceptance" calledElement="customer_handover_workflow" flowable:calledElementType="key" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ processStartListener }"></flowable:executionListener>
+        <flowable:executionListener event="end" delegateExpression="${ processEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </callActivity>
+    <callActivity id="assurance_handover_process" name="Assurance Handover" calledElement="assurance_handover_workflow" flowable:calledElementType="key" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ processStartListener }"></flowable:executionListener>
+        <flowable:executionListener event="end" delegateExpression="${ processEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </callActivity>
+    <callActivity id="billing_handover_process" name="Billing Handover" calledElement="billing_handover_workflow" flowable:calledElementType="key" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ processStartListener }"></flowable:executionListener>
+        <flowable:executionListener event="end" delegateExpression="${ processEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </callActivity>
+    <callActivity id="experience_survey_process" name="Experience Survey" calledElement="experience_survey_workflow" flowable:calledElementType="key" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ processStartListener }"></flowable:executionListener>
+        <flowable:executionListener event="end" delegateExpression="${ processEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </callActivity>
+    <endEvent id="sid-72529BA6-16CE-41F5-83FF-D4AA3F7B459B"></endEvent>
+    <callActivity id="service_testing_process" name="Service Testing" calledElement="service_macd_testing_workflow" flowable:calledElementType="key" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ processStartListener }"></flowable:executionListener>
+        <flowable:executionListener event="end" delegateExpression="${ processEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </callActivity>
+    <parallelGateway id="sid-4FFB2569-84A0-4671-B7D8-474EE2A7E8BE"></parallelGateway>
+    <parallelGateway id="sid-A2ABE386-BABE-44FF-A1A6-9335D37E3DC7"></parallelGateway>
+    <parallelGateway id="sid-2CE36431-C2B2-4929-B4E9-5D23027432CC"></parallelGateway>
+    <sequenceFlow id="sid-2096A5B6-2C9C-4761-AB01-627F90DF2860" sourceRef="sid-2CE36431-C2B2-4929-B4E9-5D23027432CC" targetRef="assurance_handover_process"></sequenceFlow>
+    <sequenceFlow id="sid-ADB27B8C-70F2-437B-AAEF-65395FC98740" sourceRef="sid-2CE36431-C2B2-4929-B4E9-5D23027432CC" targetRef="billing_handover_process"></sequenceFlow>
+    <sequenceFlow id="service_delivery_stage_start" sourceRef="sid-4FFB2569-84A0-4671-B7D8-474EE2A7E8BE" targetRef="customer_handover_process">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ stageStartListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="sid-E967067C-6F0D-4563-AE4A-7278EB943628" sourceRef="customer_handover_process" targetRef="sid-2CE36431-C2B2-4929-B4E9-5D23027432CC"></sequenceFlow>
+    <sequenceFlow id="sid-4270616A-5CE1-430E-8C32-C367D19E3507" sourceRef="assurance_handover_process" targetRef="sid-A2ABE386-BABE-44FF-A1A6-9335D37E3DC7"></sequenceFlow>
+    <sequenceFlow id="experience_survey_stage_end" sourceRef="experience_survey_process" targetRef="sid-72529BA6-16CE-41F5-83FF-D4AA3F7B459B">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ stageEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="service_delivery_stage_end" sourceRef="billing_handover_process" targetRef="sid-A2ABE386-BABE-44FF-A1A6-9335D37E3DC7">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ stageEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="experience_survey_stage_start" sourceRef="sid-A2ABE386-BABE-44FF-A1A6-9335D37E3DC7" targetRef="experience_survey_process">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ stageStartListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <userTask id="rf-config-p2p" name="RF Config P2P">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="create" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <parallelGateway id="sid-BCD403A0-2BA5-4E64-99C5-A25377778B55"></parallelGateway>
+    <parallelGateway id="sid-05248B4B-5556-4B8C-8954-40EC4D9DB891"></parallelGateway>
+    <parallelGateway id="sid-A667DA68-AF00-4110-8731-648C6823154D"></parallelGateway>
+    <parallelGateway id="sid-5169B70A-2719-4503-A495-D8E7BDD19849"></parallelGateway>
+    <exclusiveGateway id="sid-ABF8140A-27D4-4E0C-BEFA-3A61BF60876D"></exclusiveGateway>
+    <sequenceFlow id="lm-wireless-implementation-activity_end" sourceRef="rf-config-p2p" targetRef="sid-A667DA68-AF00-4110-8731-648C6823154D">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ activityEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="lm-wireless-implementation-activity_start" sourceRef="sid-05248B4B-5556-4B8C-8954-40EC4D9DB891" targetRef="rf-config-p2p">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ activityStartListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="lm_impl_process_start" sourceRef="sid-BCD403A0-2BA5-4E64-99C5-A25377778B55" targetRef="sid-05248B4B-5556-4B8C-8954-40EC4D9DB891">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ processStartListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="lm_impl_process_end" sourceRef="sid-A667DA68-AF00-4110-8731-648C6823154D" targetRef="sid-5169B70A-2719-4503-A495-D8E7BDD19849">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ processEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="service_implementation_stage_start" sourceRef="sid-985A7369-CA4F-4620-8789-27ADAC996C09" targetRef="sid-BCD403A0-2BA5-4E64-99C5-A25377778B55">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ stageStartListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="service_implementation_stage_end" sourceRef="sid-5169B70A-2719-4503-A495-D8E7BDD19849" targetRef="sid-ABF8140A-27D4-4E0C-BEFA-3A61BF60876D">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ stageEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="service_activation_stage_start" sourceRef="sid-ABF8140A-27D4-4E0C-BEFA-3A61BF60876D" targetRef="service_testing_process">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ stageStartListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="service_activation_stage_end" sourceRef="service_testing_process" targetRef="sid-4FFB2569-84A0-4671-B7D8-474EE2A7E8BE">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ stageEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_wireless-p2p-rfconfig-workaround-workflow">
+    <bpmndi:BPMNPlane bpmnElement="wireless-p2p-rfconfig-workaround-workflow" id="BPMNPlane_wireless-p2p-rfconfig-workaround-workflow">
+      <bpmndi:BPMNShape bpmnElement="sid-985A7369-CA4F-4620-8789-27ADAC996C09" id="BPMNShape_sid-985A7369-CA4F-4620-8789-27ADAC996C09">
+        <omgdc:Bounds height="30.0" width="30.0" x="50.5" y="73.5"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="customer_handover_process" id="BPMNShape_customer_handover_process">
+        <omgdc:Bounds height="55.0" width="87.0" x="812.875" y="60.75"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="assurance_handover_process" id="BPMNShape_assurance_handover_process">
+        <omgdc:Bounds height="57.0" width="73.0" x="1036.375" y="60.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="billing_handover_process" id="BPMNShape_billing_handover_process">
+        <omgdc:Bounds height="51.0" width="75.0" x="1035.375" y="135.25"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="experience_survey_process" id="BPMNShape_experience_survey_process">
+        <omgdc:Bounds height="49.0" width="74.0" x="1247.875" y="64.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-72529BA6-16CE-41F5-83FF-D4AA3F7B459B" id="BPMNShape_sid-72529BA6-16CE-41F5-83FF-D4AA3F7B459B">
+        <omgdc:Bounds height="28.0" width="28.0" x="1365.0" y="74.5"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="service_testing_process" id="BPMNShape_service_testing_process">
+        <omgdc:Bounds height="52.0" width="91.0" x="615.0" y="62.5"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-4FFB2569-84A0-4671-B7D8-474EE2A7E8BE" id="BPMNShape_sid-4FFB2569-84A0-4671-B7D8-474EE2A7E8BE">
+        <omgdc:Bounds height="40.0" width="40.0" x="737.875" y="68.5"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-A2ABE386-BABE-44FF-A1A6-9335D37E3DC7" id="BPMNShape_sid-A2ABE386-BABE-44FF-A1A6-9335D37E3DC7">
+        <omgdc:Bounds height="40.0" width="40.0" x="1172.875" y="68.25"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-2CE36431-C2B2-4929-B4E9-5D23027432CC" id="BPMNShape_sid-2CE36431-C2B2-4929-B4E9-5D23027432CC">
+        <omgdc:Bounds height="40.0" width="40.0" x="944.25" y="68.5"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="rf-config-p2p" id="BPMNShape_rf-config-p2p">
+        <omgdc:Bounds height="64.0" width="76.0" x="285.0" y="56.5"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-BCD403A0-2BA5-4E64-99C5-A25377778B55" id="BPMNShape_sid-BCD403A0-2BA5-4E64-99C5-A25377778B55">
+        <omgdc:Bounds height="40.0" width="40.0" x="129.0" y="68.5"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-05248B4B-5556-4B8C-8954-40EC4D9DB891" id="BPMNShape_sid-05248B4B-5556-4B8C-8954-40EC4D9DB891">
+        <omgdc:Bounds height="40.0" width="40.0" x="214.0" y="68.5"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-A667DA68-AF00-4110-8731-648C6823154D" id="BPMNShape_sid-A667DA68-AF00-4110-8731-648C6823154D">
+        <omgdc:Bounds height="40.0" width="40.0" x="390.0" y="68.5"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-5169B70A-2719-4503-A495-D8E7BDD19849" id="BPMNShape_sid-5169B70A-2719-4503-A495-D8E7BDD19849">
+        <omgdc:Bounds height="40.0" width="40.0" x="475.0" y="68.5"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-ABF8140A-27D4-4E0C-BEFA-3A61BF60876D" id="BPMNShape_sid-ABF8140A-27D4-4E0C-BEFA-3A61BF60876D">
+        <omgdc:Bounds height="40.0" width="40.0" x="540.0" y="68.5"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-2096A5B6-2C9C-4761-AB01-627F90DF2860" id="BPMNEdge_sid-2096A5B6-2C9C-4761-AB01-627F90DF2860">
+        <omgdi:waypoint x="984.1908254770914" y="88.5"></omgdi:waypoint>
+        <omgdi:waypoint x="1036.3749999999873" y="88.5"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="service_delivery_stage_end" id="BPMNEdge_service_delivery_stage_end">
+        <omgdi:waypoint x="1110.325" y="138.09375"></omgdi:waypoint>
+        <omgdi:waypoint x="1180.4074675324675" y="95.76363636363638"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="service_activation_stage_start" id="BPMNEdge_service_activation_stage_start">
+        <omgdi:waypoint x="579.5356174698794" y="88.90452261306534"></omgdi:waypoint>
+        <omgdi:waypoint x="614.9999999999972" y="88.72725000000001"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="lm-wireless-implementation-activity_start" id="BPMNEdge_lm-wireless-implementation-activity_start">
+        <omgdi:waypoint x="253.4056206088993" y="89.03174204355108"></omgdi:waypoint>
+        <omgdi:waypoint x="284.9999999999981" y="89.08473154362416"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="service_implementation_stage_end" id="BPMNEdge_service_implementation_stage_end">
+        <omgdi:waypoint x="514.43544546851" y="89.0"></omgdi:waypoint>
+        <omgdi:waypoint x="540.5" y="89.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="lm_impl_process_start" id="BPMNEdge_lm_impl_process_start">
+        <omgdi:waypoint x="168.4102161031295" y="89.02870045436075"></omgdi:waypoint>
+        <omgdi:waypoint x="214.59874393271332" y="89.09874393271333"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="lm_impl_process_end" id="BPMNEdge_lm_impl_process_end">
+        <omgdi:waypoint x="429.4102161031295" y="89.02870045436075"></omgdi:waypoint>
+        <omgdi:waypoint x="475.5987439327133" y="89.09874393271333"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="service_activation_stage_end" id="BPMNEdge_service_activation_stage_end">
+        <omgdi:waypoint x="705.9499999999999" y="88.5"></omgdi:waypoint>
+        <omgdi:waypoint x="737.875" y="88.5"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-4270616A-5CE1-430E-8C32-C367D19E3507" id="BPMNEdge_sid-4270616A-5CE1-430E-8C32-C367D19E3507">
+        <omgdi:waypoint x="1109.3249999999975" y="88.42395833333333"></omgdi:waypoint>
+        <omgdi:waypoint x="1172.9165800415772" y="88.29147609147608"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="experience_survey_stage_start" id="BPMNEdge_experience_survey_stage_start">
+        <omgdi:waypoint x="1212.7601922035728" y="88.3040650406504"></omgdi:waypoint>
+        <omgdi:waypoint x="1247.8749999999982" y="88.39945652173913"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="lm-wireless-implementation-activity_end" id="BPMNEdge_lm-wireless-implementation-activity_end">
+        <omgdi:waypoint x="360.95000000000005" y="88.5"></omgdi:waypoint>
+        <omgdi:waypoint x="390.0" y="88.5"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-E967067C-6F0D-4563-AE4A-7278EB943628" id="BPMNEdge_sid-E967067C-6F0D-4563-AE4A-7278EB943628">
+        <omgdi:waypoint x="899.824999999999" y="88.35069524913094"></omgdi:waypoint>
+        <omgdi:waypoint x="944.2557172557173" y="88.45375722543353"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="service_implementation_stage_start" id="BPMNEdge_service_implementation_stage_start">
+        <omgdi:waypoint x="80.44968664045209" y="88.58898674960058"></omgdi:waypoint>
+        <omgdi:waypoint x="129.38023952095807" y="88.88023952095809"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="experience_survey_stage_end" id="BPMNEdge_experience_survey_stage_end">
+        <omgdi:waypoint x="1321.825" y="88.5"></omgdi:waypoint>
+        <omgdi:waypoint x="1365.0" y="88.5"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-ADB27B8C-70F2-437B-AAEF-65395FC98740" id="BPMNEdge_sid-ADB27B8C-70F2-437B-AAEF-65395FC98740">
+        <omgdi:waypoint x="976.2299212598425" y="96.46897028334483"></omgdi:waypoint>
+        <omgdi:waypoint x="1035.375" y="135.80753739930958"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="service_delivery_stage_start" id="BPMNEdge_service_delivery_stage_start">
+        <omgdi:waypoint x="777.774493670886" y="88.4493670886076"></omgdi:waypoint>
+        <omgdi:waypoint x="812.8749999999901" y="88.36027918781727"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

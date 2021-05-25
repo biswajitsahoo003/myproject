@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <process id="teamsdr_managed_services_testing_workflow" name="teamsdr_managed_services_testing_workflow" isExecutable="true">
+    <documentation>teamsdr_managed_services_testing_workflow</documentation>
+    <startEvent id="teamsdr_managed_services_perform_uat_activity_start">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ activityStartListener }"></flowable:executionListener>
+      </extensionElements>
+    </startEvent>
+    <endEvent id="teamsdr_managed_services_perform_uat_activity_end">
+      <extensionElements>
+        <flowable:executionListener event="end" delegateExpression="${ activityEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </endEvent>
+    <userTask id="teamsdr-managed-services-perform-uat" name="TeamsDR Perform UAT">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <serviceTask id="customer-reminder-teamsdr-managed-services-perform-uat" name="Reminder" flowable:async="true" flowable:delegateExpression="${ notificationDelegate  }"></serviceTask>
+    <boundaryEvent id="sid-FB56CFFC-B6C9-4B2B-BA6A-A7B798190789" attachedToRef="teamsdr-managed-services-perform-uat" cancelActivity="false">
+      <timerEventDefinition>
+        <timeCycle>${ remainderCycle }</timeCycle>
+      </timerEventDefinition>
+    </boundaryEvent>
+    <sequenceFlow id="sid-010072DA-0BA9-41B3-B4AD-FF464CAAF834" sourceRef="sid-FB56CFFC-B6C9-4B2B-BA6A-A7B798190789" targetRef="customer-reminder-teamsdr-managed-services-perform-uat"></sequenceFlow>
+    <sequenceFlow id="sid-A955AF09-0CD2-4493-A83B-7DF54A3847CF" sourceRef="teamsdr_managed_services_perform_uat_activity_start" targetRef="teamsdr-managed-services-perform-uat"></sequenceFlow>
+    <sequenceFlow id="sid-8715137F-3F63-4613-BEBF-4F9E921B69DF" sourceRef="teamsdr-managed-services-perform-uat" targetRef="teamsdr_managed_services_perform_uat_activity_end"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_teamsdr_managed_services_testing_workflow">
+    <bpmndi:BPMNPlane bpmnElement="teamsdr_managed_services_testing_workflow" id="BPMNPlane_teamsdr_managed_services_testing_workflow">
+      <bpmndi:BPMNShape bpmnElement="teamsdr_managed_services_perform_uat_activity_start" id="BPMNShape_teamsdr_managed_services_perform_uat_activity_start">
+        <omgdc:Bounds height="30.0" width="30.0" x="265.0" y="149.3276675830082"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="teamsdr_managed_services_perform_uat_activity_end" id="BPMNShape_teamsdr_managed_services_perform_uat_activity_end">
+        <omgdc:Bounds height="28.0" width="28.0" x="525.0" y="150.3276675830082"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="teamsdr-managed-services-perform-uat" id="BPMNShape_teamsdr-managed-services-perform-uat">
+        <omgdc:Bounds height="55.99999999999994" width="112.0" x="347.7103230984851" y="136.32766758300824"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="customer-reminder-teamsdr-managed-services-perform-uat" id="BPMNShape_customer-reminder-teamsdr-managed-services-perform-uat">
+        <omgdc:Bounds height="40.0" width="90.0" x="360.0" y="45.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-FB56CFFC-B6C9-4B2B-BA6A-A7B798190789" id="BPMNShape_sid-FB56CFFC-B6C9-4B2B-BA6A-A7B798190789">
+        <omgdc:Bounds height="31.000000000000014" width="31.0" x="375.42064619697015" y="104.6553351660164"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-8715137F-3F63-4613-BEBF-4F9E921B69DF" id="BPMNEdge_sid-8715137F-3F63-4613-BEBF-4F9E921B69DF">
+        <omgdi:waypoint x="459.66032309848515" y="164.3276675830082"></omgdi:waypoint>
+        <omgdi:waypoint x="525.0" y="164.3276675830082"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-010072DA-0BA9-41B3-B4AD-FF464CAAF834" id="BPMNEdge_sid-010072DA-0BA9-41B3-B4AD-FF464CAAF834">
+        <omgdi:waypoint x="394.7429054546315" y="105.13332251489189"></omgdi:waypoint>
+        <omgdi:waypoint x="399.8946538859201" y="84.94999999999999"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-A955AF09-0CD2-4493-A83B-7DF54A3847CF" id="BPMNEdge_sid-A955AF09-0CD2-4493-A83B-7DF54A3847CF">
+        <omgdi:waypoint x="294.9499988059919" y="164.3276675830082"></omgdi:waypoint>
+        <omgdi:waypoint x="347.7103230984851" y="164.3276675830082"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/CMMN/20151109/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:flowable="http://flowable.org/cmmn" xmlns:cmmndi="http://www.omg.org/spec/CMMN/20151109/CMMNDI" xmlns:dc="http://www.omg.org/spec/CMMN/20151109/DC" xmlns:di="http://www.omg.org/spec/CMMN/20151109/DI" targetNamespace="http://www.flowable.org/casedef">
+  <case id="teamsdr_managed_services_workflow" name="teamsdr_managed_services_workflow" flowable:initiatorVariableName="initiator">
+    <casePlanModel id="casePlanModel" flowable:formFieldValidation="true" autoComplete="true">
+      <planItem id="planItem1" name="Advanced enrichment" definitionRef="AdvancedEnrichment"></planItem>
+      <planItem id="planItem2" name="Trigger Managed Service" definitionRef="sid-73C6E1FF-A9A3-4945-A61C-692DA2D98E9C">
+        <entryCriterion id="sid-63B66AC5-2640-451C-BB6D-3F6DAFB487F0" flowable:sentryRef="sentry1"></entryCriterion>
+      </planItem>
+      <planItem id="planItem3" name="TeamsDR Managed Service" definitionRef="TeamsDRManagedService">
+        <itemControl>
+          <requiredRule></requiredRule>
+          <manualActivationRule></manualActivationRule>
+        </itemControl>
+      </planItem>
+      <sentry id="sentry1">
+        <planItemOnPart id="sentryOnPart1" sourceRef="planItem1">
+          <standardEvent>complete</standardEvent>
+        </planItemOnPart>
+      </sentry>
+      <processTask id="AdvancedEnrichment" name="Advanced enrichment" flowable:fallbackToDefaultTenant="false">
+        <extensionElements>
+          <flowable:in sourceExpression="${caseInstance.id}" target="caseInstId"></flowable:in>
+          <flowable:in sourceExpression="${planItemInstance.id}" target="planItemInstId"></flowable:in>
+        </extensionElements>
+        <processRefExpression><![CDATA[managed_service_advance_enrichment_teamsdr_workflow]]></processRefExpression>
+      </processTask>
+      <task id="sid-73C6E1FF-A9A3-4945-A61C-692DA2D98E9C" name="Trigger Managed Service" isBlocking="false" flowable:async="false" flowable:exclusive="true" flowable:type="java" flowable:delegateExpression="${triggerManagedService}"></task>
+      <processTask id="TeamsDRManagedService" name="TeamsDR Managed Service" flowable:fallbackToDefaultTenant="false">
+        <extensionElements>
+          <flowable:in sourceExpression="${caseInstance.id}" target="caseInstId"></flowable:in>
+          <flowable:in sourceExpression="${planItemInstance.id}" target="planItemInstId"></flowable:in>
+        </extensionElements>
+        <processRefExpression><![CDATA[teamsdr-managed-service-workflow]]></processRefExpression>
+      </processTask>
+    </casePlanModel>
+  </case>
+  <cmmndi:CMMNDI>
+    <cmmndi:CMMNDiagram id="CMMNDiagram_teamsdr_managed_services_workflow">
+      <cmmndi:CMMNShape id="CMMNShape_casePlanModel" cmmnElementRef="casePlanModel">
+        <dc:Bounds height="714.0" width="718.0" x="45.0" y="30.0"></dc:Bounds>
+        <cmmndi:CMMNLabel></cmmndi:CMMNLabel>
+      </cmmndi:CMMNShape>
+      <cmmndi:CMMNShape id="CMMNShape_planItem1" cmmnElementRef="planItem1">
+        <dc:Bounds height="80.0" width="100.0" x="60.0" y="75.0"></dc:Bounds>
+        <cmmndi:CMMNLabel></cmmndi:CMMNLabel>
+      </cmmndi:CMMNShape>
+      <cmmndi:CMMNShape id="CMMNShape_planItem2" cmmnElementRef="planItem2">
+        <dc:Bounds height="80.0" width="100.0" x="270.0" y="90.0"></dc:Bounds>
+        <cmmndi:CMMNLabel></cmmndi:CMMNLabel>
+      </cmmndi:CMMNShape>
+      <cmmndi:CMMNShape id="CMMNShape_sid-63B66AC5-2640-451C-BB6D-3F6DAFB487F0" cmmnElementRef="sid-63B66AC5-2640-451C-BB6D-3F6DAFB487F0">
+        <dc:Bounds height="22.0" width="14.0" x="262.0" y="122.0"></dc:Bounds>
+        <cmmndi:CMMNLabel></cmmndi:CMMNLabel>
+      </cmmndi:CMMNShape>
+      <cmmndi:CMMNShape id="CMMNShape_planItem3" cmmnElementRef="planItem3">
+        <dc:Bounds height="80.0" width="100.0" x="226.0" y="225.0"></dc:Bounds>
+        <cmmndi:CMMNLabel></cmmndi:CMMNLabel>
+      </cmmndi:CMMNShape>
+      <cmmndi:CMMNEdge id="CMMNEdge_sid-9A842A48-2E5D-4051-9677-054BDC188386" cmmnElementRef="planItem1" targetCMMNElementRef="sid-63B66AC5-2640-451C-BB6D-3F6DAFB487F0">
+        <di:waypoint x="159.94999999999993" y="120.91513157894737"></di:waypoint>
+        <di:waypoint x="262.0" y="133.0"></di:waypoint>
+        <cmmndi:CMMNLabel></cmmndi:CMMNLabel>
+      </cmmndi:CMMNEdge>
+    </cmmndi:CMMNDiagram>
+  </cmmndi:CMMNDI>
+</definitions>

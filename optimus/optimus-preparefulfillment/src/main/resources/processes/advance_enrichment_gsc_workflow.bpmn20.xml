@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <signal id="reopen-site-readiness-signal" name="reopen-site-readiness-signal" flowable:scope="global"></signal>
+  <process id="advance_enrichment_gsc_workflow" name="advance_enrichment_gsc_workflow" isExecutable="true">
+    <documentation>advance_enrichment_gsc_workflow</documentation>
+    <sequenceFlow id="sid-C25B93EE-E6F5-4F28-8380-AFD3F2308C83" sourceRef="sid-9388D333-B4DA-4AF8-A280-A53E1A3AB662" targetRef="customer-reminder-gsc-advanced-enrichment"></sequenceFlow>
+    <userTask id="gsc-advanced-enrichment" name="Provide Additional Technical Details">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <startEvent id="advanced_enrichment_activity_start">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ activityStartListener }"></flowable:executionListener>
+      </extensionElements>
+    </startEvent>
+    <serviceTask id="customer-reminder-gsc-advanced-enrichment" name="reminder" flowable:async="true" flowable:delegateExpression="${ notificationDelegate }"></serviceTask>
+    <sequenceFlow id="sid-1D8939A8-4F26-4B4E-997E-4EA39B1AD822" sourceRef="advanced_enrichment_activity_start" targetRef="gsc-advanced-enrichment"></sequenceFlow>
+    <boundaryEvent id="sid-9388D333-B4DA-4AF8-A280-A53E1A3AB662" attachedToRef="gsc-advanced-enrichment" cancelActivity="false">
+      <timerEventDefinition>
+        <timeCycle>${ remainderCycle }</timeCycle>
+      </timerEventDefinition>
+    </boundaryEvent>
+    <sequenceFlow id="sid-736F8A68-AF31-4238-847B-0F951379B109" sourceRef="gsc-advanced-enrichment" targetRef="advanced_enrichment_activity_end"></sequenceFlow>
+    <endEvent id="advanced_enrichment_activity_end">
+      <extensionElements>
+        <flowable:executionListener event="end" delegateExpression="${ activityEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </endEvent>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_advance_enrichment_gsc_workflow">
+    <bpmndi:BPMNPlane bpmnElement="advance_enrichment_gsc_workflow" id="BPMNPlane_advance_enrichment_gsc_workflow">
+      <bpmndi:BPMNShape bpmnElement="gsc-advanced-enrichment" id="BPMNShape_gsc-advanced-enrichment">
+        <omgdc:Bounds height="80.0" width="117.00000000000006" x="267.2575993854221" y="105.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="advanced_enrichment_activity_start" id="BPMNShape_advanced_enrichment_activity_start">
+        <omgdc:Bounds height="30.0" width="30.0" x="165.0" y="130.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="customer-reminder-gsc-advanced-enrichment" id="BPMNShape_customer-reminder-gsc-advanced-enrichment">
+        <omgdc:Bounds height="45.0" width="89.99999999999989" x="255.0" y="15.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-9388D333-B4DA-4AF8-A280-A53E1A3AB662" id="BPMNShape_sid-9388D333-B4DA-4AF8-A280-A53E1A3AB662">
+        <omgdc:Bounds height="31.0" width="31.0" x="284.86458149246477" y="88.65194454545451"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="advanced_enrichment_activity_end" id="BPMNShape_advanced_enrichment_activity_end">
+        <omgdc:Bounds height="28.0" width="28.0" x="450.0" y="131.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-736F8A68-AF31-4238-847B-0F951379B109" id="BPMNEdge_sid-736F8A68-AF31-4238-847B-0F951379B109">
+        <omgdi:waypoint x="384.2075993854131" y="145.0"></omgdi:waypoint>
+        <omgdi:waypoint x="450.0" y="145.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-1D8939A8-4F26-4B4E-997E-4EA39B1AD822" id="BPMNEdge_sid-1D8939A8-4F26-4B4E-997E-4EA39B1AD822">
+        <omgdi:waypoint x="194.94928766489392" y="145.14104153179454"></omgdi:waypoint>
+        <omgdi:waypoint x="267.2575993854221" y="145.8232427610067"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-C25B93EE-E6F5-4F28-8380-AFD3F2308C83" id="BPMNEdge_sid-C25B93EE-E6F5-4F28-8380-AFD3F2308C83">
+        <omgdi:waypoint x="300.27955478944773" y="88.65211508805692"></omgdi:waypoint>
+        <omgdi:waypoint x="300.12279993572054" y="59.95"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <process id="eor_equip_tx_card_removal_delete_nms_wf" name="eor_equip_tx_card_removal_delete_nms_wf" isExecutable="true">
+    <documentation>eor_equip_tx_card_removal_delete_nms_wf</documentation>
+    <startEvent id="startEvent1" flowable:formFieldValidation="true"></startEvent>
+    <serviceTask id="eor_eqp_tx_card_rmvl_delete_nms_task" name="Delete In NMS" flowable:delegateExpression="${createDeviceInCramerDelegate}"></serviceTask>
+    <userTask id="eor_eqp_tx_card_rmvl_delete_nms_retry_task" name="Delete In NMS retry" flowable:formFieldValidation="true">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${taskCreateListener}"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${taskCompleteListener}"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <exclusiveGateway id="sid-642DECD1-4ECE-4734-923B-0F3886D14D7D"></exclusiveGateway>
+    <sequenceFlow id="sid-F0DE28E7-7C9C-4893-B8AE-7DF4F942A2CA" sourceRef="eor_eqp_tx_card_rmvl_delete_nms_task" targetRef="sid-642DECD1-4ECE-4734-923B-0F3886D14D7D"></sequenceFlow>
+    <endEvent id="eor_eqp_tx_card_rmvl_delete_nms_activity_end">
+      <extensionElements>
+        <flowable:executionListener event="end" delegateExpression="${activityEndListener}"></flowable:executionListener>
+      </extensionElements>
+    </endEvent>
+    <exclusiveGateway id="sid-C79B08B6-54BF-4E79-BC91-391E1C5DBB99"></exclusiveGateway>
+    <sequenceFlow id="sid-9DB83983-59C4-4A91-8A41-5D62EEAC7A36" sourceRef="eor_eqp_tx_card_rmvl_delete_nms_retry_task" targetRef="sid-C79B08B6-54BF-4E79-BC91-391E1C5DBB99"></sequenceFlow>
+    <sequenceFlow id="sid-827269E0-3D76-4AAD-809E-18CAE27E1B03" sourceRef="sid-642DECD1-4ECE-4734-923B-0F3886D14D7D" targetRef="eor_eqp_tx_card_rmvl_delete_nms_activity_end">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${isError==false}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-3F82FCC5-F81A-421A-AF14-0543E9276B78" sourceRef="sid-642DECD1-4ECE-4734-923B-0F3886D14D7D" targetRef="eor_eqp_tx_card_rmvl_delete_nms_retry_task">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${isError==true}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-A189EC43-C7EF-4AFA-A842-BA6BA2C726D1" sourceRef="sid-C79B08B6-54BF-4E79-BC91-391E1C5DBB99" targetRef="eor_eqp_tx_card_rmvl_delete_nms_task">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${retry==true}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-18095EAB-3CA9-421F-9708-0E36E35FBF46" sourceRef="sid-C79B08B6-54BF-4E79-BC91-391E1C5DBB99" targetRef="eor_eqp_tx_card_rmvl_delete_nms_activity_end">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${retry==false}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="eor_eqp_tx_card_rmvl_delete_nms_activity_start" sourceRef="startEvent1" targetRef="eor_eqp_tx_card_rmvl_delete_nms_task">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${activityStartListener}"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_eor_equip_tx_card_removal_delete_nms_wf">
+    <bpmndi:BPMNPlane bpmnElement="eor_equip_tx_card_removal_delete_nms_wf" id="BPMNPlane_eor_equip_tx_card_removal_delete_nms_wf">
+      <bpmndi:BPMNShape bpmnElement="startEvent1" id="BPMNShape_startEvent1">
+        <omgdc:Bounds height="30.0" width="30.0" x="100.0" y="163.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="eor_eqp_tx_card_rmvl_delete_nms_task" id="BPMNShape_eor_eqp_tx_card_rmvl_delete_nms_task">
+        <omgdc:Bounds height="80.0" width="99.99999999999997" x="195.00000000000003" y="138.00000000000003"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="eor_eqp_tx_card_rmvl_delete_nms_retry_task" id="BPMNShape_eor_eqp_tx_card_rmvl_delete_nms_retry_task">
+        <omgdc:Bounds height="79.99999999999997" width="100.0" x="330.0000000000001" y="255.00000000000009"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-642DECD1-4ECE-4734-923B-0F3886D14D7D" id="BPMNShape_sid-642DECD1-4ECE-4734-923B-0F3886D14D7D">
+        <omgdc:Bounds height="40.0" width="40.0" x="360.00000000000006" y="158.00000000000003"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="eor_eqp_tx_card_rmvl_delete_nms_activity_end" id="BPMNShape_eor_eqp_tx_card_rmvl_delete_nms_activity_end">
+        <omgdc:Bounds height="28.0" width="27.999999999999943" x="495.00000000000006" y="164.00000000000003"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-C79B08B6-54BF-4E79-BC91-391E1C5DBB99" id="BPMNShape_sid-C79B08B6-54BF-4E79-BC91-391E1C5DBB99">
+        <omgdc:Bounds height="40.0" width="39.99999999999997" x="225.00000000000003" y="275.00000000000006"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-827269E0-3D76-4AAD-809E-18CAE27E1B03" id="BPMNEdge_sid-827269E0-3D76-4AAD-809E-18CAE27E1B03">
+        <omgdi:waypoint x="399.51656908665115" y="178.42578125000003"></omgdi:waypoint>
+        <omgdi:waypoint x="495.00010099159215" y="178.05427992178903"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="eor_eqp_tx_card_rmvl_delete_nms_activity_start" id="BPMNEdge_eor_eqp_tx_card_rmvl_delete_nms_activity_start">
+        <omgdi:waypoint x="129.94999891869114" y="178.00000000000003"></omgdi:waypoint>
+        <omgdi:waypoint x="194.99999999994475" y="178.00000000000003"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-3F82FCC5-F81A-421A-AF14-0543E9276B78" id="BPMNEdge_sid-3F82FCC5-F81A-421A-AF14-0543E9276B78">
+        <omgdi:waypoint x="380.41810344827593" y="197.5234496124031"></omgdi:waypoint>
+        <omgdi:waypoint x="380.1714592274679" y="255.00000000000009"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-A189EC43-C7EF-4AFA-A842-BA6BA2C726D1" id="BPMNEdge_sid-A189EC43-C7EF-4AFA-A842-BA6BA2C726D1">
+        <omgdi:waypoint x="245.4145299145299" y="275.41452991452996"></omgdi:waypoint>
+        <omgdi:waypoint x="245.17" y="217.95000000000005"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-18095EAB-3CA9-421F-9708-0E36E35FBF46" id="BPMNEdge_sid-18095EAB-3CA9-421F-9708-0E36E35FBF46">
+        <omgdi:waypoint x="245.5" y="314.4403904665314"></omgdi:waypoint>
+        <omgdi:waypoint x="245.5" y="394.0"></omgdi:waypoint>
+        <omgdi:waypoint x="509.0" y="394.0"></omgdi:waypoint>
+        <omgdi:waypoint x="509.0" y="191.9499232214174"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-9DB83983-59C4-4A91-8A41-5D62EEAC7A36" id="BPMNEdge_sid-9DB83983-59C4-4A91-8A41-5D62EEAC7A36">
+        <omgdi:waypoint x="329.99999999999125" y="295.1856877323421"></omgdi:waypoint>
+        <omgdi:waypoint x="264.4774271844602" y="295.429104477612"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-F0DE28E7-7C9C-4893-B8AE-7DF4F942A2CA" id="BPMNEdge_sid-F0DE28E7-7C9C-4893-B8AE-7DF4F942A2CA">
+        <omgdi:waypoint x="294.95000000000005" y="178.18431734317346"></omgdi:waypoint>
+        <omgdi:waypoint x="360.4259259259254" y="178.42592592592595"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <process id="eor_equip_wl_prov_create_crmr_device_wf" name="eor_equip_wl_prov_create_crmr_device_wf" isExecutable="true">
+    <documentation>eor_equip_wl_prov_create_crmr_device_wf</documentation>
+    <startEvent id="startEvent1"></startEvent>
+    <serviceTask id="eor_equip_wl_prov_create_crmr_device_wf_service_task" name="Create Cramer Device" flowable:delegateExpression="${createDeviceInCramerDelegate}"></serviceTask>
+    <exclusiveGateway id="sid-12880327-4CC6-48CC-B9F7-A337AE628A91"></exclusiveGateway>
+    <userTask id="eor_equip_wl_prov_create_crmr_device_retry_task" name="Create Cramer Device Retry">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${taskCreateListener}"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${taskCompleteListener}"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <exclusiveGateway id="sid-E181E0E8-759C-40D2-9ADB-8A873EACD54A"></exclusiveGateway>
+    <endEvent id="eor_equip_wl_prov_create_crmr_device_wf_service_activity_end">
+      <extensionElements>
+        <flowable:executionListener event="end" delegateExpression="${activityEndListener}"></flowable:executionListener>
+      </extensionElements>
+    </endEvent>
+    <sequenceFlow id="sid-10A22757-DD00-4DC6-8102-117A2DFFA527" sourceRef="eor_equip_wl_prov_create_crmr_device_wf_service_task" targetRef="sid-12880327-4CC6-48CC-B9F7-A337AE628A91"></sequenceFlow>
+    <sequenceFlow id="sid-66C81606-5871-4F5E-A922-EFA22BBC76ED" sourceRef="eor_equip_wl_prov_create_crmr_device_retry_task" targetRef="sid-E181E0E8-759C-40D2-9ADB-8A873EACD54A"></sequenceFlow>
+    <sequenceFlow id="sid-F72AB761-867C-4F45-BA93-D83E4549F555" sourceRef="sid-12880327-4CC6-48CC-B9F7-A337AE628A91" targetRef="eor_equip_wl_prov_create_crmr_device_wf_service_activity_end">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${isError == false}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-002B233F-EA77-4523-8498-0ABDC298297B" sourceRef="sid-12880327-4CC6-48CC-B9F7-A337AE628A91" targetRef="eor_equip_wl_prov_create_crmr_device_retry_task">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${isError == true}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-66F94B69-9B8A-4EF1-8593-A7C27769D6F4" sourceRef="sid-E181E0E8-759C-40D2-9ADB-8A873EACD54A" targetRef="eor_equip_wl_prov_create_crmr_device_wf_service_activity_end">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${retry == false}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-B19B7A30-30C3-419A-A4ED-1A2EB2DF9DCB" sourceRef="sid-E181E0E8-759C-40D2-9ADB-8A873EACD54A" targetRef="eor_equip_wl_prov_create_crmr_device_wf_service_task">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${retry == true}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="eor_equip_wl_prov_create_crmr_device_wf_service_activity_start" sourceRef="startEvent1" targetRef="eor_equip_wl_prov_create_crmr_device_wf_service_task">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${activityStartListener}"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_eor_equip_wl_prov_create_crmr_device_wf">
+    <bpmndi:BPMNPlane bpmnElement="eor_equip_wl_prov_create_crmr_device_wf" id="BPMNPlane_eor_equip_wl_prov_create_crmr_device_wf">
+      <bpmndi:BPMNShape bpmnElement="startEvent1" id="BPMNShape_startEvent1">
+        <omgdc:Bounds height="30.0" width="30.0" x="100.0" y="162.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="eor_equip_wl_prov_create_crmr_device_wf_service_task" id="BPMNShape_eor_equip_wl_prov_create_crmr_device_wf_service_task">
+        <omgdc:Bounds height="80.0" width="100.0" x="165.0" y="137.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-12880327-4CC6-48CC-B9F7-A337AE628A91" id="BPMNShape_sid-12880327-4CC6-48CC-B9F7-A337AE628A91">
+        <omgdc:Bounds height="40.0" width="40.0" x="375.0" y="157.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="eor_equip_wl_prov_create_crmr_device_retry_task" id="BPMNShape_eor_equip_wl_prov_create_crmr_device_retry_task">
+        <omgdc:Bounds height="80.0" width="100.0" x="345.0" y="240.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-E181E0E8-759C-40D2-9ADB-8A873EACD54A" id="BPMNShape_sid-E181E0E8-759C-40D2-9ADB-8A873EACD54A">
+        <omgdc:Bounds height="40.0" width="40.0" x="195.0" y="260.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="eor_equip_wl_prov_create_crmr_device_wf_service_activity_end" id="BPMNShape_eor_equip_wl_prov_create_crmr_device_wf_service_activity_end">
+        <omgdc:Bounds height="28.0" width="28.0" x="510.0" y="163.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="eor_equip_wl_prov_create_crmr_device_wf_service_activity_start" id="BPMNEdge_eor_equip_wl_prov_create_crmr_device_wf_service_activity_start">
+        <omgdi:waypoint x="129.94999817301806" y="177.0"></omgdi:waypoint>
+        <omgdi:waypoint x="164.99999999998187" y="177.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-10A22757-DD00-4DC6-8102-117A2DFFA527" id="BPMNEdge_sid-10A22757-DD00-4DC6-8102-117A2DFFA527">
+        <omgdi:waypoint x="264.9499999999431" y="177.0"></omgdi:waypoint>
+        <omgdi:waypoint x="375.0" y="177.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-B19B7A30-30C3-419A-A4ED-1A2EB2DF9DCB" id="BPMNEdge_sid-B19B7A30-30C3-419A-A4ED-1A2EB2DF9DCB">
+        <omgdi:waypoint x="215.0" y="260.0"></omgdi:waypoint>
+        <omgdi:waypoint x="215.0" y="216.95000000000002"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-F72AB761-867C-4F45-BA93-D83E4549F555" id="BPMNEdge_sid-F72AB761-867C-4F45-BA93-D83E4549F555">
+        <omgdi:waypoint x="414.9422734314485" y="177.0"></omgdi:waypoint>
+        <omgdi:waypoint x="510.0" y="177.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-002B233F-EA77-4523-8498-0ABDC298297B" id="BPMNEdge_sid-002B233F-EA77-4523-8498-0ABDC298297B">
+        <omgdi:waypoint x="395.0" y="196.9403249272551"></omgdi:waypoint>
+        <omgdi:waypoint x="395.0" y="240.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-66C81606-5871-4F5E-A922-EFA22BBC76ED" id="BPMNEdge_sid-66C81606-5871-4F5E-A922-EFA22BBC76ED">
+        <omgdi:waypoint x="345.0" y="280.0"></omgdi:waypoint>
+        <omgdi:waypoint x="234.90551695386327" y="280.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-66F94B69-9B8A-4EF1-8593-A7C27769D6F4" id="BPMNEdge_sid-66F94B69-9B8A-4EF1-8593-A7C27769D6F4">
+        <omgdi:waypoint x="215.0" y="299.9349092284417"></omgdi:waypoint>
+        <omgdi:waypoint x="215.0" y="346.0"></omgdi:waypoint>
+        <omgdi:waypoint x="524.0" y="346.0"></omgdi:waypoint>
+        <omgdi:waypoint x="524.0" y="190.94992613241828"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

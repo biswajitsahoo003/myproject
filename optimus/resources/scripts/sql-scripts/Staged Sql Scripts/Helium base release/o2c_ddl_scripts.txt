@@ -1,0 +1,806 @@
+-- MySQL Workbench Forward Engineering
+
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+
+-- -----------------------------------------------------
+-- Schema service_fulfillment_uat
+-- -----------------------------------------------------
+
+-- -----------------------------------------------------
+-- Schema service_fulfillment_uat
+-- -----------------------------------------------------
+CREATE SCHEMA IF NOT EXISTS `service_fulfillment_uat` DEFAULT CHARACTER SET utf8 ;
+USE `service_fulfillment_uat` ;
+
+-- -----------------------------------------------------
+-- Table `service_fulfillment_uat`.`mst_stage_def`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `service_fulfillment_uat`.`mst_stage_def` (
+  `key` VARCHAR(75) NOT NULL,
+  `name` VARCHAR(255) NULL,
+  `customer_view` CHAR(1) NULL DEFAULT 'Y',
+  `sequence` TINYINT(4) NULL,
+  UNIQUE INDEX `key_UNIQUE` (`key` ASC) ,
+  PRIMARY KEY (`key`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `service_fulfillment_uat`.`mst_process_def`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `service_fulfillment_uat`.`mst_process_def` (
+  `key` VARCHAR(75) NOT NULL,
+  `name` VARCHAR(255) NULL,
+  `stage_def_key` VARCHAR(75) NOT NULL,
+  `code` VARCHAR(10) NULL,
+  `sequence` TINYINT(4) NULL,
+  `customer_view` CHAR(1) NULL,
+  INDEX `fk_o2c_process_stage_stageid_idx` (`stage_def_key` ASC) ,
+  UNIQUE INDEX `key_UNIQUE` (`key` ASC) ,
+  PRIMARY KEY (`key`),
+  CONSTRAINT `fk_mst_process_def_mst_stage_def_key_idx`
+    FOREIGN KEY (`stage_def_key`)
+    REFERENCES `service_fulfillment_uat`.`mst_stage_def` (`key`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `service_fulfillment_uat`.`mst_activity_def`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `service_fulfillment_uat`.`mst_activity_def` (
+  `key` VARCHAR(75) NOT NULL,
+  `name` VARCHAR(255) NULL,
+  `process_def_key` VARCHAR(75) NOT NULL,
+  `customer_view` CHAR(1) NULL DEFAULT 'Y',
+  `sequence` TINYINT(4) NULL,
+  INDEX `fk_activity_process_processid_idx_idx` (`process_def_key` ASC) ,
+  UNIQUE INDEX `key_UNIQUE` (`key` ASC) ,
+  PRIMARY KEY (`key`),
+  CONSTRAINT `fk_mst_activity_def_mst_process_def_key_idx`
+    FOREIGN KEY (`process_def_key`)
+    REFERENCES `service_fulfillment_uat`.`mst_process_def` (`key`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `service_fulfillment_uat`.`mst_task_def`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `service_fulfillment_uat`.`mst_task_def` (
+  `key` VARCHAR(75) NOT NULL,
+  `name` VARCHAR(255) NULL,
+  `activity_def_key` VARCHAR(75) NOT NULL,
+  `form_key` VARCHAR(100) NULL,
+  `tat` INT(11) NULL,
+  `wait_time` VARCHAR(45) NULL,
+  `reminder_cycle` VARCHAR(45) NULL,
+  `owner_group` VARCHAR(45) NULL,
+  `assigned_group` VARCHAR(45) NULL,
+  `is_customer_task` CHAR(1) NULL DEFAULT 'N',
+  `is_manual_task` CHAR(1) NULL DEFAULT 'Y',
+  `title` VARCHAR(100) NULL,
+  `description` VARCHAR(500) NULL,
+  `button_label` VARCHAR(45) NULL,
+  INDEX `fk_mst_tasks_mst_activity_activityid_idx_idx` (`activity_def_key` ASC) ,
+  UNIQUE INDEX `key_UNIQUE` (`key` ASC) ,
+  PRIMARY KEY (`key`),
+  CONSTRAINT `fk_mst_task_def_mst_activity_def_key_idx`
+    FOREIGN KEY (`activity_def_key`)
+    REFERENCES `service_fulfillment_uat`.`mst_activity_def` (`key`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `service_fulfillment_uat`.`mst_status`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `service_fulfillment_uat`.`mst_status` (
+  `id` TINYINT(4) NOT NULL,
+  `code` VARCHAR(45) NULL,
+  `active` CHAR(1) NULL,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `service_fulfillment_uat`.`stage`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `service_fulfillment_uat`.`stage` (
+  `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `stage_def_key` VARCHAR(75) NOT NULL,
+  `wf_stage_id` VARCHAR(64) NULL,
+  `status` TINYINT(4) NULL,
+  `created_time` TIMESTAMP NULL,
+  `due_date` TIMESTAMP NULL,
+  `updated_time` TIMESTAMP NULL,
+  `completed_time` TIMESTAMP NULL,
+  `sc_order_id` INT(11) NULL,
+  `order_code` VARCHAR(45) NULL,
+  `service_id` VARCHAR(45) NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_stage_mst_stage_def_id_idx_idx` (`stage_def_key` ASC) ,
+  INDEX `fk_stage_mst_status_idx_idx` (`status` ASC) ,
+  CONSTRAINT `fk_stage_mst_stage_def_key_idx`
+    FOREIGN KEY (`stage_def_key`)
+    REFERENCES `service_fulfillment_uat`.`mst_stage_def` (`key`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_stage_mst_status_idx`
+    FOREIGN KEY (`status`)
+    REFERENCES `service_fulfillment_uat`.`mst_status` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `service_fulfillment_uat`.`process`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `service_fulfillment_uat`.`process` (
+  `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `process_def_key` VARCHAR(75) NOT NULL,
+  `stage_id` INT(11) UNSIGNED NOT NULL,
+  `wf_proc_inst_id` VARCHAR(64) NULL,
+  `status` TINYINT(4) NULL,
+  `created_time` TIMESTAMP NULL,
+  `updated_time` TIMESTAMP NULL,
+  `duedate` TIMESTAMP NULL,
+  `completed_time` TIMESTAMP NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_process_mst_process_def_id_idx_idx` (`process_def_key` ASC) ,
+  INDEX `fk_process_stage_id_idx_idx` (`stage_id` ASC) ,
+  INDEX `fk_process_mst_status_idx` (`status` ASC) ,
+  CONSTRAINT `fk_process_mst_process_def_id_idx`
+    FOREIGN KEY (`process_def_key`)
+    REFERENCES `service_fulfillment_uat`.`mst_process_def` (`key`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_process_stage_id_idx`
+    FOREIGN KEY (`stage_id`)
+    REFERENCES `service_fulfillment_uat`.`stage` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_process_mst_status`
+    FOREIGN KEY (`status`)
+    REFERENCES `service_fulfillment_uat`.`mst_status` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `service_fulfillment_uat`.`activity`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `service_fulfillment_uat`.`activity` (
+  `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `activity_def_key` VARCHAR(75) NOT NULL,
+  `process_id` INT(11) UNSIGNED NOT NULL,
+  `status` TINYINT(4) NULL,
+  `wf_activity_id` VARCHAR(64) NULL,
+  `created_time` TIMESTAMP NULL,
+  `updated_time` TIMESTAMP NULL,
+  `duedate` TIMESTAMP NULL,
+  `completed_time` TIMESTAMP NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_activity_mst_activity_def_key_idx_idx` (`activity_def_key` ASC) ,
+  INDEX `fk_activity_process_id_idx_idx` (`process_id` ASC) ,
+  INDEX `fk_mst_activity_mst_status_idx_idx` (`status` ASC) ,
+  CONSTRAINT `fk_activity_mst_activity_def_key_idx`
+    FOREIGN KEY (`activity_def_key`)
+    REFERENCES `service_fulfillment_uat`.`mst_activity_def` (`key`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_activity_process_id_idx`
+    FOREIGN KEY (`process_id`)
+    REFERENCES `service_fulfillment_uat`.`process` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_mst_activity_mst_status_idx`
+    FOREIGN KEY (`status`)
+    REFERENCES `service_fulfillment_uat`.`mst_status` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `service_fulfillment_uat`.`task`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `service_fulfillment_uat`.`task` (
+  `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `task_def_key` VARCHAR(75) NOT NULL,
+  `process_id` INT(11) UNSIGNED NOT NULL,
+  `activity_id` INT(11) UNSIGNED NULL,
+  `wf_task_id` VARCHAR(64) NULL,
+  `wf_executor_id` VARCHAR(64) NULL,
+  `wf_process_inst_id` VARCHAR(64) NULL,
+  `status` TINYINT(4) NULL,
+  `sc_order_id` INT(11) NULL,
+  `order_code` VARCHAR(45) NULL,
+  `service_id` VARCHAR(45) NULL,
+  `created_time` TIMESTAMP NULL,
+  `updated_time` TIMESTAMP NULL,
+  `claim_time` TIMESTAMP NULL,
+  `duedate` TIMESTAMP NULL,
+  `completed_time` TIMESTAMP NULL,
+  `assignee` VARCHAR(64) NULL,
+  `priority` INT(11) NULL,
+  `catagory` VARCHAR(244) NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_task_activity_id_idx_idx` (`activity_id` ASC) ,
+  INDEX `fk_task_mst_task_def_key_idx_idx` (`task_def_key` ASC) ,
+  INDEX `fk_task_mst_status_idx_idx` (`status` ASC) ,
+  CONSTRAINT `fk_task_activity_id_idx`
+    FOREIGN KEY (`activity_id`)
+    REFERENCES `service_fulfillment_uat`.`activity` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_task_mst_task_def_key_idx`
+    FOREIGN KEY (`task_def_key`)
+    REFERENCES `service_fulfillment_uat`.`mst_task_def` (`key`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_task_mst_status_idx`
+    FOREIGN KEY (`status`)
+    REFERENCES `service_fulfillment_uat`.`mst_status` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `service_fulfillment_uat`.`task_data`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `service_fulfillment_uat`.`task_data` (
+  `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(75) NULL,
+  `data` TEXT NULL,
+  `task_id` INT(11) UNSIGNED NULL,
+  `created_time` TIMESTAMP NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_task_data_task_id_idx_idx` (`task_id` ASC) ,
+  CONSTRAINT `fk_task_data_task_id_idx`
+    FOREIGN KEY (`task_id`)
+    REFERENCES `service_fulfillment_uat`.`task` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `service_fulfillment_uat`.`task_assignment`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `service_fulfillment_uat`.`task_assignment` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `task_id` INT(11) UNSIGNED NULL,
+  `process_id` INT(11) UNSIGNED NULL,
+  `user_name` VARCHAR(45) NULL,
+  `group_name` VARCHAR(45) NULL,
+  `owner` VARCHAR(45) NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_task_assignment_task_id_idx_idx` (`task_id` ASC) ,
+  CONSTRAINT `fk_task_assignment_task_id_idx`
+    FOREIGN KEY (`task_id`)
+    REFERENCES `service_fulfillment_uat`.`task` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `service_fulfillment_uat`.`process_task_log`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `service_fulfillment_uat`.`process_task_log` (
+  `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `task_id` INT(11) UNSIGNED NULL,
+  `process_id` INT(11) UNSIGNED NULL,
+  `action` ENUM('Cliamed', 'Assigned', 'Re-Assigned', 'Closed') NULL,
+  `action_from` VARCHAR(150) NULL,
+  `action_to` VARCHAR(150) NULL,
+  `group_from` VARCHAR(45) NULL,
+  `group_to` VARCHAR(45) NULL,
+  `descrption` VARCHAR(500) NULL,
+  `created_time` TIMESTAMP NULL,
+  `service_id` INT(11) NULL,
+  `sc_order_id` INT(11) NULL,
+  `order_code` VARCHAR(45) NULL,
+  `active` CHAR(1) NULL DEFAULT 'Y',
+  PRIMARY KEY (`id`),
+  INDEX `fk_process_task_log_process_id_idx` (`process_id` ASC) ,
+  INDEX `fk_process_task_log_task_id_idx_idx` (`task_id` ASC) ,
+  CONSTRAINT `fk_process_task_log_process_id_idx`
+    FOREIGN KEY (`process_id`)
+    REFERENCES `service_fulfillment_uat`.`process` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_process_task_log_task_id_idx`
+    FOREIGN KEY (`task_id`)
+    REFERENCES `service_fulfillment_uat`.`task` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `service_fulfillment_uat`.`mst_template`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `service_fulfillment_uat`.`mst_template` (
+  `key` VARCHAR(200) NOT NULL,
+  `service_type` VARCHAR(45) NULL,
+  `lm_required_ind` CHAR(1) NULL DEFAULT 'N',
+  `lm_type` VARCHAR(45) NULL,
+  `connected_site_ind` CHAR(1) NULL DEFAULT 'N',
+  `cpe_required_ind` CHAR(1) NULL DEFAULT 'N',
+  `cpe_management_type` VARCHAR(45) NULL,
+  `cpe_sale_type` VARCHAR(45) NULL,
+  `cross_connect_required_ind` CHAR(1) NULL DEFAULT 'N',
+  UNIQUE INDEX `key_UNIQUE` (`key` ASC) ,
+  PRIMARY KEY (`key`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `service_fulfillment_uat`.`attribute_audit_log`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `service_fulfillment_uat`.`attribute_audit_log` (
+  `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `service_id` INT(11) NULL,
+  `task_def_key` VARCHAR(75) NULL,
+  `process_def_key` VARCHAR(75) NULL,
+  `stage_def_key` VARCHAR(75) NULL,
+  `attribute_name` VARCHAR(45) NULL,
+  `attribute_display_name` VARCHAR(255) NULL,
+  `actual_value` VARCHAR(255) NULL,
+  `modified_value` VARCHAR(255) NULL,
+  `updated_by` VARCHAR(150) NULL,
+  `created_time` TIMESTAMP NULL,
+  `active` CHAR(1) NULL DEFAULT 'Y',
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `service_fulfillment_uat`.`service_impl_data`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `service_fulfillment_uat`.`service_impl_data` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `service_id` VARCHAR(45) NULL,
+  `order_code` VARCHAR(45) NULL,
+  `sc_order_id` INT(11) NULL,
+  `data` TEXT NULL,
+  `created_time` TIMESTAMP NULL,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `service_fulfillment_uat`.`business_hour_template`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `service_fulfillment_uat`.`business_hour_template` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `template_code` VARCHAR(45) NULL,
+  `day` VARCHAR(45) NULL,
+  `is_working_day` CHAR(1) NULL,
+  `start_time` TIME NULL,
+  `end_time` TIME NULL,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `service_fulfillment_uat`.`group_to_business_hour_template`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `service_fulfillment_uat`.`group_to_business_hour_template` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `group_name` VARCHAR(45) NULL,
+  `template_code` VARCHAR(45) NULL,
+  `created_time` TIMESTAMP NULL,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `service_fulfillment_uat`.`holiday_template`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `service_fulfillment_uat`.`holiday_template` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `template_code` VARCHAR(45) NULL,
+  `holiday` VARCHAR(45) NULL,
+  `date` TIMESTAMP NULL,
+  `created_time` TIMESTAMP NULL,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `service_fulfillment_uat`.`group_to_holiday_template`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `service_fulfillment_uat`.`group_to_holiday_template` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `group_name` VARCHAR(45) NULL,
+  `template_code` VARCHAR(45) NULL,
+  `created_time` TIMESTAMP NULL,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `service_fulfillment_uat`.`mst_process_seq`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `service_fulfillment_uat`.`mst_process_seq` (
+  `template_key` VARCHAR(200) NOT NULL,
+  `process_def_key` VARCHAR(75) NOT NULL,
+  `stage_def_key` VARCHAR(75) NOT NULL,
+  `sequence` TINYINT(4) NULL,
+  PRIMARY KEY (`template_key`, `process_def_key`),
+  INDEX `fk_mst_process_seq_key_idx_idx` (`process_def_key` ASC) ,
+  CONSTRAINT `fk_mst_process_seq_key_idx`
+    FOREIGN KEY (`process_def_key`)
+    REFERENCES `service_fulfillment_uat`.`mst_process_def` (`key`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `service_fulfillment_uat`.`mst_activity_seq`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `service_fulfillment_uat`.`mst_activity_seq` (
+  `process_def_key` VARCHAR(75) NOT NULL,
+  `activity_def_key` VARCHAR(75) NOT NULL,
+  `sequence` TINYINT(4) NULL,
+  PRIMARY KEY (`process_def_key`, `activity_def_key`),
+  INDEX `fk_activity_seq_key_idx_idx` (`activity_def_key` ASC) ,
+  CONSTRAINT `fk_activity_seq_key_idx`
+    FOREIGN KEY (`activity_def_key`)
+    REFERENCES `service_fulfillment_uat`.`mst_activity_def` (`key`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `service_fulfillment_uat`.`mst_task_seq`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `service_fulfillment_uat`.`mst_task_seq` (
+  `activity_def_key` VARCHAR(75) NOT NULL,
+  `task_def_key` VARCHAR(75) NOT NULL,
+  `sequence` TINYINT(4) NULL,
+  PRIMARY KEY (`activity_def_key`, `task_def_key`),
+  INDEX `fk_task_seq_key_idx_idx` (`task_def_key` ASC) ,
+  CONSTRAINT `fk_task_seq_key_idx`
+    FOREIGN KEY (`task_def_key`)
+    REFERENCES `service_fulfillment_uat`.`mst_task_def` (`key`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `service_fulfillment_uat`.`stage_plan`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `service_fulfillment_uat`.`stage_plan` (
+  `id` INT(11) UNSIGNED NOT NULL,
+  `stage_def_key` VARCHAR(75) NOT NULL,
+  `stage_id` INT(11) UNSIGNED NULL,
+  `sc_order_id` INT(11) NULL,
+  `service_id` VARCHAR(45) NULL,
+  `estimated_start_time` TIMESTAMP NULL,
+  `estimated_end_time` TIMESTAMP NULL,
+  `targetted_start_time` TIMESTAMP NULL,
+  `targetted_end_time` TIMESTAMP NULL,
+  `actual_start_time` TIMESTAMP NULL,
+  `actual_end_time` TIMESTAMP NULL,
+  `status` TINYINT(4) NULL,
+  `sequence` TINYINT(4) NULL,
+  `customer_view` CHAR(1) NULL DEFAULT 'Y',
+  PRIMARY KEY (`id`),
+  INDEX `fk_stage_plan_mst_stage_idx_idx` (`stage_def_key` ASC) ,
+  INDEX `fk_stage_plan_stage_id_idx_idx` (`stage_id` ASC) ,
+  INDEX `fk_stage_plan_status_idx_idx` (`status` ASC) ,
+  CONSTRAINT `fk_stage_plan_mst_stage_idx`
+    FOREIGN KEY (`stage_def_key`)
+    REFERENCES `service_fulfillment_uat`.`mst_stage_def` (`key`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_stage_plan_stage_id_idx`
+    FOREIGN KEY (`stage_id`)
+    REFERENCES `service_fulfillment_uat`.`stage` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_stage_plan_status_idx`
+    FOREIGN KEY (`status`)
+    REFERENCES `service_fulfillment_uat`.`mst_status` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `service_fulfillment_uat`.`process_plan`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `service_fulfillment_uat`.`process_plan` (
+  `id` INT(11) UNSIGNED NOT NULL,
+  `stage_plan_id` INT(11) UNSIGNED NULL,
+  `process_def_key` VARCHAR(75) NOT NULL,
+  `process_id` INT(11) UNSIGNED NULL,
+  `estimated_start_time` TIMESTAMP NULL,
+  `estimated_end_time` TIMESTAMP NULL,
+  `targetted_start_time` TIMESTAMP NULL,
+  `targetted_end_time` TIMESTAMP NULL,
+  `actual_start_time` TIMESTAMP NULL,
+  `actual_end_time` TIMESTAMP NULL,
+  `status` TINYINT(4) NULL,
+  `sequence` TINYINT(4) NULL,
+  `customer_view` CHAR(1) NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_process_plan_mst_process_def_idx_idx` (`process_def_key` ASC) ,
+  INDEX `fk_process_plan_stage_plan_id_idx_idx` (`stage_plan_id` ASC) ,
+  INDEX `fk_process_plan_process_id_idx_idx` (`process_id` ASC) ,
+  INDEX `fk_process_plan_status_idx_idx` (`status` ASC) ,
+  CONSTRAINT `fk_process_plan_mst_process_def_idx`
+    FOREIGN KEY (`process_def_key`)
+    REFERENCES `service_fulfillment_uat`.`mst_process_def` (`key`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_process_plan_stage_plan_id_idx`
+    FOREIGN KEY (`stage_plan_id`)
+    REFERENCES `service_fulfillment_uat`.`stage_plan` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_process_plan_process_id_idx`
+    FOREIGN KEY (`process_id`)
+    REFERENCES `service_fulfillment_uat`.`process` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_process_plan_status_idx`
+    FOREIGN KEY (`status`)
+    REFERENCES `service_fulfillment_uat`.`mst_status` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `service_fulfillment_uat`.`mst_process_successor`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `service_fulfillment_uat`.`mst_process_successor` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `template_key` VARCHAR(200) NOT NULL,
+  `process_def_key` VARCHAR(75) NOT NULL,
+  `successor` VARCHAR(75) NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_mst_process_successor_mst_process_def_idx_idx` (`process_def_key` ASC) ,
+  CONSTRAINT `fk_mst_process_successor_mst_process_def_idx`
+    FOREIGN KEY (`process_def_key`)
+    REFERENCES `service_fulfillment_uat`.`mst_process_def` (`key`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `service_fulfillment_uat`.`mst_activity_successor`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `service_fulfillment_uat`.`mst_activity_successor` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `process_def_key` VARCHAR(75) NOT NULL,
+  `activity_def_key` VARCHAR(75) NOT NULL,
+  `successor` VARCHAR(75) NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_mst_activity_successor_mst_activity_def_idx_idx` (`activity_def_key` ASC) ,
+  CONSTRAINT `fk_mst_activity_successor_mst_activity_def_idx`
+    FOREIGN KEY (`activity_def_key`)
+    REFERENCES `service_fulfillment_uat`.`mst_activity_def` (`key`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `service_fulfillment_uat`.`mst_task_successor`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `service_fulfillment_uat`.`mst_task_successor` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `activity_def_key` VARCHAR(75) NOT NULL,
+  `task_def_key` VARCHAR(75) NOT NULL,
+  `successor` VARCHAR(75) NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_mst_task_successor_mst_task_def_idx_idx` (`task_def_key` ASC) ,
+  CONSTRAINT `fk_mst_task_successor_mst_task_def_idx`
+    FOREIGN KEY (`task_def_key`)
+    REFERENCES `service_fulfillment_uat`.`mst_task_def` (`key`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `service_fulfillment_uat`.`process_plan_successor`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `service_fulfillment_uat`.`process_plan_successor` (
+  `id` INT(11) UNSIGNED NOT NULL,
+  `process_plan_id` INT(11) UNSIGNED NOT NULL,
+  `successor` INT(11) UNSIGNED NULL,
+  INDEX `fk_process_plan_successor_id_idx_idx` (`process_plan_id` ASC) ,
+  PRIMARY KEY (`id`),
+  INDEX `fk_process_plan_successor_successor_idx_idx` (`successor` ASC) ,
+  CONSTRAINT `fk_process_plan_successor_process_plan_id_idx`
+    FOREIGN KEY (`process_plan_id`)
+    REFERENCES `service_fulfillment_uat`.`process_plan` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_process_plan_successor_successor_idx`
+    FOREIGN KEY (`successor`)
+    REFERENCES `service_fulfillment_uat`.`process_plan` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `service_fulfillment_uat`.`activity_plan`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `service_fulfillment_uat`.`activity_plan` (
+  `id` INT(11) UNSIGNED NOT NULL,
+  `process_plan_id` INT(11) UNSIGNED NULL,
+  `activity_def_key` VARCHAR(75) NOT NULL,
+  `activity_id` INT(11) UNSIGNED NULL,
+  `estimated_start_time` TIMESTAMP NULL,
+  `estimated_end_time` TIMESTAMP NULL,
+  `targetted_start_time` TIMESTAMP NULL,
+  `targetted_end_time` TIMESTAMP NULL,
+  `actual_start_time` TIMESTAMP NULL,
+  `actual_end_time` TIMESTAMP NULL,
+  `status` TINYINT(4) NULL,
+  `sequence` TINYINT(4) NULL,
+  `customer_view` CHAR(1) NULL DEFAULT 'Y',
+  PRIMARY KEY (`id`),
+  INDEX `fk_activity_plan_mst_activity_def_idx_idx` (`activity_def_key` ASC) ,
+  INDEX `fk_activity_plan_process_plan_id_idx_idx` (`process_plan_id` ASC) ,
+  INDEX `fk_activity_plan_activity_id_idx_idx` (`activity_id` ASC) ,
+  INDEX `fk_activity_plan_status_idx_idx` (`status` ASC) ,
+  CONSTRAINT `fk_activity_plan_mst_activity_def_idx`
+    FOREIGN KEY (`activity_def_key`)
+    REFERENCES `service_fulfillment_uat`.`mst_activity_def` (`key`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_activity_plan_process_plan_id_idx`
+    FOREIGN KEY (`process_plan_id`)
+    REFERENCES `service_fulfillment_uat`.`process_plan` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_activity_plan_activity_id_idx`
+    FOREIGN KEY (`activity_id`)
+    REFERENCES `service_fulfillment_uat`.`activity` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_activity_plan_status_idx`
+    FOREIGN KEY (`status`)
+    REFERENCES `service_fulfillment_uat`.`mst_status` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `service_fulfillment_uat`.`activity_plan_successor`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `service_fulfillment_uat`.`activity_plan_successor` (
+  `id` INT(11) UNSIGNED NOT NULL,
+  `activity_plan_id` INT(11) UNSIGNED NOT NULL,
+  `successor` INT(11) UNSIGNED NULL,
+  INDEX `fk_activity_plan_successor_idx_idx` (`activity_plan_id` ASC) ,
+  PRIMARY KEY (`id`),
+  INDEX `fk_activity_plan_successor_successor_id_idx_idx` (`successor` ASC) ,
+  CONSTRAINT `fk_activity_plan_successor_activity_plan_id_idx`
+    FOREIGN KEY (`activity_plan_id`)
+    REFERENCES `service_fulfillment_uat`.`activity_plan` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_activity_plan_successor_successor_id_idx`
+    FOREIGN KEY (`successor`)
+    REFERENCES `service_fulfillment_uat`.`activity_plan` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `service_fulfillment_uat`.`task_plan`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `service_fulfillment_uat`.`task_plan` (
+  `id` INT(11) UNSIGNED NOT NULL,
+  `activity_plan_id` INT(11) UNSIGNED NULL,
+  `task_def_key` VARCHAR(75) NOT NULL,
+  `task_id` INT(11) UNSIGNED NULL,
+  `sc_order_id` INT(11) NULL,
+  `service_id` VARCHAR(45) NULL,
+  `estimated_start_time` TIMESTAMP NULL,
+  `estimated_end_time` TIMESTAMP NULL,
+  `targetted_start_time` TIMESTAMP NULL,
+  `targetted_end_time` TIMESTAMP NULL,
+  `actual_start_time` TIMESTAMP NULL,
+  `actual_end_time` TIMESTAMP NULL,
+  `status` TINYINT(4) NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_task_plan_mst_task_def_key_idx_idx` (`task_def_key` ASC) ,
+  INDEX `fk_task_plan_activity_plan_id_idx_idx` (`activity_plan_id` ASC) ,
+  INDEX `fk_task_plan_task_id_idx_idx` (`task_id` ASC) ,
+  INDEX `fk_task_plan_status_idx_idx` (`status` ASC) ,
+  CONSTRAINT `fk_task_plan_mst_task_def_key_idx`
+    FOREIGN KEY (`task_def_key`)
+    REFERENCES `service_fulfillment_uat`.`mst_task_def` (`key`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_task_plan_activity_plan_id_idx`
+    FOREIGN KEY (`activity_plan_id`)
+    REFERENCES `service_fulfillment_uat`.`activity_plan` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_task_plan_task_id_idx`
+    FOREIGN KEY (`task_id`)
+    REFERENCES `service_fulfillment_uat`.`task` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_task_plan_status_idx`
+    FOREIGN KEY (`status`)
+    REFERENCES `service_fulfillment_uat`.`mst_status` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `service_fulfillment_uat`.`task_plan_successor`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `service_fulfillment_uat`.`task_plan_successor` (
+  `id` INT(11) UNSIGNED NOT NULL,
+  `task_plan_id` INT(11) UNSIGNED NOT NULL,
+  `successor` INT(11) UNSIGNED NULL,
+  INDEX `fk_task_plan_successor_id_idx_idx` (`task_plan_id` ASC) ,
+  PRIMARY KEY (`id`),
+  INDEX `fk_task_plan_successor_idx` (`successor` ASC) ,
+  CONSTRAINT `fk_task_plan_successor_id_idx`
+    FOREIGN KEY (`task_plan_id`)
+    REFERENCES `service_fulfillment_uat`.`task_plan` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_task_plan_successor`
+    FOREIGN KEY (`successor`)
+    REFERENCES `service_fulfillment_uat`.`task_plan` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `service_fulfillment_uat`.`mst_task_form`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `service_fulfillment_uat`.`mst_task_form` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `form_key` VARCHAR(100) NULL,
+  `form_data` TEXT NULL,
+  `service_type` VARCHAR(45) NULL,
+  `version` TINYINT(4) NULL,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `service_fulfillment_uat`.`mst_task_`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `service_fulfillment_uat`.`mst_task_` (
+)
+ENGINE = InnoDB;
+
+
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;

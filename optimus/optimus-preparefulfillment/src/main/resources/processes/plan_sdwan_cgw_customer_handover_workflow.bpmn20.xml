@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <process id="plan_sdwan_cgw_customer_handover_workflow" name="plan_sdwan_cgw_customer_handover_workflow" isExecutable="true">
+    <documentation>plan_sdwan_cgw_customer_handover_workflow</documentation>
+    <serviceTask id="sdwan-cgw-provide-handover-note_plan" name="Handover Note" flowable:delegateExpression="${ taskPlanDelegate }">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[sdwan-cgw_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="sid-E164C558-D7FB-41FE-A75D-B041394E61A1" sourceRef="customer_handover_acceptance_activity_start_plan" targetRef="sdwan-cgw_plan"></sequenceFlow>
+    <serviceTask id="sdwan-cgw-service-acceptance_plan" name="Service Acceptance" flowable:delegateExpression="${ taskPlanDelegate }">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[sdwan-cgw-provide-handover-note_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="customer_handover_acceptance_activity_start_plan" name="customer_handover_acceptance_activity_start" flowable:delegateExpression="${activityPlanStartDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[customer_handover_process_start_plan,service_delivery_stage_start_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <startEvent id="sid-AA7115D3-3CFC-4AA8-BD49-C1BCE6116489"></startEvent>
+    <serviceTask id="customer_handover_acceptance_activity_end_plan" name="customer_handover_acceptance_activity_end" flowable:delegateExpression="${activityPlanEndDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[sdwan-cgw-service-acceptance_plan,sdwan-cgw-raise-turnup-request_plan,sdwan-cgw-service-issue_plan,sdwan-cgw-billing-issue_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <endEvent id="sid-B5DC84D2-4715-445C-ABE6-771E0D7FE7BA"></endEvent>
+    <sequenceFlow id="sid-F1FCCB4A-0FFB-40C6-92E0-5B524D3DF054" sourceRef="customer_handover_acceptance_activity_end_plan" targetRef="sid-B5DC84D2-4715-445C-ABE6-771E0D7FE7BA"></sequenceFlow>
+    <sequenceFlow id="sid-303B6413-29E1-4CED-B3D3-236AB835F2B7" sourceRef="sid-AA7115D3-3CFC-4AA8-BD49-C1BCE6116489" targetRef="customer_handover_acceptance_activity_start_plan"></sequenceFlow>
+    <exclusiveGateway id="sid-C226F6DB-EEF3-4A40-A55D-FA1AAF01F339" default="sid-F393A594-E209-4847-952E-49831C2C4825"></exclusiveGateway>
+    <serviceTask id="sdwan-cgw-billing-issue_plan" name="billing-issue_plan" flowable:delegateExpression="${ taskPlanDelegate }">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[sdwan-cgw-service-acceptance_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="sdwan-cgw-service-issue_plan" name="service-issue_plan" flowable:delegateExpression="${ taskPlanDelegate }">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[sdwan-cgw-service-acceptance_plan,sdwan-cgw-raise-turnup-request_plan,sdwan-cgw-billing-issue_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="sdwan-cgw-raise-turnup-request_plan" name="raise-turnup-request_plan" flowable:delegateExpression="${ taskPlanDelegate }">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[sdwan-cgw-service-acceptance_plan,sdwan-cgw-billing-issue_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="sid-A343776E-2788-4D73-BC5A-B759A6ACC08E" sourceRef="sdwan-cgw-service-acceptance_plan" targetRef="sid-C226F6DB-EEF3-4A40-A55D-FA1AAF01F339"></sequenceFlow>
+    <exclusiveGateway id="sid-69D9C148-1E88-437A-986A-BD12EAAA185F" default="sid-9E3771D8-1625-4E03-95D3-A36DAFC37D2D"></exclusiveGateway>
+    <sequenceFlow id="sid-7B87FC65-71A3-4637-A6C8-55AE0A472C5C" sourceRef="sdwan-cgw-billing-issue_plan" targetRef="sid-69D9C148-1E88-437A-986A-BD12EAAA185F"></sequenceFlow>
+    <sequenceFlow id="sid-F393A594-E209-4847-952E-49831C2C4825" sourceRef="sid-C226F6DB-EEF3-4A40-A55D-FA1AAF01F339" targetRef="sid-69D9C148-1E88-437A-986A-BD12EAAA185F"></sequenceFlow>
+    <sequenceFlow id="sid-5A76146A-26F4-48DC-92AD-E9DE36737C35" sourceRef="sdwan-cgw-service-issue_plan" targetRef="sid-039ED2DD-D96C-4FC1-9C59-D4C41B680108"></sequenceFlow>
+    <exclusiveGateway id="sid-0C186BE7-5B19-4484-88D8-3E77C1418538" default="sid-6C7CDD76-E45F-4E2E-8206-35B8519B132E"></exclusiveGateway>
+    <sequenceFlow id="sid-9E3771D8-1625-4E03-95D3-A36DAFC37D2D" sourceRef="sid-69D9C148-1E88-437A-986A-BD12EAAA185F" targetRef="sid-0C186BE7-5B19-4484-88D8-3E77C1418538"></sequenceFlow>
+    <sequenceFlow id="sid-A86F5B1F-201C-4EB6-B8D5-CCD63FEECD17" sourceRef="sdwan-cgw-raise-turnup-request_plan" targetRef="sid-0C186BE7-5B19-4484-88D8-3E77C1418538"></sequenceFlow>
+    <sequenceFlow id="sid-8E775447-1B05-4849-87FB-8BCDAE19EFD4" sourceRef="sid-039ED2DD-D96C-4FC1-9C59-D4C41B680108" targetRef="customer_handover_acceptance_activity_end_plan"></sequenceFlow>
+    <exclusiveGateway id="sid-039ED2DD-D96C-4FC1-9C59-D4C41B680108"></exclusiveGateway>
+    <sequenceFlow id="sid-DA9CCC4B-C0E6-4B27-BDE9-5936E948841F" sourceRef="sdwan-cgw-provide-handover-note_plan" targetRef="sdwan-cgw-service-acceptance_plan"></sequenceFlow>
+    <sequenceFlow id="sid-F6464A6E-F490-4C15-8C71-6F282DABBD58" sourceRef="sid-69D9C148-1E88-437A-986A-BD12EAAA185F" targetRef="sdwan-cgw-raise-turnup-request_plan">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ var:get(serviceAccepted) == false && var:contains(serviceAcceptanceIssueType,"Turnup") }]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-FB12009D-2A3B-4730-B01B-728741F977D1" sourceRef="sid-0C186BE7-5B19-4484-88D8-3E77C1418538" targetRef="sdwan-cgw-service-issue_plan">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ var:get(serviceAccepted) == false && var:get(serviceAcceptanceIssueType)=="Raise Service Issue"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-6C7CDD76-E45F-4E2E-8206-35B8519B132E" sourceRef="sid-0C186BE7-5B19-4484-88D8-3E77C1418538" targetRef="sid-039ED2DD-D96C-4FC1-9C59-D4C41B680108"></sequenceFlow>
+    <serviceTask id="sdwan-cgw_plan" name="Overlay Acceptance" flowable:delegateExpression="${cgwPlanDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[customer_handover_acceptance_activity_start_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="sid-ABC33084-8865-47AA-A48A-BB003B5B138C" sourceRef="sdwan-cgw_plan" targetRef="sdwan-cgw-provide-handover-note_plan"></sequenceFlow>
+    <sequenceFlow id="sid-7A1475C1-F72B-4420-8CDA-1BF29CC46C9F" sourceRef="sid-C226F6DB-EEF3-4A40-A55D-FA1AAF01F339" targetRef="sdwan-cgw-billing-issue_plan">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ var:get(serviceAccepted) == false && var:get(serviceAcceptanceIssueType)=="Raise Billing Issue" && 
+var:get(cgwType)=="Primary" }]]></conditionExpression>
+    </sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_plan_sdwan_cgw_customer_handover_workflow">
+    <bpmndi:BPMNPlane bpmnElement="plan_sdwan_cgw_customer_handover_workflow" id="BPMNPlane_plan_sdwan_cgw_customer_handover_workflow">
+      <bpmndi:BPMNShape bpmnElement="sdwan-cgw-provide-handover-note_plan" id="BPMNShape_sdwan-cgw-provide-handover-note_plan">
+        <omgdc:Bounds height="61.0" width="100.0" x="391.0" y="114.5"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sdwan-cgw-service-acceptance_plan" id="BPMNShape_sdwan-cgw-service-acceptance_plan">
+        <omgdc:Bounds height="66.0" width="100.0" x="255.0" y="240.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="customer_handover_acceptance_activity_start_plan" id="BPMNShape_customer_handover_acceptance_activity_start_plan">
+        <omgdc:Bounds height="80.0" width="100.0" x="90.0" y="105.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-AA7115D3-3CFC-4AA8-BD49-C1BCE6116489" id="BPMNShape_sid-AA7115D3-3CFC-4AA8-BD49-C1BCE6116489">
+        <omgdc:Bounds height="30.0" width="30.0" x="15.0" y="130.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="customer_handover_acceptance_activity_end_plan" id="BPMNShape_customer_handover_acceptance_activity_end_plan">
+        <omgdc:Bounds height="80.0" width="100.0" x="585.0" y="435.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-B5DC84D2-4715-445C-ABE6-771E0D7FE7BA" id="BPMNShape_sid-B5DC84D2-4715-445C-ABE6-771E0D7FE7BA">
+        <omgdc:Bounds height="28.0" width="28.0" x="480.0" y="461.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-C226F6DB-EEF3-4A40-A55D-FA1AAF01F339" id="BPMNShape_sid-C226F6DB-EEF3-4A40-A55D-FA1AAF01F339">
+        <omgdc:Bounds height="40.0" width="40.0" x="421.0" y="253.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sdwan-cgw-billing-issue_plan" id="BPMNShape_sdwan-cgw-billing-issue_plan">
+        <omgdc:Bounds height="80.0" width="100.0" x="510.0" y="233.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sdwan-cgw-service-issue_plan" id="BPMNShape_sdwan-cgw-service-issue_plan">
+        <omgdc:Bounds height="80.0" width="100.0" x="825.0" y="435.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sdwan-cgw-raise-turnup-request_plan" id="BPMNShape_sdwan-cgw-raise-turnup-request_plan">
+        <omgdc:Bounds height="80.0" width="100.0" x="750.0" y="233.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-69D9C148-1E88-437A-986A-BD12EAAA185F" id="BPMNShape_sid-69D9C148-1E88-437A-986A-BD12EAAA185F">
+        <omgdc:Bounds height="40.0" width="40.0" x="660.0" y="253.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-0C186BE7-5B19-4484-88D8-3E77C1418538" id="BPMNShape_sid-0C186BE7-5B19-4484-88D8-3E77C1418538">
+        <omgdc:Bounds height="40.0" width="40.0" x="900.0" y="253.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-039ED2DD-D96C-4FC1-9C59-D4C41B680108" id="BPMNShape_sid-039ED2DD-D96C-4FC1-9C59-D4C41B680108">
+        <omgdc:Bounds height="40.0" width="40.0" x="735.0" y="455.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sdwan-cgw_plan" id="BPMNShape_sdwan-cgw_plan">
+        <omgdc:Bounds height="80.0" width="100.0" x="240.0" y="105.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-7B87FC65-71A3-4637-A6C8-55AE0A472C5C" id="BPMNEdge_sid-7B87FC65-71A3-4637-A6C8-55AE0A472C5C">
+        <omgdi:waypoint x="609.95" y="273.0"></omgdi:waypoint>
+        <omgdi:waypoint x="660.0" y="273.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-303B6413-29E1-4CED-B3D3-236AB835F2B7" id="BPMNEdge_sid-303B6413-29E1-4CED-B3D3-236AB835F2B7">
+        <omgdi:waypoint x="44.9499984899576" y="145.0"></omgdi:waypoint>
+        <omgdi:waypoint x="90.0" y="145.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-F393A594-E209-4847-952E-49831C2C4825" id="BPMNEdge_sid-F393A594-E209-4847-952E-49831C2C4825">
+        <omgdi:waypoint x="441.0" y="292.9353524229075"></omgdi:waypoint>
+        <omgdi:waypoint x="441.0" y="341.0"></omgdi:waypoint>
+        <omgdi:waypoint x="680.0" y="341.0"></omgdi:waypoint>
+        <omgdi:waypoint x="680.0" y="292.91461708394695"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-8E775447-1B05-4849-87FB-8BCDAE19EFD4" id="BPMNEdge_sid-8E775447-1B05-4849-87FB-8BCDAE19EFD4">
+        <omgdi:waypoint x="735.0" y="475.0"></omgdi:waypoint>
+        <omgdi:waypoint x="684.9499999999999" y="475.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-6C7CDD76-E45F-4E2E-8206-35B8519B132E" id="BPMNEdge_sid-6C7CDD76-E45F-4E2E-8206-35B8519B132E">
+        <omgdi:waypoint x="920.0" y="292.9424489023467"></omgdi:waypoint>
+        <omgdi:waypoint x="920.0" y="405.0"></omgdi:waypoint>
+        <omgdi:waypoint x="755.0" y="405.0"></omgdi:waypoint>
+        <omgdi:waypoint x="755.0" y="455.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-A86F5B1F-201C-4EB6-B8D5-CCD63FEECD17" id="BPMNEdge_sid-A86F5B1F-201C-4EB6-B8D5-CCD63FEECD17">
+        <omgdi:waypoint x="849.9499999999999" y="273.0"></omgdi:waypoint>
+        <omgdi:waypoint x="900.0" y="273.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-DA9CCC4B-C0E6-4B27-BDE9-5936E948841F" id="BPMNEdge_sid-DA9CCC4B-C0E6-4B27-BDE9-5936E948841F">
+        <omgdi:waypoint x="441.0" y="175.45"></omgdi:waypoint>
+        <omgdi:waypoint x="441.0" y="207.75"></omgdi:waypoint>
+        <omgdi:waypoint x="305.0" y="207.75"></omgdi:waypoint>
+        <omgdi:waypoint x="305.0" y="240.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-FB12009D-2A3B-4730-B01B-728741F977D1" id="BPMNEdge_sid-FB12009D-2A3B-4730-B01B-728741F977D1">
+        <omgdi:waypoint x="939.9314475991029" y="273.0"></omgdi:waypoint>
+        <omgdi:waypoint x="973.6666259765625" y="273.0"></omgdi:waypoint>
+        <omgdi:waypoint x="973.6666259765625" y="476.0"></omgdi:waypoint>
+        <omgdi:waypoint x="924.9499999999999" y="476.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-ABC33084-8865-47AA-A48A-BB003B5B138C" id="BPMNEdge_sid-ABC33084-8865-47AA-A48A-BB003B5B138C">
+        <omgdi:waypoint x="339.94999999993246" y="145.0"></omgdi:waypoint>
+        <omgdi:waypoint x="390.99999999993616" y="145.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-7A1475C1-F72B-4420-8CDA-1BF29CC46C9F" id="BPMNEdge_sid-7A1475C1-F72B-4420-8CDA-1BF29CC46C9F">
+        <omgdi:waypoint x="460.94162468494676" y="273.0"></omgdi:waypoint>
+        <omgdi:waypoint x="509.999999999975" y="273.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-F1FCCB4A-0FFB-40C6-92E0-5B524D3DF054" id="BPMNEdge_sid-F1FCCB4A-0FFB-40C6-92E0-5B524D3DF054">
+        <omgdi:waypoint x="585.0" y="475.0"></omgdi:waypoint>
+        <omgdi:waypoint x="507.94992772783905" y="475.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-F6464A6E-F490-4C15-8C71-6F282DABBD58" id="BPMNEdge_sid-F6464A6E-F490-4C15-8C71-6F282DABBD58">
+        <omgdi:waypoint x="699.941694421308" y="273.0"></omgdi:waypoint>
+        <omgdi:waypoint x="749.9999999999096" y="273.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-5A76146A-26F4-48DC-92AD-E9DE36737C35" id="BPMNEdge_sid-5A76146A-26F4-48DC-92AD-E9DE36737C35">
+        <omgdi:waypoint x="825.0" y="475.2089958158996"></omgdi:waypoint>
+        <omgdi:waypoint x="774.4871951219459" y="475.4201680672269"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-E164C558-D7FB-41FE-A75D-B041394E61A1" id="BPMNEdge_sid-E164C558-D7FB-41FE-A75D-B041394E61A1">
+        <omgdi:waypoint x="189.95" y="145.0"></omgdi:waypoint>
+        <omgdi:waypoint x="239.9999999999364" y="145.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-A343776E-2788-4D73-BC5A-B759A6ACC08E" id="BPMNEdge_sid-A343776E-2788-4D73-BC5A-B759A6ACC08E">
+        <omgdi:waypoint x="354.95000000000005" y="273.0"></omgdi:waypoint>
+        <omgdi:waypoint x="421.0" y="273.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-9E3771D8-1625-4E03-95D3-A36DAFC37D2D" id="BPMNEdge_sid-9E3771D8-1625-4E03-95D3-A36DAFC37D2D">
+        <omgdi:waypoint x="683.5250037688053" y="289.4177299960244"></omgdi:waypoint>
+        <omgdi:waypoint x="695.6666870117188" y="346.0"></omgdi:waypoint>
+        <omgdi:waypoint x="905.6666870117188" y="346.0"></omgdi:waypoint>
+        <omgdi:waypoint x="916.7175611464082" y="289.67576724354217"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

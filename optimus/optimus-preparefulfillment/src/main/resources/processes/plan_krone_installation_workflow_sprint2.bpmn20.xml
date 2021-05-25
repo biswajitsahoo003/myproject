@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <process id="plan_krone_installation_workflow_sprint2" name="plan_krone_installation_workflow_sprint2" isExecutable="true">
+    <documentation>Plan Krone Installation Workflow Sprint2</documentation>
+    <subProcess id="install_krone_process" name="Krone Installation">
+      <startEvent id="sid-5112DC19-8FD8-469D-851A-A3B4A8754524"></startEvent>
+      <endEvent id="sid-0D7BAF81-F4E7-4DCC-92F2-A54F254F9409"></endEvent>
+      <sequenceFlow id="sid-91B5C8E9-A5CD-489D-9F6C-159D7FE33B79" sourceRef="create-mrn-krone" targetRef="sid-8D438900-CFF1-4738-AC1B-A8AA213E7992"></sequenceFlow>
+      <exclusiveGateway id="sid-8D438900-CFF1-4738-AC1B-A8AA213E7992" default="sid-EA20195E-816D-415A-B8E2-04CF22145980"></exclusiveGateway>
+      <exclusiveGateway id="sid-DF2E8FAB-A7B1-413D-9AD9-248B2CBB7C0A"></exclusiveGateway>
+      <sequenceFlow id="sid-EA20195E-816D-415A-B8E2-04CF22145980" name="Yes" sourceRef="sid-8D438900-CFF1-4738-AC1B-A8AA213E7992" targetRef="customer-appointment-install-krone"></sequenceFlow>
+      <sequenceFlow id="sid-A17C1207-7588-48B6-849D-D210796DD270" sourceRef="customer-appointment-install-krone" targetRef="install-krone"></sequenceFlow>
+      <sequenceFlow id="sid-9AE0261A-D0F6-407E-AB78-8588AC04D058" name="No" sourceRef="sid-8D438900-CFF1-4738-AC1B-A8AA213E7992" targetRef="sid-DF2E8FAB-A7B1-413D-9AD9-248B2CBB7C0A">
+        <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ var:get(isKroneRequired) == "No"}]]></conditionExpression>
+      </sequenceFlow>
+      <serviceTask id="create-mrn-krone" name="Create Mrn Krone" flowable:delegateExpression="${taskPlanDelegate}">
+        <extensionElements>
+          <flowable:field name="preceders">
+            <flowable:string><![CDATA[install_krone_activity_start_plan]]></flowable:string>
+          </flowable:field>
+        </extensionElements>
+      </serviceTask>
+      <serviceTask id="customer-appointment-install-krone" name="Customer Appointment for Krone Installation" flowable:delegateExpression="${taskPlanDelegate}">
+        <extensionElements>
+          <flowable:field name="preceders">
+            <flowable:string><![CDATA[create-mrn-krone]]></flowable:string>
+          </flowable:field>
+        </extensionElements>
+      </serviceTask>
+      <serviceTask id="install-krone" name="Install Krone" flowable:delegateExpression="${taskPlanDelegate}">
+        <extensionElements>
+          <flowable:field name="preceders">
+            <flowable:string><![CDATA[customer-appointment-install-krone]]></flowable:string>
+          </flowable:field>
+        </extensionElements>
+      </serviceTask>
+      <serviceTask id="install_krone_activity_start_plan" name="install_krone_activity_start_plan" flowable:delegateExpression="${activityPlanStartDelegate}">
+        <extensionElements>
+          <flowable:field name="preceders">
+            <flowable:string><![CDATA[provide-demarc-details_plan]]></flowable:string>
+          </flowable:field>
+        </extensionElements>
+      </serviceTask>
+      <sequenceFlow id="sid-AABE22FC-F8B8-4A89-9A1D-32C00D9EDBB5" sourceRef="sid-DF2E8FAB-A7B1-413D-9AD9-248B2CBB7C0A" targetRef="sid-0D7BAF81-F4E7-4DCC-92F2-A54F254F9409"></sequenceFlow>
+      <serviceTask id="install_krone_activity_end_plan" name="install_krone_activity_end_plan" flowable:delegateExpression="${activityPlanEndDelegate}">
+        <extensionElements>
+          <flowable:field name="preceders">
+            <flowable:string><![CDATA[install-krone]]></flowable:string>
+          </flowable:field>
+        </extensionElements>
+      </serviceTask>
+      <sequenceFlow id="sid-B3FC5E19-F3C3-4A27-ABCF-D591376E1E03" sourceRef="install-krone" targetRef="install_krone_activity_end_plan"></sequenceFlow>
+      <sequenceFlow id="sid-34E928F8-DCC3-4D0B-B34F-C08F29819CA7" sourceRef="install_krone_activity_end_plan" targetRef="sid-DF2E8FAB-A7B1-413D-9AD9-248B2CBB7C0A"></sequenceFlow>
+      <sequenceFlow id="sid-2513A2B1-15D7-4121-8667-59BCAFF96BBB" sourceRef="sid-5112DC19-8FD8-469D-851A-A3B4A8754524" targetRef="install_krone_activity_start_plan"></sequenceFlow>
+      <sequenceFlow id="sid-6A4C14C1-35B9-4FB2-8683-E0A28D59667E" sourceRef="install_krone_activity_start_plan" targetRef="create-mrn-krone"></sequenceFlow>
+      <textAnnotation id="sid-AEDAD7E2-6C6A-494D-939B-E213294E102B">
+        <text>Is Krone Required ?</text>
+      </textAnnotation>
+      <association id="sid-7BA1B470-370D-4854-AC3B-8C0AAF289E5A" sourceRef="sid-8D438900-CFF1-4738-AC1B-A8AA213E7992" targetRef="sid-AEDAD7E2-6C6A-494D-939B-E213294E102B" associationDirection="None"></association>
+    </subProcess>
+    <startEvent id="sid-08227517-B9D8-4DA1-8462-8D69A84011FB"></startEvent>
+    <endEvent id="sid-D0E4CB96-E823-4FCD-AEB5-B3DEA7611742"></endEvent>
+    <sequenceFlow id="sid-20D23D03-F175-4469-9DE1-55283708E7EB" sourceRef="install_krone_process" targetRef="sid-D0E4CB96-E823-4FCD-AEB5-B3DEA7611742"></sequenceFlow>
+    <sequenceFlow id="sid-AFB80CBC-95C8-4384-A10C-2061373C6174" sourceRef="sid-08227517-B9D8-4DA1-8462-8D69A84011FB" targetRef="install_krone_process"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_plan_krone_installation_workflow_sprint2">
+    <bpmndi:BPMNPlane bpmnElement="plan_krone_installation_workflow_sprint2" id="BPMNPlane_plan_krone_installation_workflow_sprint2">
+      <bpmndi:BPMNShape bpmnElement="install_krone_process" id="BPMNShape_install_krone_process" isExpanded="false">
+        <omgdc:Bounds height="80.0" width="100.0" x="480.0" y="120.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-08227517-B9D8-4DA1-8462-8D69A84011FB" id="BPMNShape_sid-08227517-B9D8-4DA1-8462-8D69A84011FB">
+        <omgdc:Bounds height="30.0" width="30.0" x="390.0" y="160.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-D0E4CB96-E823-4FCD-AEB5-B3DEA7611742" id="BPMNShape_sid-D0E4CB96-E823-4FCD-AEB5-B3DEA7611742">
+        <omgdc:Bounds height="28.0" width="28.0" x="640.0" y="161.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-AFB80CBC-95C8-4384-A10C-2061373C6174" id="BPMNEdge_sid-AFB80CBC-95C8-4384-A10C-2061373C6174">
+        <omgdi:waypoint x="419.9499909886806" y="175.0"></omgdi:waypoint>
+        <omgdi:waypoint x="450.0" y="175.0"></omgdi:waypoint>
+        <omgdi:waypoint x="450.0" y="160.0"></omgdi:waypoint>
+        <omgdi:waypoint x="479.9999999999813" y="160.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-20D23D03-F175-4469-9DE1-55283708E7EB" id="BPMNEdge_sid-20D23D03-F175-4469-9DE1-55283708E7EB">
+        <omgdi:waypoint x="579.9499999999948" y="160.0"></omgdi:waypoint>
+        <omgdi:waypoint x="610.0" y="160.0"></omgdi:waypoint>
+        <omgdi:waypoint x="610.0" y="175.0"></omgdi:waypoint>
+        <omgdi:waypoint x="640.0" y="175.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_install_krone_process">
+    <bpmndi:BPMNPlane bpmnElement="install_krone_process" id="BPMNPlane_install_krone_process">
+      <bpmndi:BPMNShape bpmnElement="sid-5112DC19-8FD8-469D-851A-A3B4A8754524" id="BPMNShape_sid-5112DC19-8FD8-469D-851A-A3B4A8754524">
+        <omgdc:Bounds height="30.0" width="30.0" x="105.0" y="232.50000000000006"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-0D7BAF81-F4E7-4DCC-92F2-A54F254F9409" id="BPMNShape_sid-0D7BAF81-F4E7-4DCC-92F2-A54F254F9409">
+        <omgdc:Bounds height="28.0" width="28.0" x="1095.0" y="229.50000000000006"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-91B5C8E9-A5CD-489D-9F6C-159D7FE33B79" id="BPMNEdge_sid-91B5C8E9-A5CD-489D-9F6C-159D7FE33B79">
+        <omgdi:waypoint x="429.94999999997106" y="247.50000000000006"></omgdi:waypoint>
+        <omgdi:waypoint x="465.0" y="247.50000000000006"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape bpmnElement="sid-8D438900-CFF1-4738-AC1B-A8AA213E7992" id="BPMNShape_sid-8D438900-CFF1-4738-AC1B-A8AA213E7992">
+        <omgdc:Bounds height="40.0" width="40.0" x="465.0" y="227.50000000000006"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-DF2E8FAB-A7B1-413D-9AD9-248B2CBB7C0A" id="BPMNShape_sid-DF2E8FAB-A7B1-413D-9AD9-248B2CBB7C0A">
+        <omgdc:Bounds height="40.0" width="40.0" x="1020.0" y="223.50000000000006"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-EA20195E-816D-415A-B8E2-04CF22145980" id="BPMNEdge_sid-EA20195E-816D-415A-B8E2-04CF22145980">
+        <omgdi:waypoint x="504.70937499999883" y="247.7192307692308"></omgdi:waypoint>
+        <omgdi:waypoint x="530.0" y="248.0"></omgdi:waypoint>
+        <omgdi:waypoint x="530.0" y="237.0"></omgdi:waypoint>
+        <omgdi:waypoint x="554.9999999999995" y="239.8225806451613"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-A17C1207-7588-48B6-849D-D210796DD270" id="BPMNEdge_sid-A17C1207-7588-48B6-849D-D210796DD270">
+        <omgdi:waypoint x="690.9499999999999" y="247.50000000000006"></omgdi:waypoint>
+        <omgdi:waypoint x="735.0" y="247.50000000000006"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-9AE0261A-D0F6-407E-AB78-8588AC04D058" id="BPMNEdge_sid-9AE0261A-D0F6-407E-AB78-8588AC04D058">
+        <omgdi:waypoint x="485.0" y="267.43820921985815"></omgdi:waypoint>
+        <omgdi:waypoint x="485.0" y="332.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1040.0" y="332.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1040.0" y="263.4112273755657"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape bpmnElement="create-mrn-krone" id="BPMNShape_create-mrn-krone">
+        <omgdc:Bounds height="80.0" width="100.0" x="330.0" y="207.50000000000006"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="customer-appointment-install-krone" id="BPMNShape_customer-appointment-install-krone">
+        <omgdc:Bounds height="106.0" width="136.0" x="555.0" y="194.50000000000006"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="install-krone" id="BPMNShape_install-krone">
+        <omgdc:Bounds height="80.0" width="100.0" x="735.0" y="207.50000000000006"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="install_krone_activity_start_plan" id="BPMNShape_install_krone_activity_start_plan">
+        <omgdc:Bounds height="80.0" width="100.0" x="180.0" y="207.50000000000006"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-AABE22FC-F8B8-4A89-9A1D-32C00D9EDBB5" id="BPMNEdge_sid-AABE22FC-F8B8-4A89-9A1D-32C00D9EDBB5">
+        <omgdi:waypoint x="1059.935564399421" y="243.50000000000006"></omgdi:waypoint>
+        <omgdi:waypoint x="1095.0" y="243.50000000000006"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape bpmnElement="install_krone_activity_end_plan" id="BPMNShape_install_krone_activity_end_plan">
+        <omgdc:Bounds height="80.0" width="100.0" x="870.0" y="203.50000000000006"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-B3FC5E19-F3C3-4A27-ABCF-D591376E1E03" id="BPMNEdge_sid-B3FC5E19-F3C3-4A27-ABCF-D591376E1E03">
+        <omgdi:waypoint x="834.9499999999996" y="246.01851851851856"></omgdi:waypoint>
+        <omgdi:waypoint x="870.0" y="244.98000000000008"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-34E928F8-DCC3-4D0B-B34F-C08F29819CA7" id="BPMNEdge_sid-34E928F8-DCC3-4D0B-B34F-C08F29819CA7">
+        <omgdi:waypoint x="969.9499999999074" y="243.50000000000006"></omgdi:waypoint>
+        <omgdi:waypoint x="1020.0" y="243.50000000000006"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-2513A2B1-15D7-4121-8667-59BCAFF96BBB" id="BPMNEdge_sid-2513A2B1-15D7-4121-8667-59BCAFF96BBB">
+        <omgdi:waypoint x="134.9499984899576" y="247.50000000000006"></omgdi:waypoint>
+        <omgdi:waypoint x="180.0" y="247.50000000000006"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-6A4C14C1-35B9-4FB2-8683-E0A28D59667E" id="BPMNEdge_sid-6A4C14C1-35B9-4FB2-8683-E0A28D59667E">
+        <omgdi:waypoint x="279.95000000000005" y="247.50000000000006"></omgdi:waypoint>
+        <omgdi:waypoint x="330.0" y="247.50000000000006"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape bpmnElement="sid-AEDAD7E2-6C6A-494D-939B-E213294E102B" id="BPMNShape_sid-AEDAD7E2-6C6A-494D-939B-E213294E102B">
+        <omgdc:Bounds height="32.0" width="149.0" x="390.0" y="135.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-7BA1B470-370D-4854-AC3B-8C0AAF289E5A" id="BPMNEdge_sid-7BA1B470-370D-4854-AC3B-8C0AAF289E5A">
+        <omgdi:waypoint x="480.94059405940595" y="231.55351833498517"></omgdi:waypoint>
+        <omgdi:waypoint x="464.5" y="167.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

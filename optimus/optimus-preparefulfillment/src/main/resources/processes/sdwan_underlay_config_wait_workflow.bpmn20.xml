@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <process id="sdwan_underlay_config_wait_workflow" name="sdwan_underlay_config_wait_workflow" isExecutable="true">
+    <documentation>sdwan_underlay_config_wait_workflow</documentation>
+    <startEvent id="downtime_wait_process_start">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ processStartListener }"></flowable:executionListener>
+      </extensionElements>
+    </startEvent>
+    <endEvent id="downtime_wait_process_end">
+      <extensionElements>
+        <flowable:executionListener event="end" delegateExpression="${ processEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </endEvent>
+    <serviceTask id="sdwan-underlay-config" name="Service task to determine overlay configuration task completed?" flowable:delegateExpression="${sdwanUnderlayConfigurationDelegate}"></serviceTask>
+    <exclusiveGateway id="sid-3EB06524-EAA6-4757-A81A-34944C420569" default="downtime_wait_activity_end"></exclusiveGateway>
+    <intermediateCatchEvent id="sdwan-underlay-config-wait">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ serviceTaskStartListener }"></flowable:executionListener>
+        <flowable:executionListener event="end" delegateExpression="${ serviceTaskEndListener }"></flowable:executionListener>
+      </extensionElements>
+      <timerEventDefinition>
+        <timeDuration>PT10M</timeDuration>
+      </timerEventDefinition>
+    </intermediateCatchEvent>
+    <sequenceFlow id="sid-E66905B6-173D-4A26-B35F-D35AEFFF15C8" sourceRef="sdwan-underlay-config-wait" targetRef="sdwan-underlay-config"></sequenceFlow>
+    <sequenceFlow id="downtime_wait_activity_start" sourceRef="downtime_wait_process_start" targetRef="sdwan-underlay-config">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ activityStartListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="sid-A32096F0-16B4-4424-A3C5-A22E2B072699" sourceRef="sdwan-underlay-config" targetRef="sid-3EB06524-EAA6-4757-A81A-34944C420569"></sequenceFlow>
+    <sequenceFlow id="downtime_wait_activity_end" sourceRef="sid-3EB06524-EAA6-4757-A81A-34944C420569" targetRef="downtime_wait_process_end">
+      <extensionElements>
+        <flowable:executionListener event="end" delegateExpression="${ activityEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="sid-D58CC45B-402B-4847-A3F3-3803F7A3E697" sourceRef="sid-3EB06524-EAA6-4757-A81A-34944C420569" targetRef="sdwan-underlay-config-wait">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${isConfigurationTasksCompleted==false}]]></conditionExpression>
+    </sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_sdwan_underlay_config_wait_workflow">
+    <bpmndi:BPMNPlane bpmnElement="sdwan_underlay_config_wait_workflow" id="BPMNPlane_sdwan_underlay_config_wait_workflow">
+      <bpmndi:BPMNShape bpmnElement="downtime_wait_process_start" id="BPMNShape_downtime_wait_process_start">
+        <omgdc:Bounds height="30.0" width="30.0" x="75.0" y="200.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="downtime_wait_process_end" id="BPMNShape_downtime_wait_process_end">
+        <omgdc:Bounds height="28.0" width="28.0" x="585.0" y="201.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sdwan-underlay-config" id="BPMNShape_sdwan-underlay-config">
+        <omgdc:Bounds height="102.0" width="153.0" x="221.0" y="164.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-3EB06524-EAA6-4757-A81A-34944C420569" id="BPMNShape_sid-3EB06524-EAA6-4757-A81A-34944C420569">
+        <omgdc:Bounds height="40.0" width="40.0" x="450.0" y="195.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sdwan-underlay-config-wait" id="BPMNShape_sdwan-underlay-config-wait">
+        <omgdc:Bounds height="31.0" width="31.0" x="454.5" y="110.5"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-E66905B6-173D-4A26-B35F-D35AEFFF15C8" id="BPMNEdge_sid-E66905B6-173D-4A26-B35F-D35AEFFF15C8">
+        <omgdi:waypoint x="456.25262967284283" y="133.76561841391683"></omgdi:waypoint>
+        <omgdi:waypoint x="373.95" y="175.86560693641619"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-A32096F0-16B4-4424-A3C5-A22E2B072699" id="BPMNEdge_sid-A32096F0-16B4-4424-A3C5-A22E2B072699">
+        <omgdi:waypoint x="373.95000000000005" y="215.0"></omgdi:waypoint>
+        <omgdi:waypoint x="450.0" y="215.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="downtime_wait_activity_start" id="BPMNEdge_downtime_wait_activity_start">
+        <omgdi:waypoint x="104.94999932866257" y="215.0"></omgdi:waypoint>
+        <omgdi:waypoint x="220.9999999999132" y="215.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="downtime_wait_activity_end" id="BPMNEdge_downtime_wait_activity_end">
+        <omgdi:waypoint x="489.94660546534294" y="215.0"></omgdi:waypoint>
+        <omgdi:waypoint x="585.0" y="215.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-D58CC45B-402B-4847-A3F3-3803F7A3E697" id="BPMNEdge_sid-D58CC45B-402B-4847-A3F3-3803F7A3E697">
+        <omgdi:waypoint x="470.3876404494382" y="195.3876404494382"></omgdi:waypoint>
+        <omgdi:waypoint x="470.0863114836181" y="141.44948510491486"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

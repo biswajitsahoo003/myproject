@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/CMMN/20151109/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:flowable="http://flowable.org/cmmn" xmlns:cmmndi="http://www.omg.org/spec/CMMN/20151109/CMMNDI" xmlns:dc="http://www.omg.org/spec/CMMN/20151109/DC" xmlns:di="http://www.omg.org/spec/CMMN/20151109/DI" targetNamespace="http://www.flowable.org/casedef">
+  <case id="gsc_pubip_macd_workflow" name="gsc_pubip_macd_workflow" flowable:initiatorVariableName="initiator">
+    <casePlanModel id="casePlanModel" flowable:formFieldValidation="true" autoComplete="true">
+      <planItem id="planItem1" name="Order level tasks" definitionRef="OrderLevelTasks">
+        <itemControl>
+          <requiredRule></requiredRule>
+        </itemControl>
+      </planItem>
+      <planItem id="planItem2" name="Trigger Child Services Flow" definitionRef="gsc-trigger-child-flows">
+        <entryCriterion id="sid-7BAF7A0F-AC8A-4924-A323-47B1E598BCFD" flowable:sentryRef="sentry2"></entryCriterion>
+      </planItem>
+      <planItem id="planItem3" name="Procure &amp; Provision VAS Numbers" definitionRef="ProcureAndProvNumbers">
+        <itemControl>
+          <requiredRule></requiredRule>
+          <manualActivationRule></manualActivationRule>
+        </itemControl>
+      </planItem>
+      <planItem id="planItem4" name="Service Acceptence" definitionRef="ServiceAcceptence">
+        <itemControl>
+          <manualActivationRule></manualActivationRule>
+        </itemControl>
+      </planItem>
+      <planItem id="planItem5" name="Test and Deliver Numbers" definitionRef="DeliverNumbers">
+        <itemControl>
+          <manualActivationRule></manualActivationRule>
+        </itemControl>
+      </planItem>
+      <planItem id="planItem6" name="Procure UIFN Numbers" definitionRef="ProcureUIFNNumbers">
+        <itemControl>
+          <manualActivationRule></manualActivationRule>
+        </itemControl>
+      </planItem>
+      <planItem id="planItem7" name="Trigger UIFN provision" definitionRef="sid-0A03C775-575D-4A07-ACF1-C10F2647B3D9">
+        <entryCriterion id="sid-A383DE89-DA83-4CF0-81E7-DCEB4B7C24A0" flowable:sentryRef="sentry1"></entryCriterion>
+      </planItem>
+      <planItem id="planItem8" name="SIP Creation" definitionRef="NewSipCreation">
+        <itemControl>
+          <requiredRule></requiredRule>
+          <manualActivationRule></manualActivationRule>
+        </itemControl>
+      </planItem>
+      <planItem id="planItem9" name="Procure DID Numbers" definitionRef="ProcureDidNumbers">
+        <itemControl>
+          <requiredRule></requiredRule>
+          <manualActivationRule></manualActivationRule>
+        </itemControl>
+      </planItem>
+      <planItem id="planItem10" name="Provision DID New Numbers" definitionRef="ProvisionNewDidNumbers">
+        <itemControl>
+          <requiredRule></requiredRule>
+          <manualActivationRule></manualActivationRule>
+        </itemControl>
+      </planItem>
+      <planItem id="planItem11" name="Provision DID Port Numbers" definitionRef="ProvisionPortDidNumbers">
+        <itemControl>
+          <requiredRule></requiredRule>
+          <manualActivationRule></manualActivationRule>
+        </itemControl>
+      </planItem>
+      <planItem id="planItem12" name="DID New Numbers Service Acceptance" definitionRef="DidNewNumServiceAcceptance">
+        <itemControl>
+          <requiredRule></requiredRule>
+          <manualActivationRule></manualActivationRule>
+        </itemControl>
+      </planItem>
+      <planItem id="planItem13" name="DID Port Numbers Service Acceptance" definitionRef="DidPortingNumServiceAcceptance">
+        <itemControl>
+          <requiredRule></requiredRule>
+          <manualActivationRule></manualActivationRule>
+        </itemControl>
+      </planItem>
+      <sentry id="sentry2">
+        <planItemOnPart id="sentryOnPart1" sourceRef="planItem1">
+          <standardEvent>complete</standardEvent>
+        </planItemOnPart>
+      </sentry>
+      <sentry id="sentry1">
+        <planItemOnPart id="sentryOnPart2" sourceRef="planItem6">
+          <standardEvent>complete</standardEvent>
+        </planItemOnPart>
+      </sentry>
+      <processTask id="OrderLevelTasks" name="Order level tasks" flowable:fallbackToDefaultTenant="false">
+        <extensionElements>
+          <flowable:in sourceExpression="${caseInstance.id}" target="caseInstId"></flowable:in>
+          <flowable:in sourceExpression="${planItemInstance.id}" target="planItemInstId"></flowable:in>
+        </extensionElements>
+        <processRefExpression><![CDATA[gsc_pubip_order_level_workflow]]></processRefExpression>
+      </processTask>
+      <task id="gsc-trigger-child-flows" name="Trigger Child Services Flow" flowable:type="java" flowable:delegateExpression="${triggerNumberProcurement}"></task>
+      <processTask id="ProcureAndProvNumbers" name="Procure &amp; Provision VAS Numbers" flowable:fallbackToDefaultTenant="false">
+        <extensionElements>
+          <flowable:in sourceExpression="${caseInstance.id}" target="caseInstId"></flowable:in>
+          <flowable:in sourceExpression="${planItemInstance.id}" target="planItemInstId"></flowable:in>
+        </extensionElements>
+        <processRefExpression><![CDATA[gsc-pubip-vas-provision]]></processRefExpression>
+      </processTask>
+      <processTask id="ServiceAcceptence" name="Service Acceptence" flowable:fallbackToDefaultTenant="false">
+        <extensionElements>
+          <flowable:in sourceExpression="${caseInstance.id}" target="caseInstId"></flowable:in>
+          <flowable:in sourceExpression="${planItemInstance.id}" target="planItemInstId"></flowable:in>
+        </extensionElements>
+        <processRefExpression><![CDATA[gsc_service_acceptence_workflow]]></processRefExpression>
+      </processTask>
+      <processTask id="DeliverNumbers" name="Test and Deliver Numbers" flowable:fallbackToDefaultTenant="false">
+        <extensionElements>
+          <flowable:in sourceExpression="${caseInstance.id}" target="caseInstId"></flowable:in>
+          <flowable:in sourceExpression="${planItemInstance.id}" target="planItemInstId"></flowable:in>
+        </extensionElements>
+        <processRefExpression><![CDATA[gsc_pubip_deliver_numbers]]></processRefExpression>
+      </processTask>
+      <processTask id="ProcureUIFNNumbers" name="Procure UIFN Numbers" flowable:fallbackToDefaultTenant="false">
+        <extensionElements>
+          <flowable:in sourceExpression="${caseInstance.id}" target="caseInstId"></flowable:in>
+          <flowable:in sourceExpression="${planItemInstance.id}" target="planItemInstId"></flowable:in>
+        </extensionElements>
+        <processRefExpression><![CDATA[gsc_uifn_procurement]]></processRefExpression>
+      </processTask>
+      <task id="sid-0A03C775-575D-4A07-ACF1-C10F2647B3D9" name="Trigger UIFN provision" flowable:type="java" flowable:delegateExpression="${triggerUifnNumberProcurement}"></task>
+      <processTask id="NewSipCreation" name="SIP Creation" flowable:fallbackToDefaultTenant="false">
+        <extensionElements>
+          <flowable:in sourceExpression="${caseInstance.id}" target="caseInstId"></flowable:in>
+          <flowable:in sourceExpression="${planItemInstance.id}" target="planItemInstId"></flowable:in>
+        </extensionElements>
+        <processRefExpression><![CDATA[gsc-pubip-sip-creation]]></processRefExpression>
+      </processTask>
+      <processTask id="ProcureDidNumbers" name="Procure DID Numbers" flowable:fallbackToDefaultTenant="false">
+        <extensionElements>
+          <flowable:in sourceExpression="${caseInstance.id}" target="caseInstId"></flowable:in>
+          <flowable:in sourceExpression="${planItemInstance.id}" target="planItemInstId"></flowable:in>
+        </extensionElements>
+        <processRefExpression><![CDATA[gsc-pubip-did-provision]]></processRefExpression>
+      </processTask>
+      <processTask id="ProvisionNewDidNumbers" name="Provision DID New Numbers" flowable:fallbackToDefaultTenant="false">
+        <extensionElements>
+          <flowable:in sourceExpression="${caseInstance.id}" target="caseInstId"></flowable:in>
+          <flowable:in sourceExpression="${planItemInstance.id}" target="planItemInstId"></flowable:in>
+        </extensionElements>
+        <processRefExpression><![CDATA[did-config-new-number-repc]]></processRefExpression>
+      </processTask>
+      <processTask id="ProvisionPortDidNumbers" name="Provision DID Port Numbers" flowable:fallbackToDefaultTenant="false">
+        <extensionElements>
+          <flowable:in sourceExpression="${caseInstance.id}" target="caseInstId"></flowable:in>
+          <flowable:in sourceExpression="${planItemInstance.id}" target="planItemInstId"></flowable:in>
+        </extensionElements>
+        <processRefExpression><![CDATA[did-config-porting-number-repc]]></processRefExpression>
+      </processTask>
+      <processTask id="DidNewNumServiceAcceptance" name="DID New Numbers Service Acceptance" flowable:fallbackToDefaultTenant="false">
+        <extensionElements>
+          <flowable:in sourceExpression="${caseInstance.id}" target="caseInstId"></flowable:in>
+          <flowable:in sourceExpression="${planItemInstance.id}" target="planItemInstId"></flowable:in>
+        </extensionElements>
+        <processRefExpression><![CDATA[did-service-acceptence-new-number]]></processRefExpression>
+      </processTask>
+      <processTask id="DidPortingNumServiceAcceptance" name="DID Port Numbers Service Acceptance" flowable:fallbackToDefaultTenant="false">
+        <extensionElements>
+          <flowable:in sourceExpression="${caseInstance.id}" target="caseInstId"></flowable:in>
+          <flowable:in sourceExpression="${planItemInstance.id}" target="planItemInstId"></flowable:in>
+        </extensionElements>
+        <processRefExpression><![CDATA[did-service-acceptence-porting-number]]></processRefExpression>
+      </processTask>
+    </casePlanModel>
+  </case>
+  <cmmndi:CMMNDI>
+    <cmmndi:CMMNDiagram id="CMMNDiagram_gsc_pubip_macd_workflow">
+      <cmmndi:CMMNShape id="CMMNShape_casePlanModel" cmmnElementRef="casePlanModel">
+        <dc:Bounds height="714.0" width="718.0" x="0.0" y="0.0"></dc:Bounds>
+        <cmmndi:CMMNLabel></cmmndi:CMMNLabel>
+      </cmmndi:CMMNShape>
+      <cmmndi:CMMNShape id="CMMNShape_planItem1" cmmnElementRef="planItem1">
+        <dc:Bounds height="80.0" width="100.0" x="15.0" y="45.0"></dc:Bounds>
+        <cmmndi:CMMNLabel></cmmndi:CMMNLabel>
+      </cmmndi:CMMNShape>
+      <cmmndi:CMMNShape id="CMMNShape_planItem2" cmmnElementRef="planItem2">
+        <dc:Bounds height="80.0" width="100.0" x="180.0" y="45.0"></dc:Bounds>
+        <cmmndi:CMMNLabel></cmmndi:CMMNLabel>
+      </cmmndi:CMMNShape>
+      <cmmndi:CMMNShape id="CMMNShape_sid-7BAF7A0F-AC8A-4924-A323-47B1E598BCFD" cmmnElementRef="sid-7BAF7A0F-AC8A-4924-A323-47B1E598BCFD">
+        <dc:Bounds height="22.0" width="14.0" x="172.8482666015625" y="74.0"></dc:Bounds>
+        <cmmndi:CMMNLabel></cmmndi:CMMNLabel>
+      </cmmndi:CMMNShape>
+      <cmmndi:CMMNShape id="CMMNShape_planItem3" cmmnElementRef="planItem3">
+        <dc:Bounds height="80.0" width="100.0" x="225.0" y="255.0"></dc:Bounds>
+        <cmmndi:CMMNLabel></cmmndi:CMMNLabel>
+      </cmmndi:CMMNShape>
+      <cmmndi:CMMNShape id="CMMNShape_planItem4" cmmnElementRef="planItem4">
+        <dc:Bounds height="80.0" width="100.0" x="510.0" y="255.0"></dc:Bounds>
+        <cmmndi:CMMNLabel></cmmndi:CMMNLabel>
+      </cmmndi:CMMNShape>
+      <cmmndi:CMMNShape id="CMMNShape_planItem5" cmmnElementRef="planItem5">
+        <dc:Bounds height="80.0" width="100.0" x="360.0" y="255.0"></dc:Bounds>
+        <cmmndi:CMMNLabel></cmmndi:CMMNLabel>
+      </cmmndi:CMMNShape>
+      <cmmndi:CMMNShape id="CMMNShape_planItem6" cmmnElementRef="planItem6">
+        <dc:Bounds height="80.0" width="100.0" x="225.0" y="150.0"></dc:Bounds>
+        <cmmndi:CMMNLabel></cmmndi:CMMNLabel>
+      </cmmndi:CMMNShape>
+      <cmmndi:CMMNShape id="CMMNShape_planItem7" cmmnElementRef="planItem7">
+        <dc:Bounds height="80.0" width="100.0" x="360.0" y="150.0"></dc:Bounds>
+        <cmmndi:CMMNLabel></cmmndi:CMMNLabel>
+      </cmmndi:CMMNShape>
+      <cmmndi:CMMNShape id="CMMNShape_sid-A383DE89-DA83-4CF0-81E7-DCEB4B7C24A0" cmmnElementRef="sid-A383DE89-DA83-4CF0-81E7-DCEB4B7C24A0">
+        <dc:Bounds height="22.0" width="14.0" x="352.6675965974867" y="173.58791361263297"></dc:Bounds>
+        <cmmndi:CMMNLabel></cmmndi:CMMNLabel>
+      </cmmndi:CMMNShape>
+      <cmmndi:CMMNShape id="CMMNShape_planItem8" cmmnElementRef="planItem8">
+        <dc:Bounds height="80.0" width="100.0" x="225.0" y="375.0"></dc:Bounds>
+        <cmmndi:CMMNLabel></cmmndi:CMMNLabel>
+      </cmmndi:CMMNShape>
+      <cmmndi:CMMNShape id="CMMNShape_planItem9" cmmnElementRef="planItem9">
+        <dc:Bounds height="80.0" width="100.0" x="227.1675965974867" y="495.0"></dc:Bounds>
+        <cmmndi:CMMNLabel></cmmndi:CMMNLabel>
+      </cmmndi:CMMNShape>
+      <cmmndi:CMMNShape id="CMMNShape_planItem10" cmmnElementRef="planItem10">
+        <dc:Bounds height="80.0" width="100.0" x="360.0" y="450.0"></dc:Bounds>
+        <cmmndi:CMMNLabel></cmmndi:CMMNLabel>
+      </cmmndi:CMMNShape>
+      <cmmndi:CMMNShape id="CMMNShape_planItem11" cmmnElementRef="planItem11">
+        <dc:Bounds height="80.0" width="100.0" x="360.0" y="555.0"></dc:Bounds>
+        <cmmndi:CMMNLabel></cmmndi:CMMNLabel>
+      </cmmndi:CMMNShape>
+      <cmmndi:CMMNShape id="CMMNShape_planItem12" cmmnElementRef="planItem12">
+        <dc:Bounds height="80.0" width="100.0" x="510.0" y="450.0"></dc:Bounds>
+        <cmmndi:CMMNLabel></cmmndi:CMMNLabel>
+      </cmmndi:CMMNShape>
+      <cmmndi:CMMNShape id="CMMNShape_planItem13" cmmnElementRef="planItem13">
+        <dc:Bounds height="80.0" width="100.0" x="510.0" y="555.0"></dc:Bounds>
+        <cmmndi:CMMNLabel></cmmndi:CMMNLabel>
+      </cmmndi:CMMNShape>
+      <cmmndi:CMMNEdge id="CMMNEdge_sid-D0B0E361-5473-4485-B3BB-BCF56DBB9094" cmmnElementRef="planItem6" targetCMMNElementRef="sid-A383DE89-DA83-4CF0-81E7-DCEB4B7C24A0">
+        <di:waypoint x="324.95000000000005" y="186.25757775282614"></di:waypoint>
+        <di:waypoint x="352.9030464113879" y="184.16276122809006"></di:waypoint>
+        <cmmndi:CMMNLabel></cmmndi:CMMNLabel>
+      </cmmndi:CMMNEdge>
+      <cmmndi:CMMNEdge id="CMMNEdge_sid-81CF51E0-B93D-48E2-A54E-2BF22410723C" cmmnElementRef="planItem1" targetCMMNElementRef="sid-7BAF7A0F-AC8A-4924-A323-47B1E598BCFD">
+        <di:waypoint x="114.94999999999963" y="84.98504074898516"></di:waypoint>
+        <di:waypoint x="173.38491549479565" y="84.1104803370706"></di:waypoint>
+        <cmmndi:CMMNLabel></cmmndi:CMMNLabel>
+      </cmmndi:CMMNEdge>
+    </cmmndi:CMMNDiagram>
+  </cmmndi:CMMNDI>
+</definitions>

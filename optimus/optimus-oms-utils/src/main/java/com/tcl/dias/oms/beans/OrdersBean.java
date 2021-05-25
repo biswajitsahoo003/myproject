@@ -1,0 +1,305 @@
+package com.tcl.dias.oms.beans;
+
+import java.io.Serializable;
+import java.util.Date;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.tcl.dias.oms.entity.entities.Order;
+
+@JsonInclude(Include.NON_NULL)
+public class OrdersBean implements Serializable {
+	private static final long serialVersionUID = 1L;
+
+	private Integer id;
+
+	private String orderCode;
+
+	private String orderCategory;
+
+	private String orderType;
+
+	private Boolean isMacdInitiated = false;
+
+	private Boolean isMultiCircuit = false;
+
+	private Integer createdBy;
+
+	private Date createdTime;
+
+	private Date effectiveDate;
+
+	private Date endDate;
+
+	private String stage;
+
+	private Date startDate;
+
+	private Byte status;
+
+	private Integer termInMonths;
+
+	private Set<OrderToLeBean> orderToLeBeans;
+
+	private String checkList;
+
+	private Integer customerId;
+
+	private Boolean isO2cProcessed;
+
+	private String serviceId;
+
+	public OrdersBean() {
+
+	}
+
+	public OrdersBean(Order order) {
+		this.id = order.getId();
+		this.orderCode = order.getOrderCode();
+		this.isMacdInitiated = false;
+		this.createdBy = order.getCreatedBy();
+		this.createdTime = order.getCreatedTime();
+		this.effectiveDate = order.getEffectiveDate();
+		this.endDate = order.getEndDate();
+		this.stage = order.getStage();
+		this.startDate = order.getCreatedTime();
+		this.status = order.getStatus();
+		this.termInMonths = order.getTermInMonths();
+		this.setOrderToLeBeans(order.getOrderToLes() != null
+				? order.getOrderToLes().stream().map(OrderToLeBean::new).collect(Collectors.toSet())
+				: null);
+		this.customerId = order.getCustomer().getId();
+
+	}
+
+	public Integer getCustomerId() {
+		return customerId;
+	}
+
+	public void setCustomerId(Integer customerId) {
+		this.customerId = customerId;
+	}
+
+	/**
+	 * @return the id
+	 */
+	public Integer getId() {
+		return id;
+	}
+
+	/**
+	 * @param id the id to set
+	 */
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	/**
+	 * @return the createdBy
+	 */
+	public Integer getCreatedBy() {
+		return createdBy;
+	}
+
+	/**
+	 * @param createdBy the createdBy to set
+	 */
+	public void setCreatedBy(Integer createdBy) {
+		this.createdBy = createdBy;
+	}
+
+	/**
+	 * @return the createdTime
+	 */
+	public Date getCreatedTime() {
+		return createdTime;
+	}
+
+	/**
+	 * @param createdTime the createdTime to set
+	 */
+	public void setCreatedTime(Date createdTime) {
+		this.createdTime = createdTime;
+	}
+
+	/**
+	 * @return the effectiveDate
+	 */
+	public Date getEffectiveDate() {
+		return effectiveDate;
+	}
+
+	/**
+	 * @param effectiveDate the effectiveDate to set
+	 */
+	public void setEffectiveDate(Date effectiveDate) {
+		this.effectiveDate = effectiveDate;
+	}
+
+	/**
+	 * @return the endDate
+	 */
+	public Date getEndDate() {
+		return endDate;
+	}
+
+	/**
+	 * @param endDate the endDate to set
+	 */
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
+	}
+
+	/**
+	 * @return the stage
+	 */
+	public String getStage() {
+		return stage;
+	}
+
+	/**
+	 * @param stage the stage to set
+	 */
+	public void setStage(String stage) {
+		this.stage = stage;
+	}
+
+	/**
+	 * @return the startDate
+	 */
+	public Date getStartDate() {
+		return startDate;
+	}
+
+	/**
+	 * @param startDate the startDate to set
+	 */
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
+	}
+
+	/**
+	 * @return the status
+	 */
+	public Byte getStatus() {
+		return status;
+	}
+
+	/**
+	 * @param status the status to set
+	 */
+	public void setStatus(Byte status) {
+		this.status = status;
+	}
+
+	/**
+	 * @return the termInMonths
+	 */
+	public Integer getTermInMonths() {
+		return termInMonths;
+	}
+
+	/**
+	 * @param termInMonths the termInMonths to set
+	 */
+	public void setTermInMonths(Integer termInMonths) {
+		this.termInMonths = termInMonths;
+	}
+
+	/**
+	 * @return the orderToLeBeans
+	 */
+	public Set<OrderToLeBean> getOrderToLeBeans() {
+		return orderToLeBeans;
+	}
+
+	/**
+	 * @param orderToLeBeans the orderToLeBeans to set
+	 */
+	public void setOrderToLeBeans(Set<OrderToLeBean> orderToLeBeans) {
+		this.orderToLeBeans = orderToLeBeans;
+	}
+
+	/**
+	 * @return the orderCode
+	 */
+
+	public String getOrderCode() {
+		return orderCode;
+	}
+
+	/**
+	 * @param orderCode the orderCode to set
+	 */
+
+	public void setOrderCode(String orderCode) {
+		this.orderCode = orderCode;
+	}
+
+	public String getOrderCategory() {
+		return orderCategory;
+	}
+
+	public void setOrderCategory(String orderCategory) {
+		this.orderCategory = orderCategory;
+	}
+
+	public String getOrderType() {
+		return orderType;
+	}
+
+	public void setOrderType(String orderType) {
+		this.orderType = orderType;
+	}
+
+	public String getCheckList() {
+		return checkList;
+	}
+
+	public void setCheckList(String checkList) {
+		this.checkList = checkList;
+	}
+
+	public Boolean getIsMacdInitiated() {
+		return this.isMacdInitiated;
+	}
+
+	public void setIsMacdInitiated(Boolean isMacdInitiated) {
+		this.isMacdInitiated = isMacdInitiated;
+	}
+
+	public Boolean getIsO2cProcessed() {
+		return isO2cProcessed;
+	}
+
+	public void setIsO2cProcessed(Boolean isO2cProcessed) {
+		this.isO2cProcessed = isO2cProcessed;
+	}
+
+	public Boolean getIsMultiCircuit() {
+		return this.isMultiCircuit;
+	}
+
+	public void setIsMultiCircuit(Boolean multiCircuit) {
+		this.isMultiCircuit = multiCircuit;
+	}
+
+	public String getServiceId() {
+		return serviceId;
+	}
+
+	public void setServiceId(String serviceId) {
+		this.serviceId = serviceId;
+	}
+
+	@Override
+	public String toString() {
+		return "OrdersBean [id=" + id + ", orderCode=" + orderCode + ", createdBy=" + createdBy + ", createdTime="
+				+ createdTime + ", effectiveDate=" + effectiveDate + ", endDate=" + endDate + ", stage=" + stage
+				+ ", startDate=" + startDate + ", status=" + status + ", termInMonths=" + termInMonths
+				+ ", orderToLeBeans=" + orderToLeBeans + ", checkList=" + checkList + ", serviceId=" + serviceId + "]";
+	}
+
+}

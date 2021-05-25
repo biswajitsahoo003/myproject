@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <process id="plan_service_testing_workflow" name="Plan Service Testing Workflow" isExecutable="true">
+    <documentation>Plan Service Testing Workflow</documentation>
+    <startEvent id="startEvent1"></startEvent>
+    <serviceTask id="e2e-service-testing_plan" name="E2E Service Testing" flowable:delegateExpression="${ taskPlanDelegate }">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[e2e_service_testing_activity_start_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <exclusiveGateway id="sid-18E99AE1-B61D-457D-832F-4EDCF5514889" default="sid-55C35198-330B-4771-A6EE-B1CE1C7D431D"></exclusiveGateway>
+    <endEvent id="sid-71455415-E705-4074-97E7-0C943588DABF"></endEvent>
+    <serviceTask id="conduct-failover-test_end_plan" name="Conduct Failover Test" flowable:delegateExpression="${ taskPlanDelegate }">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[customer-appointment-failover-testing_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="sid-3E122157-7A5F-4EBD-961B-C67FB2C622C4" sourceRef="e2e_service_testing_activity_start_plan" targetRef="e2e-service-testing_plan"></sequenceFlow>
+    <sequenceFlow id="sid-3CEFB051-F1AA-4D62-AD5A-1A0E49162745" sourceRef="e2e-service-testing_plan" targetRef="e2e_service_testing_activity_end_plan"></sequenceFlow>
+    <serviceTask id="e2e_service_testing_activity_start_plan" name="E2E Service Testing Start" flowable:delegateExpression="${ activityPlanStartDelegate }">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[service_testing_process_start_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="e2e_service_testing_activity_end_plan" name="E2E Service Testing End" flowable:delegateExpression="${ activityPlanEndDelegate }">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[e2e-service-testing_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="failover_testing_activity_end_plan" name="Failover Testing Activity End" flowable:delegateExpression="${ activityPlanEndDelegate }">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[conduct-failover-test_end_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="customer-appointment-failover-testing_plan" name="Schedule Customer Appointment" flowable:delegateExpression="${ taskPlanDelegate }">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[failover_testing_activity_start_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="failover_testing_activity_start_plan" name="Failover Testing Activity Start" flowable:delegateExpression="${ activityPlanStartDelegate }">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[e2e_service_testing_activity_end_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="sid-B7D17054-55ED-4579-A25A-DC70D4D73CFF" sourceRef="failover_testing_activity_start_plan" targetRef="customer-appointment-failover-testing_plan"></sequenceFlow>
+    <exclusiveGateway id="sid-7DEBD111-702F-4C7B-873D-47E83DE0A3AD"></exclusiveGateway>
+    <sequenceFlow id="sid-181AB827-AD74-48E5-A995-A18EBBA584B0" sourceRef="failover_testing_activity_end_plan" targetRef="sid-7DEBD111-702F-4C7B-873D-47E83DE0A3AD"></sequenceFlow>
+    <sequenceFlow id="sid-D1364253-31E6-41BC-9AC0-A71A4A3425A5" sourceRef="sid-18E99AE1-B61D-457D-832F-4EDCF5514889" targetRef="sid-7DEBD111-702F-4C7B-873D-47E83DE0A3AD">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ failoverTestingRequired == false }]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-DE5909FB-C19F-4398-B19F-5E7FDBED3AF2" sourceRef="conduct-failover-test_end_plan" targetRef="failover_testing_activity_end_plan"></sequenceFlow>
+    <sequenceFlow id="sid-C064CFEB-8EE9-4213-8C02-B393347018C0" sourceRef="customer-appointment-failover-testing_plan" targetRef="conduct-failover-test_end_plan"></sequenceFlow>
+    <sequenceFlow id="sid-55C35198-330B-4771-A6EE-B1CE1C7D431D" sourceRef="sid-18E99AE1-B61D-457D-832F-4EDCF5514889" targetRef="failover_testing_activity_start_plan"></sequenceFlow>
+    <sequenceFlow id="sid-71425482-36ED-403A-90B6-7EB217EE0431" sourceRef="startEvent1" targetRef="e2e_service_testing_activity_start_plan"></sequenceFlow>
+    <sequenceFlow id="sid-DB7BF327-6343-4606-9965-D94D14F83201" sourceRef="sid-7DEBD111-702F-4C7B-873D-47E83DE0A3AD" targetRef="sid-71455415-E705-4074-97E7-0C943588DABF"></sequenceFlow>
+    <sequenceFlow id="sid-C9B4796B-9B3E-40FB-8C98-F58A73DAEC67" sourceRef="e2e_service_testing_activity_end_plan" targetRef="sid-18E99AE1-B61D-457D-832F-4EDCF5514889"></sequenceFlow>
+    <textAnnotation id="sid-42809AB5-CD20-49B1-B7A9-C95465A579F9">
+      <text>Is Failover testing required ?</text>
+    </textAnnotation>
+    <association id="sid-83A2959E-96E9-46A2-906A-F770AE09DB73" sourceRef="sid-18E99AE1-B61D-457D-832F-4EDCF5514889" targetRef="sid-42809AB5-CD20-49B1-B7A9-C95465A579F9" associationDirection="None"></association>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_plan_service_testing_workflow">
+    <bpmndi:BPMNPlane bpmnElement="plan_service_testing_workflow" id="BPMNPlane_plan_service_testing_workflow">
+      <bpmndi:BPMNShape bpmnElement="startEvent1" id="BPMNShape_startEvent1">
+        <omgdc:Bounds height="30.0" width="30.0" x="45.0" y="345.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="e2e-service-testing_plan" id="BPMNShape_e2e-service-testing_plan">
+        <omgdc:Bounds height="80.0" width="100.0" x="120.0" y="150.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-18E99AE1-B61D-457D-832F-4EDCF5514889" id="BPMNShape_sid-18E99AE1-B61D-457D-832F-4EDCF5514889">
+        <omgdc:Bounds height="40.0" width="40.0" x="331.0" y="216.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-71455415-E705-4074-97E7-0C943588DABF" id="BPMNShape_sid-71455415-E705-4074-97E7-0C943588DABF">
+        <omgdc:Bounds height="28.0" width="28.0" x="1140.0" y="315.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="conduct-failover-test_end_plan" id="BPMNShape_conduct-failover-test_end_plan">
+        <omgdc:Bounds height="80.0" width="100.0" x="810.0" y="105.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="e2e_service_testing_activity_start_plan" id="BPMNShape_e2e_service_testing_activity_start_plan">
+        <omgdc:Bounds height="80.0" width="100.0" x="105.0" y="300.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="e2e_service_testing_activity_end_plan" id="BPMNShape_e2e_service_testing_activity_end_plan">
+        <omgdc:Bounds height="80.0" width="100.0" x="195.0" y="30.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="failover_testing_activity_end_plan" id="BPMNShape_failover_testing_activity_end_plan">
+        <omgdc:Bounds height="80.0" width="100.0" x="960.0" y="105.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="customer-appointment-failover-testing_plan" id="BPMNShape_customer-appointment-failover-testing_plan">
+        <omgdc:Bounds height="80.0" width="100.0" x="645.0" y="105.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="failover_testing_activity_start_plan" id="BPMNShape_failover_testing_activity_start_plan">
+        <omgdc:Bounds height="80.0" width="100.0" x="480.0" y="105.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-7DEBD111-702F-4C7B-873D-47E83DE0A3AD" id="BPMNShape_sid-7DEBD111-702F-4C7B-873D-47E83DE0A3AD">
+        <omgdc:Bounds height="40.0" width="40.0" x="990.0" y="300.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-42809AB5-CD20-49B1-B7A9-C95465A579F9" id="BPMNShape_sid-42809AB5-CD20-49B1-B7A9-C95465A579F9">
+        <omgdc:Bounds height="56.0" width="103.0" x="342.0" y="130.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-83A2959E-96E9-46A2-906A-F770AE09DB73" id="BPMNShape_sid-83A2959E-96E9-46A2-906A-F770AE09DB73">
+        <omgdc:Bounds height="39.08181068224053" width="33.21953907990445" x="360.28046092009555" y="186.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-DB7BF327-6343-4606-9965-D94D14F83201" id="BPMNEdge_sid-DB7BF327-6343-4606-9965-D94D14F83201">
+        <omgdi:waypoint x="1028.7707217504899" y="321.1735294117648"></omgdi:waypoint>
+        <omgdi:waypoint x="1140.0242648458168" y="328.1266747607927"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-71425482-36ED-403A-90B6-7EB217EE0431" id="BPMNEdge_sid-71425482-36ED-403A-90B6-7EB217EE0431">
+        <omgdi:waypoint x="74.94998667680801" y="360.0"></omgdi:waypoint>
+        <omgdi:waypoint x="97.0" y="360.0"></omgdi:waypoint>
+        <omgdi:waypoint x="97.0" y="340.0"></omgdi:waypoint>
+        <omgdi:waypoint x="104.99999999995237" y="340.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-C9B4796B-9B3E-40FB-8C98-F58A73DAEC67" id="BPMNEdge_sid-C9B4796B-9B3E-40FB-8C98-F58A73DAEC67">
+        <omgdi:waypoint x="245.0" y="109.95"></omgdi:waypoint>
+        <omgdi:waypoint x="245.0" y="236.0"></omgdi:waypoint>
+        <omgdi:waypoint x="331.0" y="236.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-DE5909FB-C19F-4398-B19F-5E7FDBED3AF2" id="BPMNEdge_sid-DE5909FB-C19F-4398-B19F-5E7FDBED3AF2">
+        <omgdi:waypoint x="909.9499999999581" y="145.0"></omgdi:waypoint>
+        <omgdi:waypoint x="960.0" y="145.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-3CEFB051-F1AA-4D62-AD5A-1A0E49162745" id="BPMNEdge_sid-3CEFB051-F1AA-4D62-AD5A-1A0E49162745">
+        <omgdi:waypoint x="170.0" y="150.0"></omgdi:waypoint>
+        <omgdi:waypoint x="170.0" y="70.0"></omgdi:waypoint>
+        <omgdi:waypoint x="194.99999999999187" y="70.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-55C35198-330B-4771-A6EE-B1CE1C7D431D" id="BPMNEdge_sid-55C35198-330B-4771-A6EE-B1CE1C7D431D">
+        <omgdi:waypoint x="370.9444304857621" y="236.0"></omgdi:waypoint>
+        <omgdi:waypoint x="530.0" y="236.0"></omgdi:waypoint>
+        <omgdi:waypoint x="530.0" y="184.95"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-83A2959E-96E9-46A2-906A-F770AE09DB73" id="BPMNEdge_sid-83A2959E-96E9-46A2-906A-F770AE09DB73">
+        <omgdi:waypoint x="360.1662162162162" y="225.1891891891892"></omgdi:waypoint>
+        <omgdi:waypoint x="393.5" y="186.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-C064CFEB-8EE9-4213-8C02-B393347018C0" id="BPMNEdge_sid-C064CFEB-8EE9-4213-8C02-B393347018C0">
+        <omgdi:waypoint x="744.9499999999836" y="145.0"></omgdi:waypoint>
+        <omgdi:waypoint x="809.9999999999847" y="145.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-3E122157-7A5F-4EBD-961B-C67FB2C622C4" id="BPMNEdge_sid-3E122157-7A5F-4EBD-961B-C67FB2C622C4">
+        <omgdi:waypoint x="155.0" y="300.0"></omgdi:waypoint>
+        <omgdi:waypoint x="155.0" y="265.0"></omgdi:waypoint>
+        <omgdi:waypoint x="170.0" y="265.0"></omgdi:waypoint>
+        <omgdi:waypoint x="170.0" y="229.95000000000002"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-B7D17054-55ED-4579-A25A-DC70D4D73CFF" id="BPMNEdge_sid-B7D17054-55ED-4579-A25A-DC70D4D73CFF">
+        <omgdi:waypoint x="579.9499999999836" y="145.0"></omgdi:waypoint>
+        <omgdi:waypoint x="644.9999999999847" y="145.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-D1364253-31E6-41BC-9AC0-A71A4A3425A5" id="BPMNEdge_sid-D1364253-31E6-41BC-9AC0-A71A4A3425A5">
+        <omgdi:waypoint x="351.7041176470588" y="255.23498824911866"></omgdi:waypoint>
+        <omgdi:waypoint x="354.0" y="318.0"></omgdi:waypoint>
+        <omgdi:waypoint x="990.0126120650357" y="319.9392097264438"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-181AB827-AD74-48E5-A995-A18EBBA584B0" id="BPMNEdge_sid-181AB827-AD74-48E5-A995-A18EBBA584B0">
+        <omgdi:waypoint x="1010.0" y="184.95"></omgdi:waypoint>
+        <omgdi:waypoint x="1010.0" y="300.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

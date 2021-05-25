@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <process id="plan-sdwan-lld-workflow" name="plan-sdwan-lld-workflow" isExecutable="true">
+    <documentation>plan-sdwan-lld-workflow</documentation>
+    <startEvent id="sid-985A7369-CA4F-4620-8789-27ADAC996C09"></startEvent>
+    <callActivity id="lld_provision_process" name="LLD Provision Process" calledElement="plan-sdwan-lld-provisioning-workflow" flowable:calledElementType="key" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false">
+      <extensionElements>
+        <flowable:in source="lld_provision_activity_end_plan_endDate" target="lld_provision_activity_end_plan_endDate"></flowable:in>
+        <flowable:in source="startTrackingProcess" target="startTrackingProcess"></flowable:in>
+        <flowable:in source="customerDelayProcess" target="customerDelayProcess"></flowable:in>
+        <flowable:out source="lld_provision_activity_end_plan_endDate" target="lld_provision_activity_end_plan_endDate"></flowable:out>
+        <flowable:out source="startTrackingProcess" target="startTrackingProcess"></flowable:out>
+        <flowable:out source="customerDelayProcess" target="customerDelayProcess"></flowable:out>
+      </extensionElements>
+    </callActivity>
+    <endEvent id="sid-72529BA6-16CE-41F5-83FF-D4AA3F7B459B"></endEvent>
+    <serviceTask id="order_enrichment_stage_start_plan" name="order_enrichment_stage_start_plan" flowable:delegateExpression="${stagePlanStartDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[order_placement_stage_end_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="prepare_project_plan_process_start_plan" name="prepare_project_plan_process_start_plan" flowable:delegateExpression="${processPlanStartDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[order_enrichment_stage_start_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="sid-A1D90B90-FD7A-46C7-8ED9-890367B2C04F" sourceRef="prepare_project_plan_process_start_plan" targetRef="prepare_project_plan_process"></sequenceFlow>
+    <sequenceFlow id="sid-71373A4C-1868-4D80-B951-8BD4EBBD2E2E" sourceRef="prepare_project_plan_process" targetRef="prepare_project_plan_process_end_plan"></sequenceFlow>
+    <serviceTask id="prepare_project_plan_process_end_plan" name="prepare_project_plan_process_end_plan" flowable:delegateExpression="${processPlanEndDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[prepare_project_plan_activity_end_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="order_enrichment_stage_end_plan" name="order_enrichment_stage_end_plan" flowable:delegateExpression="${stagePlanEndDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[lld_provision_process_end_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="sid-327066A1-60F0-4023-86A1-92509F8FB561" sourceRef="order_enrichment_stage_start_plan" targetRef="prepare_project_plan_process_start_plan"></sequenceFlow>
+    <sequenceFlow id="sid-4B3F5599-9460-4D4A-8E67-9A01F80CBD21" sourceRef="sid-985A7369-CA4F-4620-8789-27ADAC996C09" targetRef="order_placement_stage_start_plan"></sequenceFlow>
+    <callActivity id="prepare_project_plan_process" name="Prepare Project Plan Process" calledElement="plan_project_plan_workflow" flowable:calledElementType="key" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false">
+      <extensionElements>
+        <flowable:in source="prepare_project_plan_activity_end_plan_endDate" target="prepare_project_plan_activity_end_plan_endDate"></flowable:in>
+        <flowable:in source="customerDelayProcess" target="customerDelayProcess"></flowable:in>
+        <flowable:in source="startTrackingProcess" target="startTrackingProcess"></flowable:in>
+        <flowable:out source="startTrackingProcess" target="startTrackingProcess"></flowable:out>
+        <flowable:out source="customerDelayProcess" target="customerDelayProcess"></flowable:out>
+        <flowable:out source="prepare_project_plan_activity_end_plan_endDate" target="prepare_project_plan_activity_end_plan_endDate"></flowable:out>
+      </extensionElements>
+    </callActivity>
+    <serviceTask id="create-project-plan" name="create-project-plan" flowable:delegateExpression="${ createProjectPlanDelegate  }"></serviceTask>
+    <sequenceFlow id="sid-9A8719F6-680E-4E5E-A7C6-DCC42D539B31" sourceRef="create-project-plan" targetRef="sid-72529BA6-16CE-41F5-83FF-D4AA3F7B459B"></sequenceFlow>
+    <serviceTask id="lld_provision_process_start_plan" name="lld_provision_process_start_plan" flowable:delegateExpression="${processPlanStartDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[basic_enrichment_process_end_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="lld_provision_process_end_plan" name="lld_provision_process_end_plan" flowable:delegateExpression="${processPlanEndDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[lld_provision_activity_end_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="sid-D998F4A0-5F43-4BDC-930B-47245305963F" sourceRef="lld_provision_process_start_plan" targetRef="lld_provision_process"></sequenceFlow>
+    <sequenceFlow id="sid-60FDB4E6-5BBE-4028-BBD6-51D1EC7D84BE" sourceRef="prepare_project_plan_process_end_plan" targetRef="basic_enrichment_process_start_plan"></sequenceFlow>
+    <sequenceFlow id="sid-F812DDBF-006F-4136-8AD7-E1819C771911" sourceRef="order_enrichment_stage_end_plan" targetRef="create-project-plan"></sequenceFlow>
+    <sequenceFlow id="sid-026C139D-36E3-4DFB-9135-5BC80F5CDA7F" sourceRef="lld_provision_process_end_plan" targetRef="order_enrichment_stage_end_plan"></sequenceFlow>
+    <sequenceFlow id="sid-F5810240-5BF1-49D9-A3A7-5F30C84DEC56" sourceRef="lld_provision_process" targetRef="lld_provision_process_end_plan"></sequenceFlow>
+    <serviceTask id="basic_enrichment_process_start_plan" name="basic_enrichment_process_start_plan" flowable:delegateExpression="${processPlanStartDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[prepare_project_plan_process_end_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="sid-27CB8280-1448-48ED-900B-4D85FD93B63B" sourceRef="basic_enrichment_process_start_plan" targetRef="basic_enrichment_process_plan"></sequenceFlow>
+    <sequenceFlow id="sid-6F96B940-0706-4B51-8C99-9670D48D31D6" sourceRef="basic_enrichment_process_plan" targetRef="basic_enrichment_process_end_plan"></sequenceFlow>
+    <serviceTask id="basic_enrichment_process_end_plan" name="basic_enrichment_process_end_plan" flowable:delegateExpression="${processPlanEndDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[basic_enrichment_activity_end_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <callActivity id="basic_enrichment_process_plan" name="Basic Enrichment Plan Process" calledElement="basic_enrichment_plan_workflow" flowable:calledElementType="key" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false">
+      <extensionElements>
+        <flowable:in source="basic_enrichment_activity_end_plan_endDate" target="basic_enrichment_activity_end_plan_endDate"></flowable:in>
+        <flowable:in source="customerDelayProcess" target="customerDelayProcess"></flowable:in>
+        <flowable:in source="startTrackingProcess" target="startTrackingProcess"></flowable:in>
+        <flowable:out source="basic_enrichment_activity_end_plan_endDate" target="basic_enrichment_activity_end_plan_endDate"></flowable:out>
+        <flowable:out source="startTrackingProcess" target="startTrackingProcess"></flowable:out>
+        <flowable:out source="customerDelayProcess" target="customerDelayProcess"></flowable:out>
+      </extensionElements>
+    </callActivity>
+    <serviceTask id="order_placement_stage_start_plan" name="order_placement_stage_start_plan" flowable:delegateExpression="${stagePlanStartDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[root]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="order_placement_stage_end_plan" name="order_placement_stage_end_plan" flowable:delegateExpression="${stagePlanEndDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[order_placement_stage_start_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="sid-51F5B5B8-2571-45E6-9945-8A4AC879C7B0" sourceRef="order_placement_stage_start_plan" targetRef="order_placement_stage_end_plan"></sequenceFlow>
+    <sequenceFlow id="sid-44165DD8-8972-4362-96F5-104AD632ED2F" sourceRef="order_placement_stage_end_plan" targetRef="order_enrichment_stage_start_plan"></sequenceFlow>
+    <sequenceFlow id="sid-A7B8E9DD-33D0-463E-87D3-BBC4A13A75BA" sourceRef="basic_enrichment_process_end_plan" targetRef="lld_provision_process_start_plan"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_plan-sdwan-lld-workflow">
+    <bpmndi:BPMNPlane bpmnElement="plan-sdwan-lld-workflow" id="BPMNPlane_plan-sdwan-lld-workflow">
+      <bpmndi:BPMNShape bpmnElement="sid-985A7369-CA4F-4620-8789-27ADAC996C09" id="BPMNShape_sid-985A7369-CA4F-4620-8789-27ADAC996C09">
+        <omgdc:Bounds height="30.0" width="30.0" x="15.0" y="115.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="lld_provision_process" id="BPMNShape_lld_provision_process">
+        <omgdc:Bounds height="56.99999999999977" width="78.99999999999955" x="840.0" y="271.5000000000001"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-72529BA6-16CE-41F5-83FF-D4AA3F7B459B" id="BPMNShape_sid-72529BA6-16CE-41F5-83FF-D4AA3F7B459B">
+        <omgdc:Bounds height="28.0" width="28.0" x="75.0" y="286.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="order_enrichment_stage_start_plan" id="BPMNShape_order_enrichment_stage_start_plan">
+        <omgdc:Bounds height="61.0" width="123.0" x="330.0" y="99.5"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="prepare_project_plan_process_start_plan" id="BPMNShape_prepare_project_plan_process_start_plan">
+        <omgdc:Bounds height="71.0" width="95.0" x="495.0" y="94.5"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="prepare_project_plan_process_end_plan" id="BPMNShape_prepare_project_plan_process_end_plan">
+        <omgdc:Bounds height="86.0" width="119.0" x="780.0" y="87.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="order_enrichment_stage_end_plan" id="BPMNShape_order_enrichment_stage_end_plan">
+        <omgdc:Bounds height="90.00000000000006" width="129.0" x="405.0" y="255.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="prepare_project_plan_process" id="BPMNShape_prepare_project_plan_process">
+        <omgdc:Bounds height="68.0" width="102.0" x="638.5" y="96.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="create-project-plan" id="BPMNShape_create-project-plan">
+        <omgdc:Bounds height="80.0" width="100.0" x="195.0" y="260.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="lld_provision_process_start_plan" id="BPMNShape_lld_provision_process_start_plan">
+        <omgdc:Bounds height="89.41970336206577" width="119.33160633636567" x="1035.0" y="255.2901483189671"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="lld_provision_process_end_plan" id="BPMNShape_lld_provision_process_end_plan">
+        <omgdc:Bounds height="86.0" width="119.0" x="630.0" y="257.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="basic_enrichment_process_start_plan" id="BPMNShape_basic_enrichment_process_start_plan">
+        <omgdc:Bounds height="71.0" width="95.0" x="930.0" y="94.5"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="basic_enrichment_process_end_plan" id="BPMNShape_basic_enrichment_process_end_plan">
+        <omgdc:Bounds height="86.0" width="119.0" x="1230.0" y="87.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="basic_enrichment_process_plan" id="BPMNShape_basic_enrichment_process_plan">
+        <omgdc:Bounds height="68.0" width="102.0" x="1080.0" y="96.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="order_placement_stage_start_plan" id="BPMNShape_order_placement_stage_start_plan">
+        <omgdc:Bounds height="58.0" width="98.0" x="68.0" y="101.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="order_placement_stage_end_plan" id="BPMNShape_order_placement_stage_end_plan">
+        <omgdc:Bounds height="63.0" width="97.0" x="196.5" y="98.5"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-6F96B940-0706-4B51-8C99-9670D48D31D6" id="BPMNEdge_sid-6F96B940-0706-4B51-8C99-9670D48D31D6">
+        <omgdi:waypoint x="1181.9499999999614" y="130.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1229.9999999999745" y="130.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-A7B8E9DD-33D0-463E-87D3-BBC4A13A75BA" id="BPMNEdge_sid-A7B8E9DD-33D0-463E-87D3-BBC4A13A75BA">
+        <omgdi:waypoint x="1289.5" y="172.95"></omgdi:waypoint>
+        <omgdi:waypoint x="1289.5" y="300.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1154.2816063363657" y="300.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-9A8719F6-680E-4E5E-A7C6-DCC42D539B31" id="BPMNEdge_sid-9A8719F6-680E-4E5E-A7C6-DCC42D539B31">
+        <omgdi:waypoint x="195.0" y="300.0"></omgdi:waypoint>
+        <omgdi:waypoint x="102.94992631812389" y="300.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-60FDB4E6-5BBE-4028-BBD6-51D1EC7D84BE" id="BPMNEdge_sid-60FDB4E6-5BBE-4028-BBD6-51D1EC7D84BE">
+        <omgdi:waypoint x="898.9499999999999" y="130.0"></omgdi:waypoint>
+        <omgdi:waypoint x="930.0" y="130.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-026C139D-36E3-4DFB-9135-5BC80F5CDA7F" id="BPMNEdge_sid-026C139D-36E3-4DFB-9135-5BC80F5CDA7F">
+        <omgdi:waypoint x="630.0" y="300.0"></omgdi:waypoint>
+        <omgdi:waypoint x="533.95" y="300.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-51F5B5B8-2571-45E6-9945-8A4AC879C7B0" id="BPMNEdge_sid-51F5B5B8-2571-45E6-9945-8A4AC879C7B0">
+        <omgdi:waypoint x="165.95" y="130.0"></omgdi:waypoint>
+        <omgdi:waypoint x="196.49999999999335" y="130.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-D998F4A0-5F43-4BDC-930B-47245305963F" id="BPMNEdge_sid-D998F4A0-5F43-4BDC-930B-47245305963F">
+        <omgdi:waypoint x="1034.9999999999125" y="300.0"></omgdi:waypoint>
+        <omgdi:waypoint x="918.9499999999505" y="300.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-F812DDBF-006F-4136-8AD7-E1819C771911" id="BPMNEdge_sid-F812DDBF-006F-4136-8AD7-E1819C771911">
+        <omgdi:waypoint x="404.99999999992866" y="300.0"></omgdi:waypoint>
+        <omgdi:waypoint x="294.95000000000005" y="300.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-71373A4C-1868-4D80-B951-8BD4EBBD2E2E" id="BPMNEdge_sid-71373A4C-1868-4D80-B951-8BD4EBBD2E2E">
+        <omgdi:waypoint x="740.4499999999999" y="130.0"></omgdi:waypoint>
+        <omgdi:waypoint x="779.9999999999757" y="130.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-4B3F5599-9460-4D4A-8E67-9A01F80CBD21" id="BPMNEdge_sid-4B3F5599-9460-4D4A-8E67-9A01F80CBD21">
+        <omgdi:waypoint x="44.94999634303157" y="130.0"></omgdi:waypoint>
+        <omgdi:waypoint x="68.0" y="130.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-F5810240-5BF1-49D9-A3A7-5F30C84DEC56" id="BPMNEdge_sid-F5810240-5BF1-49D9-A3A7-5F30C84DEC56">
+        <omgdi:waypoint x="839.9999999999734" y="300.0"></omgdi:waypoint>
+        <omgdi:waypoint x="748.9499999999999" y="300.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-327066A1-60F0-4023-86A1-92509F8FB561" id="BPMNEdge_sid-327066A1-60F0-4023-86A1-92509F8FB561">
+        <omgdi:waypoint x="452.95000000000005" y="130.0"></omgdi:waypoint>
+        <omgdi:waypoint x="494.99999999995754" y="130.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-A1D90B90-FD7A-46C7-8ED9-890367B2C04F" id="BPMNEdge_sid-A1D90B90-FD7A-46C7-8ED9-890367B2C04F">
+        <omgdi:waypoint x="589.9499999999716" y="130.0"></omgdi:waypoint>
+        <omgdi:waypoint x="638.4999999999508" y="130.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-27CB8280-1448-48ED-900B-4D85FD93B63B" id="BPMNEdge_sid-27CB8280-1448-48ED-900B-4D85FD93B63B">
+        <omgdi:waypoint x="1024.9499999999844" y="130.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1079.9999999999195" y="130.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-44165DD8-8972-4362-96F5-104AD632ED2F" id="BPMNEdge_sid-44165DD8-8972-4362-96F5-104AD632ED2F">
+        <omgdi:waypoint x="293.45000000000005" y="130.0"></omgdi:waypoint>
+        <omgdi:waypoint x="329.99999999996044" y="130.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

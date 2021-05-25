@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <process id="cancellation_account_creation_workflow" name="cancellation_account_creation_workflow" isExecutable="true">
+    <documentation>cancellation_account_creation_workflow</documentation>
+    <serviceTask id="cancellation_billing_account_creation" name="Non CPE Account Creation call to WPS" flowable:delegateExpression="${ nwAccountCreationDelegate}"></serviceTask>
+    <receiveTask id="cancellation_billing_account_creation_async" name="Account Creation Async response from WPS">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ serviceTaskStartListener }"></flowable:executionListener>
+        <flowable:executionListener event="end" delegateExpression="${ serviceTaskEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </receiveTask>
+    <exclusiveGateway id="sid-7C23CBE1-4628-45F3-977F-DE1E1735FF3A" default="sid-0D0FE9E7-0EC2-4C17-B5B9-DA87E6FCE779"></exclusiveGateway>
+    <exclusiveGateway id="sid-45EE9931-ED55-40A8-91A1-4BC55229DDBB"></exclusiveGateway>
+    <endEvent id="cancellation_account_creation_activity_end">
+      <extensionElements>
+        <flowable:executionListener event="end" delegateExpression="${ activityEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </endEvent>
+    <startEvent id="cancellation_account_creation_activity_start">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ activityStartListener }"></flowable:executionListener>
+      </extensionElements>
+    </startEvent>
+    <exclusiveGateway id="sid-459C8C2F-DA09-4274-8BDF-8CB501006F01"></exclusiveGateway>
+    <userTask id="cancellation_billing-account-creation-jeopardy" name="Billing Account Creation Jeopardy">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <exclusiveGateway id="sid-5DC022F6-20E0-4BFC-B047-FC16A1405D2B" default="sid-E4B3E297-5521-4094-8299-525380C97D52"></exclusiveGateway>
+    <sequenceFlow id="billing_account_creation_async-wait-time" sourceRef="billing_account_creation_async-wait" targetRef="sid-45EE9931-ED55-40A8-91A1-4BC55229DDBB">
+      <extensionElements>
+        <flowable:executionListener event="take" delegateExpression="${timeEventEndListener}"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="sid-1B2AB708-9C43-4353-8BF1-412F157E6F2C" sourceRef="cancellation_account_creation_activity_start" targetRef="cancellation_billing_account_creation"></sequenceFlow>
+    <sequenceFlow id="sid-7140ED7F-7623-47CF-B341-15A0883CB6C0" sourceRef="cancellation_billing_account_creation" targetRef="sid-7C23CBE1-4628-45F3-977F-DE1E1735FF3A"></sequenceFlow>
+    <sequenceFlow id="sid-42AAD757-B840-418D-A687-17D7DC1F4097" name="Yes" sourceRef="sid-7C23CBE1-4628-45F3-977F-DE1E1735FF3A" targetRef="cancellation_billing_account_creation_async">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ var:get(accountCreationAck) == true }]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-0D0FE9E7-0EC2-4C17-B5B9-DA87E6FCE779" name="No" sourceRef="sid-7C23CBE1-4628-45F3-977F-DE1E1735FF3A" targetRef="sid-45EE9931-ED55-40A8-91A1-4BC55229DDBB"></sequenceFlow>
+    <sequenceFlow id="sid-91FA5139-589B-4FFB-AD5E-036892BB22E3" sourceRef="cancellation_billing_account_creation_async" targetRef="sid-45EE9931-ED55-40A8-91A1-4BC55229DDBB"></sequenceFlow>
+    <sequenceFlow id="sid-500BEEB8-5B2C-4875-AB0A-65EF749BD6B6" sourceRef="sid-45EE9931-ED55-40A8-91A1-4BC55229DDBB" targetRef="sid-5DC022F6-20E0-4BFC-B047-FC16A1405D2B"></sequenceFlow>
+    <sequenceFlow id="sid-E4B3E297-5521-4094-8299-525380C97D52" name="Yes" sourceRef="sid-5DC022F6-20E0-4BFC-B047-FC16A1405D2B" targetRef="sid-459C8C2F-DA09-4274-8BDF-8CB501006F01"></sequenceFlow>
+    <sequenceFlow id="sid-A7F75E2C-4362-484B-9298-8379539E1D00" sourceRef="cancellation_billing-account-creation-jeopardy" targetRef="sid-459C8C2F-DA09-4274-8BDF-8CB501006F01"></sequenceFlow>
+    <sequenceFlow id="sid-8D36F545-077E-4CDD-87DD-FBE3C0099863" name="No" sourceRef="sid-5DC022F6-20E0-4BFC-B047-FC16A1405D2B" targetRef="cancellation_billing-account-creation-jeopardy">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ var:get(accountCreationStatus) == false}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-AEC195E8-52A3-4DCB-9639-1934F1BDD90F" sourceRef="sid-459C8C2F-DA09-4274-8BDF-8CB501006F01" targetRef="cancellation_account_creation_activity_end"></sequenceFlow>
+    <boundaryEvent id="billing_account_creation_async-wait" attachedToRef="cancellation_billing_account_creation_async" cancelActivity="true">
+      <timerEventDefinition>
+        <timeDuration>PT30M</timeDuration>
+      </timerEventDefinition>
+    </boundaryEvent>
+    <textAnnotation id="sid-124D43A6-9F13-435D-A099-89D0014D4877">
+      <text>Account Creation Success?</text>
+    </textAnnotation>
+    <textAnnotation id="sid-2AC34804-5B7D-4A41-99CD-204AF1DE035F">
+      <text>Account Creation Sync Call Success?</text>
+    </textAnnotation>
+    <textAnnotation id="sid-0EB002F7-934B-4C28-95FE-F0735F676E1B">
+      <text>Is Account Creation Success?</text>
+    </textAnnotation>
+    <association id="sid-5C80BB67-9273-43FF-89BC-4D581A963263" sourceRef="sid-45EE9931-ED55-40A8-91A1-4BC55229DDBB" targetRef="sid-124D43A6-9F13-435D-A099-89D0014D4877" associationDirection="None"></association>
+    <association id="sid-28589023-B368-4DFD-A6D1-DDEEB06088D9" sourceRef="sid-7C23CBE1-4628-45F3-977F-DE1E1735FF3A" targetRef="sid-2AC34804-5B7D-4A41-99CD-204AF1DE035F" associationDirection="None"></association>
+    <association id="sid-3AB34318-EC8E-4543-887F-2BD8A28B7DEA" sourceRef="sid-5DC022F6-20E0-4BFC-B047-FC16A1405D2B" targetRef="sid-0EB002F7-934B-4C28-95FE-F0735F676E1B" associationDirection="None"></association>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_cancellation_account_creation_workflow">
+    <bpmndi:BPMNPlane bpmnElement="cancellation_account_creation_workflow" id="BPMNPlane_cancellation_account_creation_workflow">
+      <bpmndi:BPMNShape bpmnElement="cancellation_billing_account_creation" id="BPMNShape_cancellation_billing_account_creation">
+        <omgdc:Bounds height="80.0" width="100.0" x="255.0" y="185.97789091808698"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="cancellation_billing_account_creation_async" id="BPMNShape_cancellation_billing_account_creation_async">
+        <omgdc:Bounds height="71.0" width="115.0" x="525.0" y="190.47789091808698"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-7C23CBE1-4628-45F3-977F-DE1E1735FF3A" id="BPMNShape_sid-7C23CBE1-4628-45F3-977F-DE1E1735FF3A">
+        <omgdc:Bounds height="40.0" width="40.0" x="418.39305733424135" y="205.97789091808698"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-45EE9931-ED55-40A8-91A1-4BC55229DDBB" id="BPMNShape_sid-45EE9931-ED55-40A8-91A1-4BC55229DDBB">
+        <omgdc:Bounds height="40.0" width="40.0" x="693.0" y="205.97789091808698"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="cancellation_account_creation_activity_end" id="BPMNShape_cancellation_account_creation_activity_end">
+        <omgdc:Bounds height="28.0" width="28.0" x="1005.0" y="261.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="cancellation_account_creation_activity_start" id="BPMNShape_cancellation_account_creation_activity_start">
+        <omgdc:Bounds height="30.0" width="30.0" x="150.0" y="210.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-459C8C2F-DA09-4274-8BDF-8CB501006F01" id="BPMNShape_sid-459C8C2F-DA09-4274-8BDF-8CB501006F01">
+        <omgdc:Bounds height="40.0" width="40.0" x="885.0" y="255.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="cancellation_billing-account-creation-jeopardy" id="BPMNShape_cancellation_billing-account-creation-jeopardy">
+        <omgdc:Bounds height="80.0" width="100.0" x="735.0" y="360.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-5DC022F6-20E0-4BFC-B047-FC16A1405D2B" id="BPMNShape_sid-5DC022F6-20E0-4BFC-B047-FC16A1405D2B">
+        <omgdc:Bounds height="40.0" width="40.0" x="765.0" y="255.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-124D43A6-9F13-435D-A099-89D0014D4877" id="BPMNShape_sid-124D43A6-9F13-435D-A099-89D0014D4877">
+        <omgdc:Bounds height="33.0" width="175.0" x="720.0" y="150.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-2AC34804-5B7D-4A41-99CD-204AF1DE035F" id="BPMNShape_sid-2AC34804-5B7D-4A41-99CD-204AF1DE035F">
+        <omgdc:Bounds height="31.0" width="217.0" x="370.2861146684828" y="135.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-0EB002F7-934B-4C28-95FE-F0735F676E1B" id="BPMNShape_sid-0EB002F7-934B-4C28-95FE-F0735F676E1B">
+        <omgdc:Bounds height="32.0" width="155.0" x="930.0" y="180.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-5C80BB67-9273-43FF-89BC-4D581A963263" id="BPMNShape_sid-5C80BB67-9273-43FF-89BC-4D581A963263">
+        <omgdc:Bounds height="36.52013570079862" width="80.30065575584297" x="727.199344244157" y="183.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-28589023-B368-4DFD-A6D1-DDEEB06088D9" id="BPMNShape_sid-28589023-B368-4DFD-A6D1-DDEEB06088D9">
+        <omgdc:Bounds height="47.9025980589536" width="32.26076076094466" x="446.52535390753815" y="166.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-3AB34318-EC8E-4543-887F-2BD8A28B7DEA" id="BPMNShape_sid-3AB34318-EC8E-4543-887F-2BD8A28B7DEA">
+        <omgdc:Bounds height="71.73250973432232" width="131.66093558831312" x="798.3390644116869" y="196.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="billing_account_creation_async-wait" id="BPMNShape_billing_account_creation_async-wait">
+        <omgdc:Bounds height="31.0" width="31.0" x="547.4012310251097" y="174.66133059420054"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-E4B3E297-5521-4094-8299-525380C97D52" id="BPMNEdge_sid-E4B3E297-5521-4094-8299-525380C97D52">
+        <omgdi:waypoint x="804.941694421308" y="275.0"></omgdi:waypoint>
+        <omgdi:waypoint x="885.0" y="275.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-91FA5139-589B-4FFB-AD5E-036892BB22E3" id="BPMNEdge_sid-91FA5139-589B-4FFB-AD5E-036892BB22E3">
+        <omgdi:waypoint x="639.9499999999915" y="225.97789091808698"></omgdi:waypoint>
+        <omgdi:waypoint x="693.0" y="225.97789091808698"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-500BEEB8-5B2C-4875-AB0A-65EF749BD6B6" id="BPMNEdge_sid-500BEEB8-5B2C-4875-AB0A-65EF749BD6B6">
+        <omgdi:waypoint x="732.9361650485437" y="225.97789091808698"></omgdi:waypoint>
+        <omgdi:waypoint x="785.0" y="225.97789091808698"></omgdi:waypoint>
+        <omgdi:waypoint x="785.0" y="255.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-AEC195E8-52A3-4DCB-9639-1934F1BDD90F" id="BPMNEdge_sid-AEC195E8-52A3-4DCB-9639-1934F1BDD90F">
+        <omgdi:waypoint x="924.9412576686476" y="275.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1005.0" y="275.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-42AAD757-B840-418D-A687-17D7DC1F4097" id="BPMNEdge_sid-42AAD757-B840-418D-A687-17D7DC1F4097">
+        <omgdi:waypoint x="458.3361401915465" y="225.97789091808698"></omgdi:waypoint>
+        <omgdi:waypoint x="525.0" y="225.97789091808698"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-8D36F545-077E-4CDD-87DD-FBE3C0099863" id="BPMNEdge_sid-8D36F545-077E-4CDD-87DD-FBE3C0099863">
+        <omgdi:waypoint x="785.0" y="294.9420263788969"></omgdi:waypoint>
+        <omgdi:waypoint x="785.0" y="360.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="billing_account_creation_async-wait-time" id="BPMNEdge_billing_account_creation_async-wait-time">
+        <omgdi:waypoint x="578.2548494299614" y="188.420271942325"></omgdi:waypoint>
+        <omgdi:waypoint x="687.0" y="176.13426208496094"></omgdi:waypoint>
+        <omgdi:waypoint x="706.1437879753338" y="212.82254433464337"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-1B2AB708-9C43-4353-8BF1-412F157E6F2C" id="BPMNEdge_sid-1B2AB708-9C43-4353-8BF1-412F157E6F2C">
+        <omgdi:waypoint x="179.94973601541184" y="225.08544870829562"></omgdi:waypoint>
+        <omgdi:waypoint x="254.99999999999693" y="225.51441503139887"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-0D0FE9E7-0EC2-4C17-B5B9-DA87E6FCE779" id="BPMNEdge_sid-0D0FE9E7-0EC2-4C17-B5B9-DA87E6FCE779">
+        <omgdi:waypoint x="438.39305733424135" y="245.91821791964972"></omgdi:waypoint>
+        <omgdi:waypoint x="438.39305733424135" y="329.0"></omgdi:waypoint>
+        <omgdi:waypoint x="713.0" y="329.0"></omgdi:waypoint>
+        <omgdi:waypoint x="713.0" y="245.88753413283317"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-28589023-B368-4DFD-A6D1-DDEEB06088D9" id="BPMNEdge_sid-28589023-B368-4DFD-A6D1-DDEEB06088D9">
+        <omgdi:waypoint x="446.4216901991243" y="214.02664566984942"></omgdi:waypoint>
+        <omgdi:waypoint x="478.7861146684828" y="166.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-A7F75E2C-4362-484B-9298-8379539E1D00" id="BPMNEdge_sid-A7F75E2C-4362-484B-9298-8379539E1D00">
+        <omgdi:waypoint x="834.9499999999756" y="400.0"></omgdi:waypoint>
+        <omgdi:waypoint x="905.0" y="400.0"></omgdi:waypoint>
+        <omgdi:waypoint x="905.0" y="294.9079463570857"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-5C80BB67-9273-43FF-89BC-4D581A963263" id="BPMNEdge_sid-5C80BB67-9273-43FF-89BC-4D581A963263">
+        <omgdi:waypoint x="726.7132959155105" y="219.725555996293"></omgdi:waypoint>
+        <omgdi:waypoint x="807.5" y="183.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-3AB34318-EC8E-4543-887F-2BD8A28B7DEA" id="BPMNEdge_sid-3AB34318-EC8E-4543-887F-2BD8A28B7DEA">
+        <omgdi:waypoint x="797.9140624999999" y="267.94642857142856"></omgdi:waypoint>
+        <omgdi:waypoint x="930.0" y="196.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-7140ED7F-7623-47CF-B341-15A0883CB6C0" id="BPMNEdge_sid-7140ED7F-7623-47CF-B341-15A0883CB6C0">
+        <omgdi:waypoint x="354.94999999993405" y="225.97789091808698"></omgdi:waypoint>
+        <omgdi:waypoint x="418.39305733424135" y="225.97789091808698"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

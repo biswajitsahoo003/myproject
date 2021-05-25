@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <process id="plan_account_creation_workflow_sprint2" name="plan_account_creation_workflow_sprint2" isExecutable="true">
+    <documentation>plan_account_creation_workflow_sprint2</documentation>
+    <serviceTask id="billing_account_creation_plan" name="Non CPE Account Creation call to WPS" flowable:delegateExpression="${ taskPlanDelegate }">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[account-creation-check_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="sid-7140ED7F-7623-47CF-B341-15A0883CB6C0" sourceRef="billing_account_creation_plan" targetRef="sid-5DC022F6-20E0-4BFC-B047-FC16A1405D2B"></sequenceFlow>
+    <serviceTask id="account-creation-check_plan" name="Account Check Required Check" flowable:delegateExpression="${ taskPlanDelegate }">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[account_creation_activity_start_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <exclusiveGateway id="sid-46B2049C-5252-4121-98AD-DA8DF0952270" default="sid-74662E5A-AD21-4688-B780-8A1BA389691D"></exclusiveGateway>
+    <exclusiveGateway id="sid-459C8C2F-DA09-4274-8BDF-8CB501006F01"></exclusiveGateway>
+    <sequenceFlow id="sid-DAB02A66-9239-4337-AAF9-1474103E3139" sourceRef="account-creation-check_plan" targetRef="sid-46B2049C-5252-4121-98AD-DA8DF0952270"></sequenceFlow>
+    <sequenceFlow id="sid-3004F30C-4CBE-4EF7-9C9F-C52A1BD1C0B0" sourceRef="sid-46B2049C-5252-4121-98AD-DA8DF0952270" targetRef="sid-459C8C2F-DA09-4274-8BDF-8CB501006F01">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ isAccountRequired == false}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-74662E5A-AD21-4688-B780-8A1BA389691D" sourceRef="sid-46B2049C-5252-4121-98AD-DA8DF0952270" targetRef="billing_account_creation_plan"></sequenceFlow>
+    <exclusiveGateway id="sid-5DC022F6-20E0-4BFC-B047-FC16A1405D2B" default="sid-E4B3E297-5521-4094-8299-525380C97D52"></exclusiveGateway>
+    <sequenceFlow id="sid-A7F75E2C-4362-484B-9298-8379539E1D00" sourceRef="billing-account-creation-jeopardy_plan" targetRef="sid-459C8C2F-DA09-4274-8BDF-8CB501006F01"></sequenceFlow>
+    <sequenceFlow id="sid-E4B3E297-5521-4094-8299-525380C97D52" name="Yes" sourceRef="sid-5DC022F6-20E0-4BFC-B047-FC16A1405D2B" targetRef="sid-459C8C2F-DA09-4274-8BDF-8CB501006F01"></sequenceFlow>
+    <sequenceFlow id="sid-8D36F545-077E-4CDD-87DD-FBE3C0099863" name="No" sourceRef="sid-5DC022F6-20E0-4BFC-B047-FC16A1405D2B" targetRef="billing-account-creation-jeopardy_plan">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ var:get(accountCreationStatus) == false}]]></conditionExpression>
+    </sequenceFlow>
+    <serviceTask id="account_creation_activity_start_plan" name="account_creation_activity_start_plan" flowable:delegateExpression="${activityPlanStartDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[billing_handover_process_start_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="sid-978EAA1C-15C6-4C6B-AA69-28EB13E02A01" sourceRef="account_creation_activity_start_plan" targetRef="account-creation-check_plan"></sequenceFlow>
+    <serviceTask id="billing-account-creation-jeopardy_plan" name="Billing Account Creation Jeopardy" flowable:delegateExpression="${ taskPlanDelegate }">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[billing_account_creation_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="sid-207D13DF-E879-481E-804E-729BDFA78462" sourceRef="sid-459C8C2F-DA09-4274-8BDF-8CB501006F01" targetRef="account_creation_activity_end_plan"></sequenceFlow>
+    <serviceTask id="account_creation_activity_end_plan" name="account_creation_activity_end_plan" flowable:delegateExpression="${activityPlanEndDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[account-creation-check_plan,billing_account_creation_plan,billing-account-creation-jeopardy_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <endEvent id="sid-796DA9F1-884C-40DC-A4BC-CCCB245759CB"></endEvent>
+    <sequenceFlow id="sid-302C3E1F-1A33-48D5-BE2E-081AE0640C9E" sourceRef="account_creation_activity_end_plan" targetRef="sid-796DA9F1-884C-40DC-A4BC-CCCB245759CB"></sequenceFlow>
+    <startEvent id="sid-DAE548AC-8C0D-468E-BFF2-9EC3E13271AB"></startEvent>
+    <sequenceFlow id="sid-8EFA9000-21AA-451B-B91D-903E69A1A5B0" sourceRef="sid-DAE548AC-8C0D-468E-BFF2-9EC3E13271AB" targetRef="account_creation_activity_start_plan"></sequenceFlow>
+    <textAnnotation id="sid-0EB002F7-934B-4C28-95FE-F0735F676E1B">
+      <text>Is Account Creation Success?</text>
+    </textAnnotation>
+    <association id="sid-3AB34318-EC8E-4543-887F-2BD8A28B7DEA" sourceRef="sid-5DC022F6-20E0-4BFC-B047-FC16A1405D2B" targetRef="sid-0EB002F7-934B-4C28-95FE-F0735F676E1B" associationDirection="None"></association>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_plan_account_creation_workflow_sprint2">
+    <bpmndi:BPMNPlane bpmnElement="plan_account_creation_workflow_sprint2" id="BPMNPlane_plan_account_creation_workflow_sprint2">
+      <bpmndi:BPMNShape bpmnElement="billing_account_creation_plan" id="BPMNShape_billing_account_creation_plan">
+        <omgdc:Bounds height="80.0" width="100.0" x="420.0" y="145.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="account-creation-check_plan" id="BPMNShape_account-creation-check_plan">
+        <omgdc:Bounds height="80.0" width="100.0" x="190.0" y="220.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-46B2049C-5252-4121-98AD-DA8DF0952270" id="BPMNShape_sid-46B2049C-5252-4121-98AD-DA8DF0952270">
+        <omgdc:Bounds height="40.0" width="40.0" x="335.0" y="240.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-459C8C2F-DA09-4274-8BDF-8CB501006F01" id="BPMNShape_sid-459C8C2F-DA09-4274-8BDF-8CB501006F01">
+        <omgdc:Bounds height="40.0" width="40.0" x="1060.0" y="165.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-5DC022F6-20E0-4BFC-B047-FC16A1405D2B" id="BPMNShape_sid-5DC022F6-20E0-4BFC-B047-FC16A1405D2B">
+        <omgdc:Bounds height="40.0" width="40.0" x="685.0" y="165.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="account_creation_activity_start_plan" id="BPMNShape_account_creation_activity_start_plan">
+        <omgdc:Bounds height="80.0" width="100.0" x="190.0" y="345.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="billing-account-creation-jeopardy_plan" id="BPMNShape_billing-account-creation-jeopardy_plan">
+        <omgdc:Bounds height="80.0" width="100.0" x="655.0" y="285.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="account_creation_activity_end_plan" id="BPMNShape_account_creation_activity_end_plan">
+        <omgdc:Bounds height="80.0" width="100.0" x="1110.0" y="345.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-796DA9F1-884C-40DC-A4BC-CCCB245759CB" id="BPMNShape_sid-796DA9F1-884C-40DC-A4BC-CCCB245759CB">
+        <omgdc:Bounds height="28.0" width="28.0" x="1255.0" y="371.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-DAE548AC-8C0D-468E-BFF2-9EC3E13271AB" id="BPMNShape_sid-DAE548AC-8C0D-468E-BFF2-9EC3E13271AB">
+        <omgdc:Bounds height="30.0" width="30.0" x="30.0" y="225.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-0EB002F7-934B-4C28-95FE-F0735F676E1B" id="BPMNShape_sid-0EB002F7-934B-4C28-95FE-F0735F676E1B">
+        <omgdc:Bounds height="32.0" width="155.0" x="775.0" y="120.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-3AB34318-EC8E-4543-887F-2BD8A28B7DEA" id="BPMNShape_sid-3AB34318-EC8E-4543-887F-2BD8A28B7DEA">
+        <omgdc:Bounds height="40.77028765563668" width="58.24326807948091" x="716.7567319205191" y="136.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-E4B3E297-5521-4094-8299-525380C97D52" id="BPMNEdge_sid-E4B3E297-5521-4094-8299-525380C97D52">
+        <omgdi:waypoint x="724.9473407087339" y="185.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1060.0" y="185.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-978EAA1C-15C6-4C6B-AA69-28EB13E02A01" id="BPMNEdge_sid-978EAA1C-15C6-4C6B-AA69-28EB13E02A01">
+        <omgdi:waypoint x="240.0" y="345.0"></omgdi:waypoint>
+        <omgdi:waypoint x="240.0" y="299.95000000000005"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-8D36F545-077E-4CDD-87DD-FBE3C0099863" id="BPMNEdge_sid-8D36F545-077E-4CDD-87DD-FBE3C0099863">
+        <omgdi:waypoint x="705.0" y="204.94288008565312"></omgdi:waypoint>
+        <omgdi:waypoint x="705.0" y="285.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-A7F75E2C-4362-484B-9298-8379539E1D00" id="BPMNEdge_sid-A7F75E2C-4362-484B-9298-8379539E1D00">
+        <omgdi:waypoint x="754.9499999998862" y="325.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1080.0" y="325.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1080.0" y="204.90709435310941"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-74662E5A-AD21-4688-B780-8A1BA389691D" id="BPMNEdge_sid-74662E5A-AD21-4688-B780-8A1BA389691D">
+        <omgdi:waypoint x="374.9413336228275" y="260.0"></omgdi:waypoint>
+        <omgdi:waypoint x="470.0" y="260.0"></omgdi:waypoint>
+        <omgdi:waypoint x="470.0" y="224.95000000000002"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-3004F30C-4CBE-4EF7-9C9F-C52A1BD1C0B0" id="BPMNEdge_sid-3004F30C-4CBE-4EF7-9C9F-C52A1BD1C0B0">
+        <omgdi:waypoint x="355.0" y="240.0"></omgdi:waypoint>
+        <omgdi:waypoint x="355.0" y="33.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1080.0" y="33.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1080.0" y="165.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-302C3E1F-1A33-48D5-BE2E-081AE0640C9E" id="BPMNEdge_sid-302C3E1F-1A33-48D5-BE2E-081AE0640C9E">
+        <omgdi:waypoint x="1209.95" y="385.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1255.0" y="385.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-DAB02A66-9239-4337-AAF9-1474103E3139" id="BPMNEdge_sid-DAB02A66-9239-4337-AAF9-1474103E3139">
+        <omgdi:waypoint x="289.9499999999468" y="260.0"></omgdi:waypoint>
+        <omgdi:waypoint x="335.0" y="260.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-207D13DF-E879-481E-804E-729BDFA78462" id="BPMNEdge_sid-207D13DF-E879-481E-804E-729BDFA78462">
+        <omgdi:waypoint x="1086.0064516129032" y="198.93928571428577"></omgdi:waypoint>
+        <omgdi:waypoint x="1108.0" y="250.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1144.5925925925926" y="345.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-3AB34318-EC8E-4543-887F-2BD8A28B7DEA" id="BPMNEdge_sid-3AB34318-EC8E-4543-887F-2BD8A28B7DEA">
+        <omgdi:waypoint x="716.735294117647" y="176.76470588235296"></omgdi:waypoint>
+        <omgdi:waypoint x="775.0" y="136.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-7140ED7F-7623-47CF-B341-15A0883CB6C0" id="BPMNEdge_sid-7140ED7F-7623-47CF-B341-15A0883CB6C0">
+        <omgdi:waypoint x="519.9499999998982" y="185.0"></omgdi:waypoint>
+        <omgdi:waypoint x="685.0" y="185.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-8EFA9000-21AA-451B-B91D-903E69A1A5B0" id="BPMNEdge_sid-8EFA9000-21AA-451B-B91D-903E69A1A5B0">
+        <omgdi:waypoint x="45.0" y="254.94999913081827"></omgdi:waypoint>
+        <omgdi:waypoint x="45.0" y="385.0"></omgdi:waypoint>
+        <omgdi:waypoint x="190.0" y="385.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

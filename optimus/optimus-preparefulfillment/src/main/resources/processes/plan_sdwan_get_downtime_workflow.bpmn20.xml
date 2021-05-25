@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <process id="plan_sdwan_get_downtime_workflow" name="plan_sdwan_get_downtime_workflow" isExecutable="true">
+    <documentation>plan_sdwan_get_downtime_workflow</documentation>
+    <sequenceFlow id="sid-03C49F8A-345F-4FC7-B76B-C5AE6278BFD1" sourceRef="provide-downtime_plan" targetRef="sid-7FEEAA7C-1AE0-48AD-A191-C37FF8A3A0B3"></sequenceFlow>
+    <exclusiveGateway id="sid-7FEEAA7C-1AE0-48AD-A191-C37FF8A3A0B3"></exclusiveGateway>
+    <exclusiveGateway id="sid-B2273F7D-D4FE-4CFA-B47B-5CF2E1CB06F5" default="sid-0EB1ABAA-0EAD-4907-8902-47CB3945D2E9"></exclusiveGateway>
+    <serviceTask id="get-downtime-activity_start_plan" name="get-downtime-activity_start_plan" flowable:delegateExpression="${activityPlanStartDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[get-downtime-process_start_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="sid-C4B69D6C-2FF2-41C4-89D8-C3DBBA8D3086" sourceRef="get-downtime-activity_start_plan" targetRef="sid-B2273F7D-D4FE-4CFA-B47B-5CF2E1CB06F5"></sequenceFlow>
+    <serviceTask id="provide-downtime_plan" name="Provide Downtime" flowable:delegateExpression="${ taskPlanDelegate }">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[get-downtime-activity_start_plan,wait-for-downtime-from-customer_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="sid-B645FE11-A613-4797-9144-3E22B6857CBB" sourceRef="sid-7FEEAA7C-1AE0-48AD-A191-C37FF8A3A0B3" targetRef="get-downtime-activity_end_plan"></sequenceFlow>
+    <serviceTask id="get-downtime-activity_end_plan" name="get-downtime-activity_end_plan" flowable:delegateExpression="${activityPlanEndDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[provide-downtime_plan,get-downtime-activity_start_plan,wait-for-downtime-from-customer_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <endEvent id="sid-5FD1A20F-F26F-4ED2-A872-24EC3A7010D5"></endEvent>
+    <sequenceFlow id="sid-1D3EBB8B-AB0B-4086-A3CA-B1FE12F70CDE" sourceRef="get-downtime-process_end_plan" targetRef="sid-5FD1A20F-F26F-4ED2-A872-24EC3A7010D5"></sequenceFlow>
+    <startEvent id="sid-192BC904-10BF-4156-8240-4E926B6A72AF"></startEvent>
+    <serviceTask id="wait-for-downtime-from-customer_plan" name="wait for Downtime" flowable:delegateExpression="${ taskPlanDelegate }">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[get-downtime-activity_start_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <exclusiveGateway id="sid-C46AD4B5-2CC7-4F67-B420-BD3F250D5A73" default="sid-1B67BB61-875B-4A23-8FE0-C4895F7096C6"></exclusiveGateway>
+    <sequenceFlow id="sid-7988AC26-0FCC-45CE-9C0E-C4AD0E40B03D" sourceRef="wait-for-downtime-from-customer_plan" targetRef="sid-C46AD4B5-2CC7-4F67-B420-BD3F250D5A73"></sequenceFlow>
+    <sequenceFlow id="sid-1B67BB61-875B-4A23-8FE0-C4895F7096C6" sourceRef="sid-C46AD4B5-2CC7-4F67-B420-BD3F250D5A73" targetRef="sid-7FEEAA7C-1AE0-48AD-A191-C37FF8A3A0B3"></sequenceFlow>
+    <sequenceFlow id="sid-B1A23A17-6ABC-493B-AA57-90A1A02F8965" sourceRef="sid-C46AD4B5-2CC7-4F67-B420-BD3F250D5A73" targetRef="provide-downtime_plan">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ checkDowntimeAction=="manual" }]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-9F9C1CD8-9F6D-4A75-9284-1AC01510D1A5" sourceRef="sid-192BC904-10BF-4156-8240-4E926B6A72AF" targetRef="get-downtime-process_start_plan"></sequenceFlow>
+    <sequenceFlow id="sid-0EB1ABAA-0EAD-4907-8902-47CB3945D2E9" sourceRef="sid-B2273F7D-D4FE-4CFA-B47B-5CF2E1CB06F5" targetRef="sid-7FEEAA7C-1AE0-48AD-A191-C37FF8A3A0B3"></sequenceFlow>
+    <sequenceFlow id="sid-DE9E1E33-F4D7-45C7-BD3B-E7D5F39896E5" sourceRef="sid-B2273F7D-D4FE-4CFA-B47B-5CF2E1CB06F5" targetRef="provide-downtime_plan">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ var:get(checkDowntimeAction)=="open" }]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-27CE7B16-0D93-4566-9C24-C8C31F9DC95A" sourceRef="sid-B2273F7D-D4FE-4CFA-B47B-5CF2E1CB06F5" targetRef="wait-for-downtime-from-customer_plan">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ var:get(checkDowntimeAction)=="wait" }]]></conditionExpression>
+    </sequenceFlow>
+    <serviceTask id="get-downtime-process_start_plan" name="get-downtime-process_start_plan" flowable:delegateExpression="${processPlanStartDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[rf-config-p2p_plan,assign-dummy-config-process_end_plan,service-configuration-jeopardy_plan,manual-service-configuration_plan,activity-go-ahead_plan,confirm-switch-over_plan,service-configuration-jeopardy_plan,advanced-enrichment-rejected_plan,preview-service-configuration-jeopardy_plan,confirm-preview-service-configuration_plan,confirm-order-service-configuration_plan,lm_cable_extension_process_end_plan,tx-parallel-turn-up_plan,lm_cable_swap_process_end_plan,tx-sdh-configuration-manual_plan,tx-mpls-post-validation-manual_plan,confirm-tx-configuration_plan,confirm-tx-go-ahead_plan,enrich-service-design-tx-jeopardy_plan,tx_configuration_activity_start_plan,service_configuration_activity_end_plan,get-clr-async_plan,tx-mpls-configuration-manual,tx-node-manual-configuration_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="sid-E88FA9E4-5E5D-4992-9017-08DA0D64E099" sourceRef="get-downtime-process_start_plan" targetRef="get-downtime-activity_start_plan"></sequenceFlow>
+    <serviceTask id="get-downtime-process_end_plan" name="get-downtime-process_end_plan" flowable:delegateExpression="${processPlanEndDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[get-downtime-activity_end_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="sid-0E6779FB-49CB-44EE-A207-29466069E271" sourceRef="get-downtime-activity_end_plan" targetRef="get-downtime-process_end_plan"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_plan_sdwan_get_downtime_workflow">
+    <bpmndi:BPMNPlane bpmnElement="plan_sdwan_get_downtime_workflow" id="BPMNPlane_plan_sdwan_get_downtime_workflow">
+      <bpmndi:BPMNShape bpmnElement="sid-7FEEAA7C-1AE0-48AD-A191-C37FF8A3A0B3" id="BPMNShape_sid-7FEEAA7C-1AE0-48AD-A191-C37FF8A3A0B3">
+        <omgdc:Bounds height="40.0" width="40.0" x="600.0" y="95.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-B2273F7D-D4FE-4CFA-B47B-5CF2E1CB06F5" id="BPMNShape_sid-B2273F7D-D4FE-4CFA-B47B-5CF2E1CB06F5">
+        <omgdc:Bounds height="40.000000000000014" width="40.0" x="375.0" y="94.99999999999999"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="get-downtime-activity_start_plan" id="BPMNShape_get-downtime-activity_start_plan">
+        <omgdc:Bounds height="79.99999999999997" width="100.0" x="225.0" y="75.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="provide-downtime_plan" id="BPMNShape_provide-downtime_plan">
+        <omgdc:Bounds height="80.00000000000001" width="100.0" x="465.0" y="74.99999999999999"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="get-downtime-activity_end_plan" id="BPMNShape_get-downtime-activity_end_plan">
+        <omgdc:Bounds height="80.0" width="100.0" x="705.0" y="75.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-5FD1A20F-F26F-4ED2-A872-24EC3A7010D5" id="BPMNShape_sid-5FD1A20F-F26F-4ED2-A872-24EC3A7010D5">
+        <omgdc:Bounds height="28.0" width="28.0" x="1080.0" y="101.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-192BC904-10BF-4156-8240-4E926B6A72AF" id="BPMNShape_sid-192BC904-10BF-4156-8240-4E926B6A72AF">
+        <omgdc:Bounds height="30.0" width="30.0" x="0.0" y="99.99999999999997"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="wait-for-downtime-from-customer_plan" id="BPMNShape_wait-for-downtime-from-customer_plan">
+        <omgdc:Bounds height="80.0" width="100.0" x="345.0" y="161.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-C46AD4B5-2CC7-4F67-B420-BD3F250D5A73" id="BPMNShape_sid-C46AD4B5-2CC7-4F67-B420-BD3F250D5A73">
+        <omgdc:Bounds height="40.0" width="40.0" x="600.0" y="181.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="get-downtime-process_start_plan" id="BPMNShape_get-downtime-process_start_plan">
+        <omgdc:Bounds height="80.0" width="100.0" x="75.0" y="74.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="get-downtime-process_end_plan" id="BPMNShape_get-downtime-process_end_plan">
+        <omgdc:Bounds height="80.0" width="100.0" x="855.0" y="74.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-7988AC26-0FCC-45CE-9C0E-C4AD0E40B03D" id="BPMNEdge_sid-7988AC26-0FCC-45CE-9C0E-C4AD0E40B03D">
+        <omgdi:waypoint x="444.94999999996566" y="201.0"></omgdi:waypoint>
+        <omgdi:waypoint x="600.0" y="201.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-27CE7B16-0D93-4566-9C24-C8C31F9DC95A" id="BPMNEdge_sid-27CE7B16-0D93-4566-9C24-C8C31F9DC95A">
+        <omgdi:waypoint x="395.0" y="134.93841463414634"></omgdi:waypoint>
+        <omgdi:waypoint x="395.0" y="161.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-1B67BB61-875B-4A23-8FE0-C4895F7096C6" id="BPMNEdge_sid-1B67BB61-875B-4A23-8FE0-C4895F7096C6">
+        <omgdi:waypoint x="620.0" y="181.0"></omgdi:waypoint>
+        <omgdi:waypoint x="620.0" y="134.91155413271247"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-B645FE11-A613-4797-9144-3E22B6857CBB" id="BPMNEdge_sid-B645FE11-A613-4797-9144-3E22B6857CBB">
+        <omgdi:waypoint x="639.9426165803109" y="115.0"></omgdi:waypoint>
+        <omgdi:waypoint x="704.9999999999961" y="115.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-C4B69D6C-2FF2-41C4-89D8-C3DBBA8D3086" id="BPMNEdge_sid-C4B69D6C-2FF2-41C4-89D8-C3DBBA8D3086">
+        <omgdi:waypoint x="324.95000000000005" y="115.0"></omgdi:waypoint>
+        <omgdi:waypoint x="275.0" y="114.99999999999999"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-E88FA9E4-5E5D-4992-9017-08DA0D64E099" id="BPMNEdge_sid-E88FA9E4-5E5D-4992-9017-08DA0D64E099">
+        <omgdi:waypoint x="174.94999999999834" y="114.33299999999998"></omgdi:waypoint>
+        <omgdi:waypoint x="224.99999999999528" y="114.66666666666667"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-03C49F8A-345F-4FC7-B76B-C5AE6278BFD1" id="BPMNEdge_sid-03C49F8A-345F-4FC7-B76B-C5AE6278BFD1">
+        <omgdi:waypoint x="564.9499999999852" y="115.0"></omgdi:waypoint>
+        <omgdi:waypoint x="600.0" y="115.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-9F9C1CD8-9F6D-4A75-9284-1AC01510D1A5" id="BPMNEdge_sid-9F9C1CD8-9F6D-4A75-9284-1AC01510D1A5">
+        <omgdi:waypoint x="29.949998811561795" y="114.99999999999999"></omgdi:waypoint>
+        <omgdi:waypoint x="74.99999999998823" y="114.99999999999997"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-0EB1ABAA-0EAD-4907-8902-47CB3945D2E9" id="BPMNEdge_sid-0EB1ABAA-0EAD-4907-8902-47CB3945D2E9">
+        <omgdi:waypoint x="395.0" y="94.99999999999999"></omgdi:waypoint>
+        <omgdi:waypoint x="395.0" y="30.0"></omgdi:waypoint>
+        <omgdi:waypoint x="620.0" y="30.0"></omgdi:waypoint>
+        <omgdi:waypoint x="620.0" y="95.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-1D3EBB8B-AB0B-4086-A3CA-B1FE12F70CDE" id="BPMNEdge_sid-1D3EBB8B-AB0B-4086-A3CA-B1FE12F70CDE">
+        <omgdi:waypoint x="954.9499999999999" y="115.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1080.0" y="115.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-0E6779FB-49CB-44EE-A207-29466069E271" id="BPMNEdge_sid-0E6779FB-49CB-44EE-A207-29466069E271">
+        <omgdi:waypoint x="804.9499999999985" y="114.66666666666667"></omgdi:waypoint>
+        <omgdi:waypoint x="854.9999999999969" y="114.33299999999998"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-B1A23A17-6ABC-493B-AA57-90A1A02F8965" id="BPMNEdge_sid-B1A23A17-6ABC-493B-AA57-90A1A02F8965">
+        <omgdi:waypoint x="609.0047145102147" y="191.99476439790575"></omgdi:waypoint>
+        <omgdi:waypoint x="563.7702443280976" y="154.95"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-DE9E1E33-F4D7-45C7-BD3B-E7D5F39896E5" id="BPMNEdge_sid-DE9E1E33-F4D7-45C7-BD3B-E7D5F39896E5">
+        <omgdi:waypoint x="414.9416944213137" y="115.0"></omgdi:waypoint>
+        <omgdi:waypoint x="464.9999999999978" y="115.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <signal id="service-configuration-ack-timeout-signal" name="service-configuration-ack-timeout-signal" flowable:scope="global"></signal>
+  <process id="tx_downtime_workflow" name="Tx Downtime Workflow" isExecutable="true">
+    <documentation>Tx Downtime Workflow</documentation>
+    <sequenceFlow id="sid-B63314FE-1DF9-4ED3-9358-E6BAAA4EEBCD" sourceRef="service_configuration_activity_start" targetRef="get-tx-downtime-info"></sequenceFlow>
+    <startEvent id="service_configuration_activity_start"></startEvent>
+    <serviceTask id="get-tx-downtime-info" name="Get Tx Downtime Info" flowable:delegateExpression="${getTxDownTimeDelegate}"></serviceTask>
+    <receiveTask id="get-tx-downtime-info-async" name="Get Tx Downtime Info Async">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ serviceTaskStartListener }"></flowable:executionListener>
+        <flowable:executionListener event="end" delegateExpression="${ serviceTaskEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </receiveTask>
+    <exclusiveGateway id="sid-0BE45F6F-6F09-444E-9A7C-803855D6DB0F" default="sid-FBB935CD-A237-4D83-B5A2-AD7765C361A5"></exclusiveGateway>
+    <exclusiveGateway id="sid-03178D91-FD6A-41C1-8EE9-2AB32A8D2B6B" default="sid-02BFCB27-AE0D-4212-BA8C-7BEC398BCAAA"></exclusiveGateway>
+    <userTask id="tx-downtime-jeopardy" name="Tx Downtime Jeopardy">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="sid-8A9018EE-6690-4B2C-BBF9-22A6541F686B" sourceRef="get-tx-downtime-info" targetRef="sid-0BE45F6F-6F09-444E-9A7C-803855D6DB0F"></sequenceFlow>
+    <sequenceFlow id="sid-FBB935CD-A237-4D83-B5A2-AD7765C361A5" name="No" sourceRef="sid-0BE45F6F-6F09-444E-9A7C-803855D6DB0F" targetRef="sid-03178D91-FD6A-41C1-8EE9-2AB32A8D2B6B"></sequenceFlow>
+    <endEvent id="sid-24A9B35D-3247-421E-A756-F54D8F05BDD5"></endEvent>
+    <sequenceFlow id="sid-B3C66F55-9C77-40DC-B374-17868B720ABC" sourceRef="get-tx-downtime-info-async" targetRef="sid-03178D91-FD6A-41C1-8EE9-2AB32A8D2B6B"></sequenceFlow>
+    <sequenceFlow id="sid-FDBD136A-B59B-4713-AA35-9CDAF04B37E9" name="Yes" sourceRef="sid-0BE45F6F-6F09-444E-9A7C-803855D6DB0F" targetRef="get-tx-downtime-info-async">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ isTxDownTimeCallSuccess== true }]]></conditionExpression>
+    </sequenceFlow>
+    <boundaryEvent id="sid-02345C6A-0C2D-4360-8A0F-62068E3CB4C7" attachedToRef="get-tx-downtime-info-async" cancelActivity="true">
+      <timerEventDefinition>
+        <timeDuration>PT30M</timeDuration>
+      </timerEventDefinition>
+    </boundaryEvent>
+    <sequenceFlow id="get-tx-downtime-info-async-wait-time" sourceRef="sid-02345C6A-0C2D-4360-8A0F-62068E3CB4C7" targetRef="sid-03178D91-FD6A-41C1-8EE9-2AB32A8D2B6B">
+      <extensionElements>
+        <flowable:executionListener event="take" delegateExpression="${ timeEventEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <exclusiveGateway id="sid-B46C0FDE-9FF0-4CFB-86B7-F82753B0A82C" default="sid-A840C0AC-8C9C-4349-8D06-F30EDB319577"></exclusiveGateway>
+    <sequenceFlow id="sid-7A248254-70F0-4816-AF4E-6B510BB842A5" sourceRef="tx-downtime-jeopardy" targetRef="sid-B46C0FDE-9FF0-4CFB-86B7-F82753B0A82C"></sequenceFlow>
+    <exclusiveGateway id="sid-3C0C8378-87CA-41DA-9A65-C2AC2EC6D62D"></exclusiveGateway>
+    <sequenceFlow id="sid-49834D48-09ED-4EF3-9AE8-44E2E11553BA" sourceRef="sid-3C0C8378-87CA-41DA-9A65-C2AC2EC6D62D" targetRef="sid-24A9B35D-3247-421E-A756-F54D8F05BDD5"></sequenceFlow>
+    <sequenceFlow id="sid-02BFCB27-AE0D-4212-BA8C-7BEC398BCAAA" sourceRef="sid-03178D91-FD6A-41C1-8EE9-2AB32A8D2B6B" targetRef="sid-3C0C8378-87CA-41DA-9A65-C2AC2EC6D62D"></sequenceFlow>
+    <sequenceFlow id="sid-A840C0AC-8C9C-4349-8D06-F30EDB319577" sourceRef="sid-B46C0FDE-9FF0-4CFB-86B7-F82753B0A82C" targetRef="get-tx-downtime-info"></sequenceFlow>
+    <sequenceFlow id="sid-B425BE94-E427-4AAA-94A8-AB5E90067803" name="No" sourceRef="sid-03178D91-FD6A-41C1-8EE9-2AB32A8D2B6B" targetRef="tx-downtime-jeopardy">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ isTxDownTimeCallSuccess== false || getTxDownTimeSuccess == false }]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-6917A84B-C10E-4CED-81CE-84EADC7686B8" sourceRef="sid-B46C0FDE-9FF0-4CFB-86B7-F82753B0A82C" targetRef="sid-3C0C8378-87CA-41DA-9A65-C2AC2EC6D62D">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ var:get(action) == "manual" }]]></conditionExpression>
+    </sequenceFlow>
+    <textAnnotation id="sid-15ECA792-11A5-451E-8092-D17812911DB3">
+      <text>Tx Downtime  Sync call completed?</text>
+    </textAnnotation>
+    <association id="sid-ED4EA618-483C-446F-92E7-1D56B5FD197E" sourceRef="sid-0BE45F6F-6F09-444E-9A7C-803855D6DB0F" targetRef="sid-15ECA792-11A5-451E-8092-D17812911DB3" associationDirection="None"></association>
+    <textAnnotation id="sid-07F7EEE7-8C4E-4125-8DAF-545D542C1316">
+      <text>Get Tx Downtime Info  Success?</text>
+    </textAnnotation>
+    <association id="sid-C6BDF598-E480-42C7-A37C-FDC80287F1CF" sourceRef="sid-03178D91-FD6A-41C1-8EE9-2AB32A8D2B6B" targetRef="sid-07F7EEE7-8C4E-4125-8DAF-545D542C1316" associationDirection="None"></association>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_tx_downtime_workflow">
+    <bpmndi:BPMNPlane bpmnElement="tx_downtime_workflow" id="BPMNPlane_tx_downtime_workflow">
+      <bpmndi:BPMNShape bpmnElement="service_configuration_activity_start" id="BPMNShape_service_configuration_activity_start">
+        <omgdc:Bounds height="30.0" width="30.0" x="30.0" y="214.5"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="get-tx-downtime-info" id="BPMNShape_get-tx-downtime-info">
+        <omgdc:Bounds height="80.0" width="100.0" x="105.0" y="189.5"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="get-tx-downtime-info-async" id="BPMNShape_get-tx-downtime-info-async">
+        <omgdc:Bounds height="80.0" width="100.0" x="214.0" y="60.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-0BE45F6F-6F09-444E-9A7C-803855D6DB0F" id="BPMNShape_sid-0BE45F6F-6F09-444E-9A7C-803855D6DB0F">
+        <omgdc:Bounds height="40.0" width="40.0" x="244.0" y="209.5"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-03178D91-FD6A-41C1-8EE9-2AB32A8D2B6B" id="BPMNShape_sid-03178D91-FD6A-41C1-8EE9-2AB32A8D2B6B">
+        <omgdc:Bounds height="40.0" width="40.0" x="413.5" y="209.5"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="tx-downtime-jeopardy" id="BPMNShape_tx-downtime-jeopardy">
+        <omgdc:Bounds height="80.0" width="100.0" x="383.5" y="29.373162050180042"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-15ECA792-11A5-451E-8092-D17812911DB3" id="BPMNShape_sid-15ECA792-11A5-451E-8092-D17812911DB3">
+        <omgdc:Bounds height="29.0" width="118.0" x="212.0" y="264.5"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-ED4EA618-483C-446F-92E7-1D56B5FD197E" id="BPMNShape_sid-ED4EA618-483C-446F-92E7-1D56B5FD197E">
+        <omgdc:Bounds height="17.61316932430907" width="3.5226338648618025" x="267.4773661351382" y="246.88683067569093"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-07F7EEE7-8C4E-4125-8DAF-545D542C1316" id="BPMNShape_sid-07F7EEE7-8C4E-4125-8DAF-545D542C1316">
+        <omgdc:Bounds height="36.0" width="97.0" x="360.0" y="261.5"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-C6BDF598-E480-42C7-A37C-FDC80287F1CF" id="BPMNShape_sid-C6BDF598-E480-42C7-A37C-FDC80287F1CF">
+        <omgdc:Bounds height="20.211975626275432" width="15.790605958027697" x="408.5" y="241.28802437372457"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-24A9B35D-3247-421E-A756-F54D8F05BDD5" id="BPMNShape_sid-24A9B35D-3247-421E-A756-F54D8F05BDD5">
+        <omgdc:Bounds height="28.0" width="28.0" x="600.0" y="215.5"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-02345C6A-0C2D-4360-8A0F-62068E3CB4C7" id="BPMNShape_sid-02345C6A-0C2D-4360-8A0F-62068E3CB4C7">
+        <omgdc:Bounds height="31.0" width="31.0" x="273.83339192493435" y="44.49990748694577"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-B46C0FDE-9FF0-4CFB-86B7-F82753B0A82C" id="BPMNShape_sid-B46C0FDE-9FF0-4CFB-86B7-F82753B0A82C">
+        <omgdc:Bounds height="40.0" width="40.0" x="528.5" y="49.37316205018004"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-3C0C8378-87CA-41DA-9A65-C2AC2EC6D62D" id="BPMNShape_sid-3C0C8378-87CA-41DA-9A65-C2AC2EC6D62D">
+        <omgdc:Bounds height="40.0" width="40.0" x="528.5" y="209.5"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-ED4EA618-483C-446F-92E7-1D56B5FD197E" id="BPMNEdge_sid-ED4EA618-483C-446F-92E7-1D56B5FD197E">
+        <omgdi:waypoint x="267.325" y="246.10920427553444"></omgdi:waypoint>
+        <omgdi:waypoint x="271.0" y="264.5"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="get-tx-downtime-info-async-wait-time" id="BPMNEdge_get-tx-downtime-info-async-wait-time">
+        <omgdi:waypoint x="299.34644707783633" y="71.76615746777813"></omgdi:waypoint>
+        <omgdi:waypoint x="424.3453439340792" y="218.65090045954224"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-7A248254-70F0-4816-AF4E-6B510BB842A5" id="BPMNEdge_sid-7A248254-70F0-4816-AF4E-6B510BB842A5">
+        <omgdi:waypoint x="483.4499999999977" y="69.5893958164138"></omgdi:waypoint>
+        <omgdi:waypoint x="528.9130434782587" y="69.7862055284409"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-49834D48-09ED-4EF3-9AE8-44E2E11553BA" id="BPMNEdge_sid-49834D48-09ED-4EF3-9AE8-44E2E11553BA">
+        <omgdi:waypoint x="568.0820046439607" y="229.85271317829458"></omgdi:waypoint>
+        <omgdi:waypoint x="600.0004032095912" y="229.60730462874494"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-C6BDF598-E480-42C7-A37C-FDC80287F1CF" id="BPMNEdge_sid-C6BDF598-E480-42C7-A37C-FDC80287F1CF">
+        <omgdi:waypoint x="424.7280701754386" y="240.7"></omgdi:waypoint>
+        <omgdi:waypoint x="408.5" y="261.5"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-8A9018EE-6690-4B2C-BBF9-22A6541F686B" id="BPMNEdge_sid-8A9018EE-6690-4B2C-BBF9-22A6541F686B">
+        <omgdi:waypoint x="204.94999999999598" y="229.5"></omgdi:waypoint>
+        <omgdi:waypoint x="244.0" y="229.5"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-6917A84B-C10E-4CED-81CE-84EADC7686B8" id="BPMNEdge_sid-6917A84B-C10E-4CED-81CE-84EADC7686B8">
+        <omgdi:waypoint x="548.940299197028" y="88.87671772025298"></omgdi:waypoint>
+        <omgdi:waypoint x="548.5622943669388" y="209.56245049317175"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-B3C66F55-9C77-40DC-B374-17868B720ABC" id="BPMNEdge_sid-B3C66F55-9C77-40DC-B374-17868B720ABC">
+        <omgdi:waypoint x="303.6219940699779" y="139.95"></omgdi:waypoint>
+        <omgdi:waypoint x="421.6537824393762" y="221.33756523314347"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-02BFCB27-AE0D-4212-BA8C-7BEC398BCAAA" id="BPMNEdge_sid-02BFCB27-AE0D-4212-BA8C-7BEC398BCAAA">
+        <omgdi:waypoint x="452.94176802776684" y="230.0"></omgdi:waypoint>
+        <omgdi:waypoint x="529.0" y="230.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-B425BE94-E427-4AAA-94A8-AB5E90067803" id="BPMNEdge_sid-B425BE94-E427-4AAA-94A8-AB5E90067803">
+        <omgdi:waypoint x="433.5" y="209.5"></omgdi:waypoint>
+        <omgdi:waypoint x="433.5" y="109.32316205018004"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-B63314FE-1DF9-4ED3-9358-E6BAAA4EEBCD" id="BPMNEdge_sid-B63314FE-1DF9-4ED3-9358-E6BAAA4EEBCD">
+        <omgdi:waypoint x="59.9499984899576" y="229.5"></omgdi:waypoint>
+        <omgdi:waypoint x="105.0" y="229.5"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-A840C0AC-8C9C-4349-8D06-F30EDB319577" id="BPMNEdge_sid-A840C0AC-8C9C-4349-8D06-F30EDB319577">
+        <omgdi:waypoint x="549.0" y="49.873162050180035"></omgdi:waypoint>
+        <omgdi:waypoint x="549.0" y="23.0"></omgdi:waypoint>
+        <omgdi:waypoint x="155.0" y="23.0"></omgdi:waypoint>
+        <omgdi:waypoint x="155.0" y="189.5"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-FBB935CD-A237-4D83-B5A2-AD7765C361A5" id="BPMNEdge_sid-FBB935CD-A237-4D83-B5A2-AD7765C361A5">
+        <omgdi:waypoint x="283.9441185141071" y="229.5"></omgdi:waypoint>
+        <omgdi:waypoint x="413.5" y="229.5"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-FDBD136A-B59B-4713-AA35-9CDAF04B37E9" id="BPMNEdge_sid-FDBD136A-B59B-4713-AA35-9CDAF04B37E9">
+        <omgdi:waypoint x="264.0" y="209.5"></omgdi:waypoint>
+        <omgdi:waypoint x="264.0" y="139.95"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

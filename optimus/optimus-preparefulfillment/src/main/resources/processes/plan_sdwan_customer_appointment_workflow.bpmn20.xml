@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <process id="plan_sdwan_customer_appointment_workflow" name="plan_sdwan_customer_appointment_workflow" isExecutable="true">
+    <documentation>plan_sdwan_customer_appointment_workflow</documentation>
+    <exclusiveGateway id="sid-7FEEAA7C-1AE0-48AD-A191-C37FF8A3A0B3"></exclusiveGateway>
+    <exclusiveGateway id="sid-B2273F7D-D4FE-4CFA-B47B-5CF2E1CB06F5" default="sid-DE9E1E33-F4D7-45C7-BD3B-E7D5F39896E5"></exclusiveGateway>
+    <serviceTask id="get-downtime-activity_start_plan" name="get-downtime-activity_start_plan" flowable:delegateExpression="${activityPlanStartDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[get-downtime-process_start_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="sdwan-customer-appointment-cpe-installation_plan" name="Provide Appointment for CPE Installation" flowable:delegateExpression="${ taskPlanDelegate }">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[get-downtime-activity_start_plan,wait-for-downtime-from-customer_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="get-downtime-activity_end_plan" name="get-downtime-activity_end_plan" flowable:delegateExpression="${activityPlanEndDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[sdwan-customer-appointment-cpe-installation_plan,get-downtime-activity_start_plan,wait-for-customer-appointment-for-cpe-installation_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <endEvent id="sid-5FD1A20F-F26F-4ED2-A872-24EC3A7010D5"></endEvent>
+    <sequenceFlow id="sid-1D3EBB8B-AB0B-4086-A3CA-B1FE12F70CDE" sourceRef="get-downtime-activity_end_plan" targetRef="sid-5FD1A20F-F26F-4ED2-A872-24EC3A7010D5"></sequenceFlow>
+    <startEvent id="sid-192BC904-10BF-4156-8240-4E926B6A72AF"></startEvent>
+    <serviceTask id="wait-for-customer-appointment-for-cpe-installation_plan" name="wait for Customer Appointment" flowable:delegateExpression="${ taskPlanDelegate }">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[get-downtime-activity_start_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <exclusiveGateway id="sid-C46AD4B5-2CC7-4F67-B420-BD3F250D5A73" default="sid-1B67BB61-875B-4A23-8FE0-C4895F7096C6"></exclusiveGateway>
+    <sequenceFlow id="sid-9F9C1CD8-9F6D-4A75-9284-1AC01510D1A5" sourceRef="sid-192BC904-10BF-4156-8240-4E926B6A72AF" targetRef="get-downtime-activity_start_plan"></sequenceFlow>
+    <sequenceFlow id="sid-7988AC26-0FCC-45CE-9C0E-C4AD0E40B03D" sourceRef="wait-for-customer-appointment-for-cpe-installation_plan" targetRef="sid-C46AD4B5-2CC7-4F67-B420-BD3F250D5A73"></sequenceFlow>
+    <sequenceFlow id="sid-03C49F8A-345F-4FC7-B76B-C5AE6278BFD1" sourceRef="sdwan-customer-appointment-cpe-installation_plan" targetRef="sid-7FEEAA7C-1AE0-48AD-A191-C37FF8A3A0B3"></sequenceFlow>
+    <sequenceFlow id="sid-1B67BB61-875B-4A23-8FE0-C4895F7096C6" sourceRef="sid-C46AD4B5-2CC7-4F67-B420-BD3F250D5A73" targetRef="sid-7FEEAA7C-1AE0-48AD-A191-C37FF8A3A0B3"></sequenceFlow>
+    <sequenceFlow id="sid-B645FE11-A613-4797-9144-3E22B6857CBB" sourceRef="sid-7FEEAA7C-1AE0-48AD-A191-C37FF8A3A0B3" targetRef="get-downtime-activity_end_plan"></sequenceFlow>
+    <sequenceFlow id="sid-B1A23A17-6ABC-493B-AA57-90A1A02F8965" sourceRef="sid-C46AD4B5-2CC7-4F67-B420-BD3F250D5A73" targetRef="sdwan-customer-appointment-cpe-installation_plan">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ var:get(customerAppointment)=="manual" }]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-C4B69D6C-2FF2-41C4-89D8-C3DBBA8D3086" sourceRef="get-downtime-activity_start_plan" targetRef="sid-B2273F7D-D4FE-4CFA-B47B-5CF2E1CB06F5"></sequenceFlow>
+    <sequenceFlow id="sid-DE9E1E33-F4D7-45C7-BD3B-E7D5F39896E5" sourceRef="sid-B2273F7D-D4FE-4CFA-B47B-5CF2E1CB06F5" targetRef="sdwan-customer-appointment-cpe-installation_plan"></sequenceFlow>
+    <sequenceFlow id="sid-27CE7B16-0D93-4566-9C24-C8C31F9DC95A" sourceRef="sid-B2273F7D-D4FE-4CFA-B47B-5CF2E1CB06F5" targetRef="wait-for-customer-appointment-for-cpe-installation_plan">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ var:get(customerAppointment) =="wait" }]]></conditionExpression>
+    </sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_plan_sdwan_customer_appointment_workflow">
+    <bpmndi:BPMNPlane bpmnElement="plan_sdwan_customer_appointment_workflow" id="BPMNPlane_plan_sdwan_customer_appointment_workflow">
+      <bpmndi:BPMNShape bpmnElement="sid-7FEEAA7C-1AE0-48AD-A191-C37FF8A3A0B3" id="BPMNShape_sid-7FEEAA7C-1AE0-48AD-A191-C37FF8A3A0B3">
+        <omgdc:Bounds height="40.0" width="40.0" x="480.0" y="95.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-B2273F7D-D4FE-4CFA-B47B-5CF2E1CB06F5" id="BPMNShape_sid-B2273F7D-D4FE-4CFA-B47B-5CF2E1CB06F5">
+        <omgdc:Bounds height="40.0" width="40.0" x="255.0" y="95.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="get-downtime-activity_start_plan" id="BPMNShape_get-downtime-activity_start_plan">
+        <omgdc:Bounds height="79.99999999999997" width="100.0" x="75.0" y="180.00000000000003"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sdwan-customer-appointment-cpe-installation_plan" id="BPMNShape_sdwan-customer-appointment-cpe-installation_plan">
+        <omgdc:Bounds height="80.0" width="100.0" x="345.0" y="75.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="get-downtime-activity_end_plan" id="BPMNShape_get-downtime-activity_end_plan">
+        <omgdc:Bounds height="80.0" width="100.0" x="565.0" y="75.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-5FD1A20F-F26F-4ED2-A872-24EC3A7010D5" id="BPMNShape_sid-5FD1A20F-F26F-4ED2-A872-24EC3A7010D5">
+        <omgdc:Bounds height="28.0" width="28.0" x="710.0" y="101.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-192BC904-10BF-4156-8240-4E926B6A72AF" id="BPMNShape_sid-192BC904-10BF-4156-8240-4E926B6A72AF">
+        <omgdc:Bounds height="30.0" width="30.0" x="37.000015109776996" y="66.01562797976649"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="wait-for-customer-appointment-for-cpe-installation_plan" id="BPMNShape_wait-for-customer-appointment-for-cpe-installation_plan">
+        <omgdc:Bounds height="80.0" width="100.0" x="225.0" y="180.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-C46AD4B5-2CC7-4F67-B420-BD3F250D5A73" id="BPMNShape_sid-C46AD4B5-2CC7-4F67-B420-BD3F250D5A73">
+        <omgdc:Bounds height="40.0" width="40.0" x="480.0" y="200.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-7988AC26-0FCC-45CE-9C0E-C4AD0E40B03D" id="BPMNEdge_sid-7988AC26-0FCC-45CE-9C0E-C4AD0E40B03D">
+        <omgdi:waypoint x="324.95000000000005" y="220.0"></omgdi:waypoint>
+        <omgdi:waypoint x="480.0" y="220.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-27CE7B16-0D93-4566-9C24-C8C31F9DC95A" id="BPMNEdge_sid-27CE7B16-0D93-4566-9C24-C8C31F9DC95A">
+        <omgdi:waypoint x="275.0" y="134.94050903901044"></omgdi:waypoint>
+        <omgdi:waypoint x="275.0" y="180.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-1B67BB61-875B-4A23-8FE0-C4895F7096C6" id="BPMNEdge_sid-1B67BB61-875B-4A23-8FE0-C4895F7096C6">
+        <omgdi:waypoint x="500.0" y="200.0"></omgdi:waypoint>
+        <omgdi:waypoint x="500.0" y="134.90946139180176"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-03C49F8A-345F-4FC7-B76B-C5AE6278BFD1" id="BPMNEdge_sid-03C49F8A-345F-4FC7-B76B-C5AE6278BFD1">
+        <omgdi:waypoint x="444.94999999998527" y="115.0"></omgdi:waypoint>
+        <omgdi:waypoint x="480.0" y="115.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-B645FE11-A613-4797-9144-3E22B6857CBB" id="BPMNEdge_sid-B645FE11-A613-4797-9144-3E22B6857CBB">
+        <omgdi:waypoint x="519.9413336229366" y="115.0"></omgdi:waypoint>
+        <omgdi:waypoint x="564.9999999999906" y="115.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-9F9C1CD8-9F6D-4A75-9284-1AC01510D1A5" id="BPMNEdge_sid-9F9C1CD8-9F6D-4A75-9284-1AC01510D1A5">
+        <omgdi:waypoint x="52.00001339008722" y="95.96562703431428"></omgdi:waypoint>
+        <omgdi:waypoint x="52.0" y="220.0"></omgdi:waypoint>
+        <omgdi:waypoint x="75.0" y="220.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-1D3EBB8B-AB0B-4086-A3CA-B1FE12F70CDE" id="BPMNEdge_sid-1D3EBB8B-AB0B-4086-A3CA-B1FE12F70CDE">
+        <omgdi:waypoint x="664.9499999999791" y="115.0"></omgdi:waypoint>
+        <omgdi:waypoint x="710.0" y="115.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-B1A23A17-6ABC-493B-AA57-90A1A02F8965" id="BPMNEdge_sid-B1A23A17-6ABC-493B-AA57-90A1A02F8965">
+        <omgdi:waypoint x="500.0" y="220.0"></omgdi:waypoint>
+        <omgdi:waypoint x="395.0" y="115.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-DE9E1E33-F4D7-45C7-BD3B-E7D5F39896E5" id="BPMNEdge_sid-DE9E1E33-F4D7-45C7-BD3B-E7D5F39896E5">
+        <omgdi:waypoint x="294.94169442131556" y="115.0"></omgdi:waypoint>
+        <omgdi:waypoint x="345.0" y="115.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-C4B69D6C-2FF2-41C4-89D8-C3DBBA8D3086" id="BPMNEdge_sid-C4B69D6C-2FF2-41C4-89D8-C3DBBA8D3086">
+        <omgdi:waypoint x="125.0" y="180.00000000000003"></omgdi:waypoint>
+        <omgdi:waypoint x="125.0" y="115.0"></omgdi:waypoint>
+        <omgdi:waypoint x="255.0" y="115.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

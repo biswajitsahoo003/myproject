@@ -1,0 +1,95 @@
+package com.tcl.dias.common.fulfillment.beans;
+
+import java.util.Date;
+
+/**
+ * This file contains the OdrAdditionalServiceParam.java class.
+ * 
+ *
+ * @author Manojkumar R
+ * @link http://www.tatacommunications.com/
+ * @copyright 2019 Tata Communications Limited
+ */
+public class OdrAdditionalServiceParamBean {
+	
+	private Integer id;
+	private String referenceId;
+	private String referenceType;
+	private String category;
+	private String attribute;
+	private String value;
+	private String createdBy;
+	private Date createdTime;
+	private String updatedBy;
+	private Date updatedTime;
+	private String isActive;
+	public Integer getId() {
+		return id;
+	}
+	public void setId(Integer id) {
+		this.id = id;
+	}
+	public String getReferenceId() {
+		return referenceId;
+	}
+	public void setReferenceId(String referenceId) {
+		this.referenceId = referenceId;
+	}
+	public String getReferenceType() {
+		return referenceType;
+	}
+	public void setReferenceType(String referenceType) {
+		this.referenceType = referenceType;
+	}
+	public String getCategory() {
+		return category;
+	}
+	public void setCategory(String category) {
+		this.category = category;
+	}
+	public String getAttribute() {
+		return attribute;
+	}
+	public void setAttribute(String attribute) {
+		this.attribute = attribute;
+	}
+	public String getValue() {
+		return value;
+	}
+	public void setValue(String value) {
+		this.value = value;
+	}
+	public String getCreatedBy() {
+		return createdBy;
+	}
+	public void setCreatedBy(String createdBy) {
+		this.createdBy = createdBy;
+	}
+	public Date getCreatedTime() {
+		return createdTime;
+	}
+	public void setCreatedTime(Date createdTime) {
+		this.createdTime = createdTime;
+	}
+	public String getUpdatedBy() {
+		return updatedBy;
+	}
+	public void setUpdatedBy(String updatedBy) {
+		this.updatedBy = updatedBy;
+	}
+	public Date getUpdatedTime() {
+		return updatedTime;
+	}
+	public void setUpdatedTime(Date updatedTime) {
+		this.updatedTime = updatedTime;
+	}
+	public String getIsActive() {
+		return isActive;
+	}
+	public void setIsActive(String isActive) {
+		this.isActive = isActive;
+	}
+	
+	
+
+}

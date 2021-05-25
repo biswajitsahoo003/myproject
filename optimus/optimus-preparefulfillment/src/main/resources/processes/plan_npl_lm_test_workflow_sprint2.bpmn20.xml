@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <process id="plan_npl_lm_test_workflow_sprint2" name="plan_npl_lm_test_workflow_sprint2" isExecutable="true">
+    <documentation>plan_npl_lm_test_workflow_sprint2</documentation>
+    <exclusiveGateway id="sid-CCF48D78-2FBD-477D-94E9-48719D9B43DD"></exclusiveGateway>
+    <sequenceFlow id="sid-03C49F8A-345F-4FC7-B76B-C5AE6278BFD1" sourceRef="conduct-lm-test-offnet-wireless" targetRef="confirm-last-mile-acceptance-offnet-wireless"></sequenceFlow>
+    <exclusiveGateway id="sid-6219A843-C2A5-4E80-8703-171F46133C37"></exclusiveGateway>
+    <exclusiveGateway id="sid-82F9F11F-A278-4434-A1E8-A5660865F129" default="sid-E63F4B52-5E32-44A8-863A-2A8D276116D7"></exclusiveGateway>
+    <sequenceFlow id="sid-DA8E80E2-49B7-45AC-8664-4CD94C51E701" sourceRef="customer-appointment-lm-test" targetRef="arrange-field-engineer-lm-test-onnet-wireline"></sequenceFlow>
+    <exclusiveGateway id="sid-58A75A7B-2059-4335-8E00-98392E482B50"></exclusiveGateway>
+    <sequenceFlow id="sid-9C17743D-4898-4C75-AA64-D96423407D8C" sourceRef="arrange-field-engineer-lm-test-onnet-wireline_reopen" targetRef="sid-58A75A7B-2059-4335-8E00-98392E482B50"></sequenceFlow>
+    <sequenceFlow id="sid-B46029DA-B71A-4C64-A57D-8A60C057BDA0" sourceRef="sid-58A75A7B-2059-4335-8E00-98392E482B50" targetRef="conduct-lm-test-onnet-wireline"></sequenceFlow>
+    <sequenceFlow id="sid-E63F4B52-5E32-44A8-863A-2A8D276116D7" name="Yes" sourceRef="sid-82F9F11F-A278-4434-A1E8-A5660865F129" targetRef="arrange-field-engineer-lm-test-onnet-wireline_reopen"></sequenceFlow>
+    <sequenceFlow id="sid-5DC7C559-F376-43C8-827D-5CA037FD99B8" sourceRef="conduct-lm-test-onnet-wireline" targetRef="sid-6219A843-C2A5-4E80-8703-171F46133C37"></sequenceFlow>
+    <sequenceFlow id="sid-602977A8-B404-4E44-9572-F80239CEFA6B" name="No" sourceRef="sid-82F9F11F-A278-4434-A1E8-A5660865F129" targetRef="customer-appointment-lm-test">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ isSoftLoopPossibleAtCE == false}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-7933F15A-BCD1-4A58-AC8F-5D75E6AC8C2E" sourceRef="confirm-last-mile-acceptance-offnet-wireless" targetRef="sid-6219A843-C2A5-4E80-8703-171F46133C37"></sequenceFlow>
+    <sequenceFlow id="sid-54512E11-446B-48B0-8EB0-1AC011498C81" name="Wireline" sourceRef="sid-CCF48D78-2FBD-477D-94E9-48719D9B43DD" targetRef="sid-82F9F11F-A278-4434-A1E8-A5660865F129">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ lmType == "onnet" && lmConnectionType == "Wireline" }]]></conditionExpression>
+    </sequenceFlow>
+    <serviceTask id="customer-appointment-lm-test" name="Schedule customer Appointment for LM Test" flowable:delegateExpression="${ taskPlanDelegate }">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[lm_test_onnet_wireline_activity_start_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="arrange-field-engineer-lm-test-onnet-wireline" name="Arrange Field Engineer for LM Test" flowable:delegateExpression="${ taskPlanDelegate }">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[customer-appointment-lm-test]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="arrange-field-engineer-lm-test-onnet-wireline_reopen" name="Arrange Field Engineer for LM Test" flowable:delegateExpression="${ taskPlanDelegate }">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[lm_test_onnet_wireline_activity_start_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="conduct-lm-test-onnet-wireline" name="Conduct LM Test" flowable:delegateExpression="${ taskPlanDelegate }">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[arrange-field-engineer-lm-test-onnet-wireline,arrange-field-engineer-lm-test-onnet-wireline_reopen]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="conduct-lm-test-offnet-wireless" name="Test Offet LM" flowable:delegateExpression="${ taskPlanDelegate }">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[lm_test_onnet_wireline_activity_start_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="confirm-last-mile-acceptance-offnet-wireless" name="Confirm Last Mile Acceptance" flowable:delegateExpression="${ taskPlanDelegate }">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[conduct-lm-test-offnet-wireless]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <startEvent id="sid-8D79CA14-62B2-4A0E-A228-2EDF7F4849BA"></startEvent>
+    <serviceTask id="lm_test_onnet_wireline_activity_start_plan" name="lm_test_onnet_wireline_activity_start_plan" flowable:delegateExpression="${activityPlanStartDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[lm_test_onnet_wireline_process_start_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="sid-4D26E538-404A-4CBB-9891-3D6B9E0BDE99" sourceRef="lm_test_onnet_wireline_activity_start_plan" targetRef="sid-CCF48D78-2FBD-477D-94E9-48719D9B43DD"></sequenceFlow>
+    <sequenceFlow id="sid-858C8CCE-F187-471B-8473-2D302CA3A64B" sourceRef="sid-6219A843-C2A5-4E80-8703-171F46133C37" targetRef="lm_test_onnet_wireline_activity_end_plan"></sequenceFlow>
+    <serviceTask id="lm_test_onnet_wireline_activity_end_plan" name="lm_test_onnet_wireline_activity_end_plan" flowable:delegateExpression="${activityPlanEndDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[conduct-lm-test-onnet-wireline, confirm-last-mile-acceptance-offnet-wireless]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <endEvent id="sid-C18403C2-4225-41F3-8FE0-B5C821BF83B7"></endEvent>
+    <sequenceFlow id="sid-B2AE5EE7-1C24-4F8C-BD80-75B958708D0C" sourceRef="lm_test_onnet_wireline_process_end_plan" targetRef="sid-C18403C2-4225-41F3-8FE0-B5C821BF83B7"></sequenceFlow>
+    <sequenceFlow id="sid-F5E3E633-59CD-43D1-AF74-E9805401CADB" name="Offnet" sourceRef="sid-CCF48D78-2FBD-477D-94E9-48719D9B43DD" targetRef="conduct-lm-test-offnet-wireless">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ lmType == "offnet" }]]></conditionExpression>
+    </sequenceFlow>
+    <serviceTask id="lm_test_onnet_wireline_process_end_plan" name="lm_test_onnet_wireline_process_end_plan" flowable:delegateExpression="${processPlanEndDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[lm_test_onnet_wireline_activity_end_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="lm_test_onnet_wireline_process_start_plan" name="lm_test_onnet_wireline_process_start_plan" flowable:delegateExpression="${processPlanStartDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[tx_configuration_process_end_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="sid-04EC0A3B-1AFD-4387-B8AB-E3C6CDA9B192" sourceRef="sid-8D79CA14-62B2-4A0E-A228-2EDF7F4849BA" targetRef="lm_test_onnet_wireline_process_start_plan"></sequenceFlow>
+    <sequenceFlow id="sid-65CE65D6-60F4-43D6-9FBF-464455892C16" sourceRef="lm_test_onnet_wireline_process_start_plan" targetRef="lm_test_onnet_wireline_activity_start_plan"></sequenceFlow>
+    <sequenceFlow id="sid-856C76D1-3619-43E7-9588-768B3EA943F1" sourceRef="lm_test_onnet_wireline_activity_end_plan" targetRef="lm_test_onnet_wireline_process_end_plan"></sequenceFlow>
+    <sequenceFlow id="sid-112DD4F2-A3DF-4825-A8AE-611004D5B155" sourceRef="arrange-field-engineer-lm-test-onnet-wireline" targetRef="sid-58A75A7B-2059-4335-8E00-98392E482B50"></sequenceFlow>
+    <textAnnotation id="sid-57F58C6B-B332-42F1-B1D2-9F8B1BD6644C">
+      <text>LM Type</text>
+    </textAnnotation>
+    <association id="sid-AA05778F-046C-4F4D-9EB2-16DDAC58E2AA" sourceRef="sid-CCF48D78-2FBD-477D-94E9-48719D9B43DD" targetRef="sid-57F58C6B-B332-42F1-B1D2-9F8B1BD6644C" associationDirection="None"></association>
+    <textAnnotation id="sid-5006F343-B17E-4665-821B-436F0BFA83DB">
+      <text>Is soft loop possible at CE?”</text>
+    </textAnnotation>
+    <association id="sid-E9021DF4-B8D8-4634-BA5A-AFFE32E31ACC" sourceRef="sid-82F9F11F-A278-4434-A1E8-A5660865F129" targetRef="sid-5006F343-B17E-4665-821B-436F0BFA83DB" associationDirection="None"></association>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_plan_npl_lm_test_workflow_sprint2">
+    <bpmndi:BPMNPlane bpmnElement="plan_npl_lm_test_workflow_sprint2" id="BPMNPlane_plan_npl_lm_test_workflow_sprint2">
+      <bpmndi:BPMNShape bpmnElement="sid-CCF48D78-2FBD-477D-94E9-48719D9B43DD" id="BPMNShape_sid-CCF48D78-2FBD-477D-94E9-48719D9B43DD">
+        <omgdc:Bounds height="40.0" width="40.0" x="285.0" y="270.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-6219A843-C2A5-4E80-8703-171F46133C37" id="BPMNShape_sid-6219A843-C2A5-4E80-8703-171F46133C37">
+        <omgdc:Bounds height="40.0" width="40.0" x="870.0" y="300.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-82F9F11F-A278-4434-A1E8-A5660865F129" id="BPMNShape_sid-82F9F11F-A278-4434-A1E8-A5660865F129">
+        <omgdc:Bounds height="40.0" width="40.0" x="285.0" y="155.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-58A75A7B-2059-4335-8E00-98392E482B50" id="BPMNShape_sid-58A75A7B-2059-4335-8E00-98392E482B50">
+        <omgdc:Bounds height="40.0" width="40.0" x="630.0" y="155.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-57F58C6B-B332-42F1-B1D2-9F8B1BD6644C" id="BPMNShape_sid-57F58C6B-B332-42F1-B1D2-9F8B1BD6644C">
+        <omgdc:Bounds height="50.0" width="100.0" x="165.0" y="120.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-AA05778F-046C-4F4D-9EB2-16DDAC58E2AA" id="BPMNShape_sid-AA05778F-046C-4F4D-9EB2-16DDAC58E2AA">
+        <omgdc:Bounds height="110.9920364376269" width="110.9920364376269" x="184.01960678118655" y="169.01960678118655"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-5006F343-B17E-4665-821B-436F0BFA83DB" id="BPMNShape_sid-5006F343-B17E-4665-821B-436F0BFA83DB">
+        <omgdc:Bounds height="50.0" width="100.0" x="210.0" y="15.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-E9021DF4-B8D8-4634-BA5A-AFFE32E31ACC" id="BPMNShape_sid-E9021DF4-B8D8-4634-BA5A-AFFE32E31ACC">
+        <omgdc:Bounds height="98.5665696653986" width="69.24097869056925" x="227.21544815471538" y="64.2714026673007"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="customer-appointment-lm-test" id="BPMNShape_customer-appointment-lm-test">
+        <omgdc:Bounds height="80.0" width="100.0" x="330.0" y="30.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="arrange-field-engineer-lm-test-onnet-wireline" id="BPMNShape_arrange-field-engineer-lm-test-onnet-wireline">
+        <omgdc:Bounds height="80.0" width="99.99999999999994" x="495.00000000000006" y="30.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="arrange-field-engineer-lm-test-onnet-wireline_reopen" id="BPMNShape_arrange-field-engineer-lm-test-onnet-wireline_reopen">
+        <omgdc:Bounds height="80.0" width="100.0" x="405.0" y="135.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="conduct-lm-test-onnet-wireline" id="BPMNShape_conduct-lm-test-onnet-wireline">
+        <omgdc:Bounds height="80.0" width="100.0" x="840.0" y="135.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="conduct-lm-test-offnet-wireless" id="BPMNShape_conduct-lm-test-offnet-wireless">
+        <omgdc:Bounds height="80.0" width="100.0" x="480.0" y="330.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="confirm-last-mile-acceptance-offnet-wireless" id="BPMNShape_confirm-last-mile-acceptance-offnet-wireless">
+        <omgdc:Bounds height="81.0" width="116.0" x="645.0" y="330.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-8D79CA14-62B2-4A0E-A228-2EDF7F4849BA" id="BPMNShape_sid-8D79CA14-62B2-4A0E-A228-2EDF7F4849BA">
+        <omgdc:Bounds height="30.0" width="30.0" x="45.0" y="135.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="lm_test_onnet_wireline_activity_start_plan" id="BPMNShape_lm_test_onnet_wireline_activity_start_plan">
+        <omgdc:Bounds height="72.0" width="84.0" x="165.0" y="240.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="lm_test_onnet_wireline_activity_end_plan" id="BPMNShape_lm_test_onnet_wireline_activity_end_plan">
+        <omgdc:Bounds height="80.0" width="100.0" x="945.0" y="280.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-C18403C2-4225-41F3-8FE0-B5C821BF83B7" id="BPMNShape_sid-C18403C2-4225-41F3-8FE0-B5C821BF83B7">
+        <omgdc:Bounds height="28.0" width="28.0" x="1270.0" y="306.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="lm_test_onnet_wireline_process_end_plan" id="BPMNShape_lm_test_onnet_wireline_process_end_plan">
+        <omgdc:Bounds height="80.0" width="100.0" x="1110.0" y="280.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="lm_test_onnet_wireline_process_start_plan" id="BPMNShape_lm_test_onnet_wireline_process_start_plan">
+        <omgdc:Bounds height="72.0" width="84.0" x="15.0" y="240.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-F5E3E633-59CD-43D1-AF74-E9805401CADB" id="BPMNEdge_sid-F5E3E633-59CD-43D1-AF74-E9805401CADB">
+        <omgdi:waypoint x="305.0" y="309.9368581652952"></omgdi:waypoint>
+        <omgdi:waypoint x="305.0" y="365.80264391574053"></omgdi:waypoint>
+        <omgdi:waypoint x="480.0" y="365.80264391574053"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-112DD4F2-A3DF-4825-A8AE-611004D5B155" id="BPMNEdge_sid-112DD4F2-A3DF-4825-A8AE-611004D5B155">
+        <omgdi:waypoint x="545.0" y="70.0"></omgdi:waypoint>
+        <omgdi:waypoint x="650.5" y="175.5"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-5DC7C559-F376-43C8-827D-5CA037FD99B8" id="BPMNEdge_sid-5DC7C559-F376-43C8-827D-5CA037FD99B8">
+        <omgdi:waypoint x="890.0" y="214.95000000000002"></omgdi:waypoint>
+        <omgdi:waypoint x="890.0" y="300.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-E63F4B52-5E32-44A8-863A-2A8D276116D7" id="BPMNEdge_sid-E63F4B52-5E32-44A8-863A-2A8D276116D7">
+        <omgdi:waypoint x="324.9433544303797" y="175.0"></omgdi:waypoint>
+        <omgdi:waypoint x="405.0" y="175.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-E9021DF4-B8D8-4634-BA5A-AFFE32E31ACC" id="BPMNEdge_sid-E9021DF4-B8D8-4634-BA5A-AFFE32E31ACC">
+        <omgdi:waypoint x="296.747572815534" y="163.25157843613405"></omgdi:waypoint>
+        <omgdi:waypoint x="227.69214876033058" y="64.95"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-04EC0A3B-1AFD-4387-B8AB-E3C6CDA9B192" id="BPMNEdge_sid-04EC0A3B-1AFD-4387-B8AB-E3C6CDA9B192">
+        <omgdi:waypoint x="60.0" y="164.949990988829"></omgdi:waypoint>
+        <omgdi:waypoint x="60.0" y="195.0"></omgdi:waypoint>
+        <omgdi:waypoint x="57.0" y="195.0"></omgdi:waypoint>
+        <omgdi:waypoint x="57.0" y="240.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-7933F15A-BCD1-4A58-AC8F-5D75E6AC8C2E" id="BPMNEdge_sid-7933F15A-BCD1-4A58-AC8F-5D75E6AC8C2E">
+        <omgdi:waypoint x="760.949999999789" y="366.5"></omgdi:waypoint>
+        <omgdi:waypoint x="890.0" y="366.5"></omgdi:waypoint>
+        <omgdi:waypoint x="890.0" y="339.92139008620694"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-4D26E538-404A-4CBB-9891-3D6B9E0BDE99" id="BPMNEdge_sid-4D26E538-404A-4CBB-9891-3D6B9E0BDE99">
+        <omgdi:waypoint x="248.95" y="281.9928571428572"></omgdi:waypoint>
+        <omgdi:waypoint x="287.4692239072257" y="287.5"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-602977A8-B404-4E44-9572-F80239CEFA6B" id="BPMNEdge_sid-602977A8-B404-4E44-9572-F80239CEFA6B">
+        <omgdi:waypoint x="305.0" y="155.0"></omgdi:waypoint>
+        <omgdi:waypoint x="305.0" y="70.0"></omgdi:waypoint>
+        <omgdi:waypoint x="329.99999999999187" y="70.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-65CE65D6-60F4-43D6-9FBF-464455892C16" id="BPMNEdge_sid-65CE65D6-60F4-43D6-9FBF-464455892C16">
+        <omgdi:waypoint x="98.94999999995976" y="276.0"></omgdi:waypoint>
+        <omgdi:waypoint x="165.0" y="276.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-AA05778F-046C-4F4D-9EB2-16DDAC58E2AA" id="BPMNEdge_sid-AA05778F-046C-4F4D-9EB2-16DDAC58E2AA">
+        <omgdi:waypoint x="305.0" y="290.0"></omgdi:waypoint>
+        <omgdi:waypoint x="173.0" y="158.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-03C49F8A-345F-4FC7-B76B-C5AE6278BFD1" id="BPMNEdge_sid-03C49F8A-345F-4FC7-B76B-C5AE6278BFD1">
+        <omgdi:waypoint x="579.9499999999944" y="370.1853845011876"></omgdi:waypoint>
+        <omgdi:waypoint x="644.9999999999895" y="370.42681116389554"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-858C8CCE-F187-471B-8473-2D302CA3A64B" id="BPMNEdge_sid-858C8CCE-F187-471B-8473-2D302CA3A64B">
+        <omgdi:waypoint x="909.5319164265019" y="320.4086538461538"></omgdi:waypoint>
+        <omgdi:waypoint x="944.9999999999986" y="320.238995215311"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-B2AE5EE7-1C24-4F8C-BD80-75B958708D0C" id="BPMNEdge_sid-B2AE5EE7-1C24-4F8C-BD80-75B958708D0C">
+        <omgdi:waypoint x="1209.95" y="320.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1270.0" y="320.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-B46029DA-B71A-4C64-A57D-8A60C057BDA0" id="BPMNEdge_sid-B46029DA-B71A-4C64-A57D-8A60C057BDA0">
+        <omgdi:waypoint x="669.9476308957161" y="175.0"></omgdi:waypoint>
+        <omgdi:waypoint x="840.0" y="175.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-856C76D1-3619-43E7-9588-768B3EA943F1" id="BPMNEdge_sid-856C76D1-3619-43E7-9588-768B3EA943F1">
+        <omgdi:waypoint x="1044.9499999997022" y="320.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1109.9999999999845" y="320.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-DA8E80E2-49B7-45AC-8664-4CD94C51E701" id="BPMNEdge_sid-DA8E80E2-49B7-45AC-8664-4CD94C51E701">
+        <omgdi:waypoint x="429.9499999999978" y="70.0"></omgdi:waypoint>
+        <omgdi:waypoint x="495.00000000000006" y="70.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-54512E11-446B-48B0-8EB0-1AC011498C81" id="BPMNEdge_sid-54512E11-446B-48B0-8EB0-1AC011498C81">
+        <omgdi:waypoint x="305.0" y="270.0"></omgdi:waypoint>
+        <omgdi:waypoint x="305.0" y="194.90863794604007"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-9C17743D-4898-4C75-AA64-D96423407D8C" id="BPMNEdge_sid-9C17743D-4898-4C75-AA64-D96423407D8C">
+        <omgdi:waypoint x="504.9499999999802" y="175.0"></omgdi:waypoint>
+        <omgdi:waypoint x="630.0" y="175.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

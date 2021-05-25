@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <process id="mux-recovery-workflow" name="Mux Recovery Workflow" isExecutable="true">
+    <documentation>Mux Recovery Workflow</documentation>
+    <startEvent id="termination_process_start"></startEvent>
+    <endEvent id="termination_process_end"></endEvent>
+    <userTask id="customer-appointment-mux-recovery" name="Confirm Appointment Mux Recovery">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="sid-CCC5BB16-D577-4659-988B-9A60960790A9" sourceRef="confirm-mux-recovery" targetRef="sid-A254EF69-D730-4570-BF4C-E0614BA2F2C3"></sequenceFlow>
+    <userTask id="arrange-field-engineer-mux-recovery" name="Mux Arrange Field Engineer" default="sid-9A239764-6512-4D60-80AB-F52D48349003">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <userTask id="confirm-mux-recovery" name="Mux Recovery">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="sid-509CDA1B-81BE-4270-A24A-0FFF3CD7E94A" sourceRef="customer-appointment-mux-recovery" targetRef="arrange-field-engineer-mux-recovery"></sequenceFlow>
+    <exclusiveGateway id="sid-A254EF69-D730-4570-BF4C-E0614BA2F2C3" default="sid-0DF36257-F416-44DD-B14D-71F656409702"></exclusiveGateway>
+    <sequenceFlow id="sid-0DF36257-F416-44DD-B14D-71F656409702" sourceRef="sid-A254EF69-D730-4570-BF4C-E0614BA2F2C3" targetRef="termination_process_end"></sequenceFlow>
+    <userTask id="confirm-zero-node-mux" name="Confirm Zero node Mux">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="sid-D24B91E1-DEAE-4954-918F-0A313C6D10F3" sourceRef="termination_process_start" targetRef="confirm-zero-node-mux"></sequenceFlow>
+    <exclusiveGateway id="sid-B29108F5-1A04-4D56-9D84-019F98EF92D2" default="sid-4F3CAB0F-63AD-4585-B1D7-87A663BDDFE1"></exclusiveGateway>
+    <sequenceFlow id="sid-2A5633F3-7F52-4407-B9D7-5EA8C9C55CEA" sourceRef="confirm-zero-node-mux" targetRef="sid-B29108F5-1A04-4D56-9D84-019F98EF92D2"></sequenceFlow>
+    <sequenceFlow id="sid-C138BA32-3DED-43EA-A748-C6CA5855527E" sourceRef="sid-A254EF69-D730-4570-BF4C-E0614BA2F2C3" targetRef="customer-appointment-mux-recovery_reopen">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ var:get(action) == "FIELD-OPS-MUX-REAPP" }]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-4F3CAB0F-63AD-4585-B1D7-87A663BDDFE1" sourceRef="sid-B29108F5-1A04-4D56-9D84-019F98EF92D2" targetRef="sid-A254EF69-D730-4570-BF4C-E0614BA2F2C3"></sequenceFlow>
+    <sequenceFlow id="sid-BBD7C8C4-C635-43F9-8089-8D964F06FD48" sourceRef="sid-B29108F5-1A04-4D56-9D84-019F98EF92D2" targetRef="customer-appointment-mux-recovery">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ var:get(terminationIsZeroNodeOrNot) == "Yes" }]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="customer-appointment-mux-recovery_reopen" name="Confirm Appointment Mux Recovery">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <exclusiveGateway id="sid-93B11754-2EDF-489C-8C9A-4B6F65715626"></exclusiveGateway>
+    <sequenceFlow id="sid-F69E16B1-860D-4876-8906-3F97F3AFB28C" sourceRef="sid-93B11754-2EDF-489C-8C9A-4B6F65715626" targetRef="confirm-mux-recovery"></sequenceFlow>
+    <sequenceFlow id="sid-9A239764-6512-4D60-80AB-F52D48349003" sourceRef="arrange-field-engineer-mux-recovery" targetRef="sid-93B11754-2EDF-489C-8C9A-4B6F65715626"></sequenceFlow>
+    <sequenceFlow id="sid-3C6FEA09-80DE-4FBF-8C62-DF1C1D0C8A5B" sourceRef="customer-appointment-mux-recovery_reopen" targetRef="sid-93B11754-2EDF-489C-8C9A-4B6F65715626"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_mux-recovery-workflow">
+    <bpmndi:BPMNPlane bpmnElement="mux-recovery-workflow" id="BPMNPlane_mux-recovery-workflow">
+      <bpmndi:BPMNShape bpmnElement="termination_process_start" id="BPMNShape_termination_process_start">
+        <omgdc:Bounds height="30.0" width="30.0" x="15.0" y="321.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="termination_process_end" id="BPMNShape_termination_process_end">
+        <omgdc:Bounds height="28.0" width="28.0" x="960.0" y="322.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="customer-appointment-mux-recovery" id="BPMNShape_customer-appointment-mux-recovery">
+        <omgdc:Bounds height="56.0" width="94.0" x="330.0" y="308.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="arrange-field-engineer-mux-recovery" id="BPMNShape_arrange-field-engineer-mux-recovery">
+        <omgdc:Bounds height="56.0" width="94.0" x="495.0" y="308.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="confirm-mux-recovery" id="BPMNShape_confirm-mux-recovery">
+        <omgdc:Bounds height="56.0" width="94.0" x="690.0" y="308.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-A254EF69-D730-4570-BF4C-E0614BA2F2C3" id="BPMNShape_sid-A254EF69-D730-4570-BF4C-E0614BA2F2C3">
+        <omgdc:Bounds height="40.0" width="40.0" x="822.0" y="316.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="confirm-zero-node-mux" id="BPMNShape_confirm-zero-node-mux">
+        <omgdc:Bounds height="56.0" width="94.0" x="90.0" y="312.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-B29108F5-1A04-4D56-9D84-019F98EF92D2" id="BPMNShape_sid-B29108F5-1A04-4D56-9D84-019F98EF92D2">
+        <omgdc:Bounds height="40.0" width="40.0" x="244.0" y="320.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="customer-appointment-mux-recovery_reopen" id="BPMNShape_customer-appointment-mux-recovery_reopen">
+        <omgdc:Bounds height="56.0" width="94.0" x="675.0" y="150.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-93B11754-2EDF-489C-8C9A-4B6F65715626" id="BPMNShape_sid-93B11754-2EDF-489C-8C9A-4B6F65715626">
+        <omgdc:Bounds height="40.0" width="40.0" x="627.0" y="313.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-C138BA32-3DED-43EA-A748-C6CA5855527E" id="BPMNEdge_sid-C138BA32-3DED-43EA-A748-C6CA5855527E">
+        <omgdi:waypoint x="842.0" y="316.0"></omgdi:waypoint>
+        <omgdi:waypoint x="842.0" y="184.0"></omgdi:waypoint>
+        <omgdi:waypoint x="768.9499999999923" y="184.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-509CDA1B-81BE-4270-A24A-0FFF3CD7E94A" id="BPMNEdge_sid-509CDA1B-81BE-4270-A24A-0FFF3CD7E94A">
+        <omgdi:waypoint x="423.95000000000005" y="336.0"></omgdi:waypoint>
+        <omgdi:waypoint x="495.0" y="336.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-2A5633F3-7F52-4407-B9D7-5EA8C9C55CEA" id="BPMNEdge_sid-2A5633F3-7F52-4407-B9D7-5EA8C9C55CEA">
+        <omgdi:waypoint x="183.95" y="340.1841176470588"></omgdi:waypoint>
+        <omgdi:waypoint x="244.4212598425197" y="340.4212598425197"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-CCC5BB16-D577-4659-988B-9A60960790A9" id="BPMNEdge_sid-CCC5BB16-D577-4659-988B-9A60960790A9">
+        <omgdi:waypoint x="783.9499999999999" y="336.0"></omgdi:waypoint>
+        <omgdi:waypoint x="822.0" y="336.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-0DF36257-F416-44DD-B14D-71F656409702" id="BPMNEdge_sid-0DF36257-F416-44DD-B14D-71F656409702">
+        <omgdi:waypoint x="861.9424489022997" y="336.0"></omgdi:waypoint>
+        <omgdi:waypoint x="960.0" y="336.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-F69E16B1-860D-4876-8906-3F97F3AFB28C" id="BPMNEdge_sid-F69E16B1-860D-4876-8906-3F97F3AFB28C">
+        <omgdi:waypoint x="665.925325732899" y="334.0149456521739"></omgdi:waypoint>
+        <omgdi:waypoint x="690.0" y="334.68715083798884"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-4F3CAB0F-63AD-4585-B1D7-87A663BDDFE1" id="BPMNEdge_sid-4F3CAB0F-63AD-4585-B1D7-87A663BDDFE1">
+        <omgdi:waypoint x="264.5" y="359.4380967336684"></omgdi:waypoint>
+        <omgdi:waypoint x="264.5" y="420.0"></omgdi:waypoint>
+        <omgdi:waypoint x="842.0" y="420.0"></omgdi:waypoint>
+        <omgdi:waypoint x="842.0" y="355.9118295589988"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-D24B91E1-DEAE-4954-918F-0A313C6D10F3" id="BPMNEdge_sid-D24B91E1-DEAE-4954-918F-0A313C6D10F3">
+        <omgdi:waypoint x="44.949998017681985" y="336.0"></omgdi:waypoint>
+        <omgdi:waypoint x="89.9999999999743" y="336.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-9A239764-6512-4D60-80AB-F52D48349003" id="BPMNEdge_sid-9A239764-6512-4D60-80AB-F52D48349003">
+        <omgdi:waypoint x="588.95" y="334.8862559241706"></omgdi:waypoint>
+        <omgdi:waypoint x="627.9629629629629" y="333.9618055555555"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-3C6FEA09-80DE-4FBF-8C62-DF1C1D0C8A5B" id="BPMNEdge_sid-3C6FEA09-80DE-4FBF-8C62-DF1C1D0C8A5B">
+        <omgdi:waypoint x="675.0" y="178.0"></omgdi:waypoint>
+        <omgdi:waypoint x="647.0" y="178.0"></omgdi:waypoint>
+        <omgdi:waypoint x="647.0" y="313.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-BBD7C8C4-C635-43F9-8089-8D964F06FD48" id="BPMNEdge_sid-BBD7C8C4-C635-43F9-8089-8D964F06FD48">
+        <omgdi:waypoint x="283.68269230769226" y="339.7307692307692"></omgdi:waypoint>
+        <omgdi:waypoint x="330.0" y="337.878"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

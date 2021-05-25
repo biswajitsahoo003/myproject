@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <process id="gsc_sip_config_wait_workflow" name="gsc_sip_config_wait_workflow" isExecutable="true">
+    <documentation>gsc_sip_config_wait_workflow</documentation>
+    <startEvent id="downtime_wait_process_start" flowable:formFieldValidation="true">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ processStartListener }"></flowable:executionListener>
+      </extensionElements>
+    </startEvent>
+    <endEvent id="downtime_wait_process_end">
+      <extensionElements>
+        <flowable:executionListener event="end" delegateExpression="${ processEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </endEvent>
+    <serviceTask id="gsc-sip-config" name="Service task to determine sip configuration task completed?" flowable:delegateExpression="${checkSipConfigStatusDelegate}"></serviceTask>
+    <exclusiveGateway id="sid-3EB06524-EAA6-4757-A81A-34944C420569" default="downtime_wait_activity_end"></exclusiveGateway>
+    <sequenceFlow id="downtime_wait_activity_start" sourceRef="downtime_wait_process_start" targetRef="gsc-sip-config">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ activityStartListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="sid-A32096F0-16B4-4424-A3C5-A22E2B072699" sourceRef="gsc-sip-config" targetRef="sid-3EB06524-EAA6-4757-A81A-34944C420569"></sequenceFlow>
+    <sequenceFlow id="downtime_wait_activity_end" sourceRef="sid-3EB06524-EAA6-4757-A81A-34944C420569" targetRef="sid-0CC24279-1940-47AE-B50B-38CC0D861CEE">
+      <extensionElements>
+        <flowable:executionListener event="end" delegateExpression="${ activityEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <exclusiveGateway id="sid-0CC24279-1940-47AE-B50B-38CC0D861CEE"></exclusiveGateway>
+    <receiveTask id="vas-wait-for-sip" name="Vas wait for SIP Config">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ serviceTaskStartListener }"></flowable:executionListener>
+        <flowable:executionListener event="end" delegateExpression="${ serviceTaskEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </receiveTask>
+    <sequenceFlow id="sid-D0B5BA84-DF85-4BC2-B720-B26B17C6D0BA" sourceRef="vas-wait-for-sip" targetRef="sid-0CC24279-1940-47AE-B50B-38CC0D861CEE"></sequenceFlow>
+    <sequenceFlow id="sid-9B2890E9-BB92-4DB6-8344-261FB109433D" sourceRef="sid-0CC24279-1940-47AE-B50B-38CC0D861CEE" targetRef="downtime_wait_process_end"></sequenceFlow>
+    <sequenceFlow id="sid-D58CC45B-402B-4847-A3F3-3803F7A3E697" sourceRef="sid-3EB06524-EAA6-4757-A81A-34944C420569" targetRef="vas-wait-for-sip">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${waitForSip=='yes'}]]></conditionExpression>
+    </sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_gsc_sip_config_wait_workflow">
+    <bpmndi:BPMNPlane bpmnElement="gsc_sip_config_wait_workflow" id="BPMNPlane_gsc_sip_config_wait_workflow">
+      <bpmndi:BPMNShape bpmnElement="downtime_wait_process_start" id="BPMNShape_downtime_wait_process_start">
+        <omgdc:Bounds height="30.0" width="30.0" x="75.0" y="200.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="downtime_wait_process_end" id="BPMNShape_downtime_wait_process_end">
+        <omgdc:Bounds height="28.0" width="28.0" x="675.0" y="201.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="gsc-sip-config" id="BPMNShape_gsc-sip-config">
+        <omgdc:Bounds height="102.0" width="153.0" x="221.0" y="164.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-3EB06524-EAA6-4757-A81A-34944C420569" id="BPMNShape_sid-3EB06524-EAA6-4757-A81A-34944C420569">
+        <omgdc:Bounds height="40.0" width="40.0" x="450.0" y="195.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-0CC24279-1940-47AE-B50B-38CC0D861CEE" id="BPMNShape_sid-0CC24279-1940-47AE-B50B-38CC0D861CEE">
+        <omgdc:Bounds height="40.0" width="40.0" x="570.0" y="195.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="vas-wait-for-sip" id="BPMNShape_vas-wait-for-sip">
+        <omgdc:Bounds height="80.0" width="100.0" x="420.0" y="45.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-D0B5BA84-DF85-4BC2-B720-B26B17C6D0BA" id="BPMNEdge_sid-D0B5BA84-DF85-4BC2-B720-B26B17C6D0BA">
+        <omgdi:waypoint x="519.95" y="85.0"></omgdi:waypoint>
+        <omgdi:waypoint x="590.5" y="85.0"></omgdi:waypoint>
+        <omgdi:waypoint x="590.5" y="195.5"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-9B2890E9-BB92-4DB6-8344-261FB109433D" id="BPMNEdge_sid-9B2890E9-BB92-4DB6-8344-261FB109433D">
+        <omgdi:waypoint x="609.5369266055046" y="215.4030612244898"></omgdi:waypoint>
+        <omgdi:waypoint x="675.0001739538759" y="215.07081148673626"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-A32096F0-16B4-4424-A3C5-A22E2B072699" id="BPMNEdge_sid-A32096F0-16B4-4424-A3C5-A22E2B072699">
+        <omgdi:waypoint x="373.95000000000005" y="215.0"></omgdi:waypoint>
+        <omgdi:waypoint x="450.0" y="215.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="downtime_wait_activity_start" id="BPMNEdge_downtime_wait_activity_start">
+        <omgdi:waypoint x="104.94999957545127" y="215.0"></omgdi:waypoint>
+        <omgdi:waypoint x="220.99999999996334" y="215.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="downtime_wait_activity_end" id="BPMNEdge_downtime_wait_activity_end">
+        <omgdi:waypoint x="489.9441560395951" y="215.0"></omgdi:waypoint>
+        <omgdi:waypoint x="570.0" y="215.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-D58CC45B-402B-4847-A3F3-3803F7A3E697" id="BPMNEdge_sid-D58CC45B-402B-4847-A3F3-3803F7A3E697">
+        <omgdi:waypoint x="470.0" y="195.0"></omgdi:waypoint>
+        <omgdi:waypoint x="470.0" y="124.95"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

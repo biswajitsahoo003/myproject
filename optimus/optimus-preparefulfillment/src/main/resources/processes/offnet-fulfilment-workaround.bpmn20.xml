@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <process id="offnet-fulfilment-workaround" name="offnet-fulfilment-workaround" isExecutable="true">
+    <documentation>offnet-fulfilment-workaround</documentation>
+    <startEvent id="sid-985A7369-CA4F-4620-8789-27ADAC996C09"></startEvent>
+    <callActivity id="order-offnet-lm-process" name="Order Offnet LM" calledElement="order_offnet_lm_workflow" flowable:calledElementType="key" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ processStartListener }"></flowable:executionListener>
+        <flowable:executionListener event="end" delegateExpression="${ processEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </callActivity>
+    <callActivity id="lm-implementation" name="LM Implementation" calledElement="lm-implementation-workflow" flowable:calledElementType="key" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false">
+      <extensionElements>
+        <flowable:out source="isPEInternalCablingRequired" target="isPEInternalCablingRequired"></flowable:out>
+        <flowable:out source="offnetMastRequired" target="offnetMastRequired"></flowable:out>
+      </extensionElements>
+    </callActivity>
+    <callActivity id="lm_test_onnet_wireline_process" name="Test LM" calledElement="lm_test_workflow_merger" flowable:calledElementType="key" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ processStartListener }"></flowable:executionListener>
+        <flowable:executionListener event="end" delegateExpression="${ processEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </callActivity>
+    <sequenceFlow id="sid-0B6D14AB-7E12-4DB7-B801-DDB4C84512AC" sourceRef="sid-AEF2AAC6-4CFE-485E-9E35-79F724041147" targetRef="lm_test_onnet_wireline_process"></sequenceFlow>
+    <parallelGateway id="sid-7CFC6DC7-84E0-45CC-AA75-CD45CE9F5E84"></parallelGateway>
+    <callActivity id="track_offnet_process" name="Track Offnet" calledElement="track_offnet_workflow" flowable:calledElementType="key" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ processStartListener }"></flowable:executionListener>
+        <flowable:executionListener event="end" delegateExpression="${ processEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </callActivity>
+    <sequenceFlow id="sid-A50C6D90-F675-4D91-9DB2-C6513F8AEE47" sourceRef="track_offnet_process" targetRef="sid-7CFC6DC7-84E0-45CC-AA75-CD45CE9F5E84"></sequenceFlow>
+    <parallelGateway id="sid-AEF2AAC6-4CFE-485E-9E35-79F724041147"></parallelGateway>
+    <endEvent id="sid-560BC39D-969A-4EF8-ADCF-8C24A2757960"></endEvent>
+    <sequenceFlow id="service_implementation_stage_start" sourceRef="sid-985A7369-CA4F-4620-8789-27ADAC996C09" targetRef="order-offnet-lm-process">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ stageStartListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="service_implementation_stage_end" sourceRef="sid-7CFC6DC7-84E0-45CC-AA75-CD45CE9F5E84" targetRef="sid-560BC39D-969A-4EF8-ADCF-8C24A2757960">
+      <extensionElements>
+        <flowable:executionListener event="end" delegateExpression="${ stageEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="sid-FF7CD08A-015C-417A-9E44-14A2F04F33A7" sourceRef="lm_test_onnet_wireline_process" targetRef="sid-7CFC6DC7-84E0-45CC-AA75-CD45CE9F5E84"></sequenceFlow>
+    <sequenceFlow id="sid-2585485F-8352-4382-AE32-0D92BBCF9EDB" sourceRef="sid-AEF2AAC6-4CFE-485E-9E35-79F724041147" targetRef="track_offnet_process"></sequenceFlow>
+    <sequenceFlow id="sid-E7D241C3-1B5C-476C-AC41-2577C8B2E6E8" sourceRef="lm-implementation" targetRef="sid-AEF2AAC6-4CFE-485E-9E35-79F724041147"></sequenceFlow>
+    <sequenceFlow id="sid-10632FE1-4CFD-43CA-A2E2-4F580590371E" sourceRef="order-offnet-lm-process" targetRef="lm-implementation"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_offnet-fulfilment-workaround">
+    <bpmndi:BPMNPlane bpmnElement="offnet-fulfilment-workaround" id="BPMNPlane_offnet-fulfilment-workaround">
+      <bpmndi:BPMNShape bpmnElement="sid-985A7369-CA4F-4620-8789-27ADAC996C09" id="BPMNShape_sid-985A7369-CA4F-4620-8789-27ADAC996C09">
+        <omgdc:Bounds height="30.0" width="30.0" x="170.5" y="55.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="order-offnet-lm-process" id="BPMNShape_order-offnet-lm-process">
+        <omgdc:Bounds height="50.0" width="89.0" x="255.0" y="45.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="lm-implementation" id="BPMNShape_lm-implementation">
+        <omgdc:Bounds height="51.0" width="103.0" x="405.0" y="44.5"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="lm_test_onnet_wireline_process" id="BPMNShape_lm_test_onnet_wireline_process">
+        <omgdc:Bounds height="45.0" width="78.0" x="559.0" y="135.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-7CFC6DC7-84E0-45CC-AA75-CD45CE9F5E84" id="BPMNShape_sid-7CFC6DC7-84E0-45CC-AA75-CD45CE9F5E84">
+        <omgdc:Bounds height="40.0" width="40.0" x="717.0" y="225.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="track_offnet_process" id="BPMNShape_track_offnet_process">
+        <omgdc:Bounds height="48.0" width="94.0" x="690.0" y="133.5"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-AEF2AAC6-4CFE-485E-9E35-79F724041147" id="BPMNShape_sid-AEF2AAC6-4CFE-485E-9E35-79F724041147">
+        <omgdc:Bounds height="40.0" width="40.0" x="578.0" y="50.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-560BC39D-969A-4EF8-ADCF-8C24A2757960" id="BPMNShape_sid-560BC39D-969A-4EF8-ADCF-8C24A2757960">
+        <omgdc:Bounds height="28.0" width="28.0" x="802.0" y="231.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-FF7CD08A-015C-417A-9E44-14A2F04F33A7" id="BPMNEdge_sid-FF7CD08A-015C-417A-9E44-14A2F04F33A7">
+        <omgdi:waypoint x="598.0" y="179.95000000000002"></omgdi:waypoint>
+        <omgdi:waypoint x="598.0" y="245.0"></omgdi:waypoint>
+        <omgdi:waypoint x="717.0" y="245.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="service_implementation_stage_start" id="BPMNEdge_service_implementation_stage_start">
+        <omgdi:waypoint x="200.44999859402068" y="70.0"></omgdi:waypoint>
+        <omgdi:waypoint x="254.9999999999892" y="70.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-A50C6D90-F675-4D91-9DB2-C6513F8AEE47" id="BPMNEdge_sid-A50C6D90-F675-4D91-9DB2-C6513F8AEE47">
+        <omgdi:waypoint x="737.1360795454545" y="181.45000000000002"></omgdi:waypoint>
+        <omgdi:waypoint x="737.3857142857142" y="225.38571428571427"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="service_implementation_stage_end" id="BPMNEdge_service_implementation_stage_end">
+        <omgdi:waypoint x="756.5591869398166" y="245.3782051282051"></omgdi:waypoint>
+        <omgdi:waypoint x="802.0002755524882" y="245.08885188426405"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-10632FE1-4CFD-43CA-A2E2-4F580590371E" id="BPMNEdge_sid-10632FE1-4CFD-43CA-A2E2-4F580590371E">
+        <omgdi:waypoint x="343.94999999997134" y="70.0"></omgdi:waypoint>
+        <omgdi:waypoint x="404.9999999999808" y="70.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-0B6D14AB-7E12-4DB7-B801-DDB4C84512AC" id="BPMNEdge_sid-0B6D14AB-7E12-4DB7-B801-DDB4C84512AC">
+        <omgdi:waypoint x="598.3901734104046" y="89.5484699769053"></omgdi:waypoint>
+        <omgdi:waypoint x="598.1290229885058" y="135.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-E7D241C3-1B5C-476C-AC41-2577C8B2E6E8" id="BPMNEdge_sid-E7D241C3-1B5C-476C-AC41-2577C8B2E6E8">
+        <omgdi:waypoint x="507.9499999999967" y="70.18116197183097"></omgdi:waypoint>
+        <omgdi:waypoint x="578.429328621904" y="70.42932862190811"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-2585485F-8352-4382-AE32-0D92BBCF9EDB" id="BPMNEdge_sid-2585485F-8352-4382-AE32-0D92BBCF9EDB">
+        <omgdi:waypoint x="617.4431637806637" y="70.5"></omgdi:waypoint>
+        <omgdi:waypoint x="737.0" y="70.5"></omgdi:waypoint>
+        <omgdi:waypoint x="737.0" y="133.5"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

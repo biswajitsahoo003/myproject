@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <process id="eor_equip_ip_provisioning_workflow" name="eor_equip_ip_provisioning_workflow" isExecutable="true">
+    <documentation>eor_equip_ip_provisioning_workflow</documentation>
+    <startEvent id="startEvent1" flowable:formFieldValidation="true"></startEvent>
+    <callActivity id="raise_eor" name="Raise EOR Order" calledElement="initiate_eor_ip_provisioning_workflow" flowable:calledElementType="key" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false"></callActivity>
+    <callActivity id="ip_allocation" name="IP Allocation Task" calledElement="ip_allocation_workflow" flowable:calledElementType="key" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false"></callActivity>
+    <callActivity id="instal_device_basic_config" name="Install Device And Basic Config" calledElement="instal_device_basic_config_workflow" flowable:calledElementType="key" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false"></callActivity>
+    <callActivity id="validate_and_at" name="Validate and AT" calledElement="validate_and_at_workflow" flowable:calledElementType="key" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false"></callActivity>
+    <callActivity id="update_cramer_status" name="Update Cramer Status" calledElement="update_cramer_status_workflow" flowable:calledElementType="key" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false"></callActivity>
+    <sequenceFlow id="sid-EE8653AD-EE8B-44E6-8930-8C23E9158C5E" sourceRef="instal_device_basic_config" targetRef="validate_and_at"></sequenceFlow>
+    <sequenceFlow id="sid-70B44FD9-162E-4DED-94E6-4C3307F7306A" sourceRef="validate_and_at" targetRef="update_cramer_status"></sequenceFlow>
+    <callActivity id="verification_and_update" name="Verification and Update" calledElement="verification_and_update_workflow" flowable:calledElementType="key" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false">
+      <extensionElements>
+        <flowable:out source="isAluPe" target="isAluPe"></flowable:out>
+      </extensionElements>
+    </callActivity>
+    <exclusiveGateway id="sid-803F9A36-7D7F-430F-BFC7-F41ED7E1632A"></exclusiveGateway>
+    <callActivity id="add_node_and_topology" name="Add Node and Topology - NetP " calledElement="add_node_and_topology_workflow" flowable:calledElementType="key" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false"></callActivity>
+    <callActivity id="add_node_netp_nsp" name="Add Node in NetP and NSP" calledElement="add_node_netp_nsp_workflow" flowable:calledElementType="key" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false"></callActivity>
+    <callActivity id="notify_originator_and_pm" name="Notify Originator and PM" calledElement="notify_originator_workflow" flowable:calledElementType="key" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false"></callActivity>
+    <endEvent id="sid-04B34512-3E76-410A-B0C9-AE231F80054C"></endEvent>
+    <callActivity id="sid-599B0E9F-0A8F-4FAA-B8FE-85D939056D8B" name="Verify EOR Details" calledElement="verify_eor_details_workflow" flowable:calledElementType="key" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false"></callActivity>
+    <sequenceFlow id="sid-A7C0B532-1FBD-47C5-88EE-7C9F01D34D86" sourceRef="ip_allocation" targetRef="sid-599B0E9F-0A8F-4FAA-B8FE-85D939056D8B"></sequenceFlow>
+    <callActivity id="configure_add_device_tacacs_workflow" name="Configure and Add device in TACACS" calledElement="configure_add_device_tacacs_workflow" flowable:calledElementType="key" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false"></callActivity>
+    <sequenceFlow id="sid-EDA6D0A7-A99A-4D27-9EFC-016B5E121280" sourceRef="update_cramer_status" targetRef="configure_add_device_tacacs_workflow"></sequenceFlow>
+    <callActivity id="update_cramer_status_readyinservice_workflow" name="Update Cramer Status &quot;ReadyInService&quot;" calledElement="update_cramer_status_readyinservice_workflow" flowable:calledElementType="key" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false"></callActivity>
+    <sequenceFlow id="sid-581F54E3-9B3C-4375-8394-0805B335DBEB" sourceRef="configure_add_device_tacacs_workflow" targetRef="update_cramer_status_readyinservice_workflow"></sequenceFlow>
+    <sequenceFlow id="sid-CCDEE120-04CD-46AC-9221-553EDD45AE55" sourceRef="update_cramer_status_readyinservice_workflow" targetRef="verification_and_update"></sequenceFlow>
+    <sequenceFlow id="sid-6C207C12-E2AB-4494-8341-FDF171C269A5" sourceRef="sid-599B0E9F-0A8F-4FAA-B8FE-85D939056D8B" targetRef="instal_device_basic_config"></sequenceFlow>
+    <callActivity id="sid-8390B184-5BBD-4813-928F-757CC322EA64" name="Create Device in Cramer" calledElement="create_device_in_cramer_workflow" flowable:calledElementType="key" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false"></callActivity>
+    <sequenceFlow id="sid-8B52359F-08A4-481D-9F49-659B1427755B" sourceRef="raise_eor" targetRef="sid-8390B184-5BBD-4813-928F-757CC322EA64"></sequenceFlow>
+    <sequenceFlow id="sid-8652BB82-DB48-46EC-9411-F84F8CDCC99D" sourceRef="sid-8390B184-5BBD-4813-928F-757CC322EA64" targetRef="ip_allocation"></sequenceFlow>
+    <sequenceFlow id="sid-D5634D58-E6D6-428D-A526-586C72097EBE" sourceRef="verification_and_update" targetRef="sid-803F9A36-7D7F-430F-BFC7-F41ED7E1632A"></sequenceFlow>
+    <sequenceFlow id="sid-B3E185B2-701B-4BBF-BFE0-059A170E6160" sourceRef="sid-803F9A36-7D7F-430F-BFC7-F41ED7E1632A" targetRef="add_node_and_topology">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ var:get(isAluPe) == false }]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-8783CCAB-B7F9-4226-B6E8-A8BC4AE96357" sourceRef="sid-803F9A36-7D7F-430F-BFC7-F41ED7E1632A" targetRef="add_node_netp_nsp">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ var:get(isAluPe) == true }]]></conditionExpression>
+    </sequenceFlow>
+    <exclusiveGateway id="sid-7D364E65-1F1F-4974-8CB2-18F939EC6668"></exclusiveGateway>
+    <sequenceFlow id="sid-4288D9AE-F1E8-489F-8BD1-64CD71DBEF0D" sourceRef="add_node_netp_nsp" targetRef="sid-7D364E65-1F1F-4974-8CB2-18F939EC6668"></sequenceFlow>
+    <sequenceFlow id="sid-A80DB987-D3FD-420F-83C2-15A993C4687A" sourceRef="add_node_and_topology" targetRef="sid-7D364E65-1F1F-4974-8CB2-18F939EC6668"></sequenceFlow>
+    <sequenceFlow id="sid-F4A18254-4742-4340-8CF6-387D5264D910" sourceRef="sid-7D364E65-1F1F-4974-8CB2-18F939EC6668" targetRef="notify_originator_and_pm"></sequenceFlow>
+    <sequenceFlow id="eor-ipprov_start" sourceRef="startEvent1" targetRef="raise_eor">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ processStartListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="eor-ipprov_end" sourceRef="notify_originator_and_pm" targetRef="sid-04B34512-3E76-410A-B0C9-AE231F80054C">
+      <extensionElements>
+        <flowable:executionListener event="end" delegateExpression="${ processEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_eor_equip_ip_provisioning_workflow">
+    <bpmndi:BPMNPlane bpmnElement="eor_equip_ip_provisioning_workflow" id="BPMNPlane_eor_equip_ip_provisioning_workflow">
+      <bpmndi:BPMNShape bpmnElement="startEvent1" id="BPMNShape_startEvent1">
+        <omgdc:Bounds height="30.0" width="30.0" x="115.0" y="25.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="raise_eor" id="BPMNShape_raise_eor">
+        <omgdc:Bounds height="80.0" width="100.0" x="190.0" y="0.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ip_allocation" id="BPMNShape_ip_allocation">
+        <omgdc:Bounds height="80.0" width="100.0" x="370.0" y="120.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="instal_device_basic_config" id="BPMNShape_instal_device_basic_config">
+        <omgdc:Bounds height="80.0" width="100.0" x="595.0" y="60.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="validate_and_at" id="BPMNShape_validate_and_at">
+        <omgdc:Bounds height="80.0" width="100.0" x="595.0" y="240.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="update_cramer_status" id="BPMNShape_update_cramer_status">
+        <omgdc:Bounds height="80.0" width="100.0" x="745.0" y="240.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="verification_and_update" id="BPMNShape_verification_and_update">
+        <omgdc:Bounds height="80.0" width="100.0" x="1092.0" y="60.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-803F9A36-7D7F-430F-BFC7-F41ED7E1632A" id="BPMNShape_sid-803F9A36-7D7F-430F-BFC7-F41ED7E1632A">
+        <omgdc:Bounds height="40.0" width="40.0" x="1122.0" y="240.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="add_node_and_topology" id="BPMNShape_add_node_and_topology">
+        <omgdc:Bounds height="80.0" width="100.0" x="1182.0" y="300.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="add_node_netp_nsp" id="BPMNShape_add_node_netp_nsp">
+        <omgdc:Bounds height="80.0" width="100.0" x="1015.0" y="300.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="notify_originator_and_pm" id="BPMNShape_notify_originator_and_pm">
+        <omgdc:Bounds height="80.0" width="100.0" x="1092.0" y="510.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-04B34512-3E76-410A-B0C9-AE231F80054C" id="BPMNShape_sid-04B34512-3E76-410A-B0C9-AE231F80054C">
+        <omgdc:Bounds height="28.0" width="28.0" x="1272.0" y="536.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-599B0E9F-0A8F-4FAA-B8FE-85D939056D8B" id="BPMNShape_sid-599B0E9F-0A8F-4FAA-B8FE-85D939056D8B">
+        <omgdc:Bounds height="80.0" width="100.0" x="370.0" y="240.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="configure_add_device_tacacs_workflow" id="BPMNShape_configure_add_device_tacacs_workflow">
+        <omgdc:Bounds height="80.0" width="100.0" x="747.4" y="61.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="update_cramer_status_readyinservice_workflow" id="BPMNShape_update_cramer_status_readyinservice_workflow">
+        <omgdc:Bounds height="80.0" width="100.0" x="895.0" y="61.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-8390B184-5BBD-4813-928F-757CC322EA64" id="BPMNShape_sid-8390B184-5BBD-4813-928F-757CC322EA64">
+        <omgdc:Bounds height="80.0" width="100.0" x="190.0" y="120.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-7D364E65-1F1F-4974-8CB2-18F939EC6668" id="BPMNShape_sid-7D364E65-1F1F-4974-8CB2-18F939EC6668">
+        <omgdc:Bounds height="40.0" width="40.0" x="1122.0" y="423.4"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-A7C0B532-1FBD-47C5-88EE-7C9F01D34D86" id="BPMNEdge_sid-A7C0B532-1FBD-47C5-88EE-7C9F01D34D86">
+        <omgdi:waypoint x="420.0" y="199.95"></omgdi:waypoint>
+        <omgdi:waypoint x="420.0" y="240.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-70B44FD9-162E-4DED-94E6-4C3307F7306A" id="BPMNEdge_sid-70B44FD9-162E-4DED-94E6-4C3307F7306A">
+        <omgdi:waypoint x="694.9499999998727" y="280.0"></omgdi:waypoint>
+        <omgdi:waypoint x="744.9999999999363" y="280.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-8B52359F-08A4-481D-9F49-659B1427755B" id="BPMNEdge_sid-8B52359F-08A4-481D-9F49-659B1427755B">
+        <omgdi:waypoint x="240.0" y="79.95"></omgdi:waypoint>
+        <omgdi:waypoint x="240.0" y="120.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-EDA6D0A7-A99A-4D27-9EFC-016B5E121280" id="BPMNEdge_sid-EDA6D0A7-A99A-4D27-9EFC-016B5E121280">
+        <omgdi:waypoint x="795.5356424581006" y="240.0"></omgdi:waypoint>
+        <omgdi:waypoint x="796.863687150838" y="140.95"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-B3E185B2-701B-4BBF-BFE0-059A170E6160" id="BPMNEdge_sid-B3E185B2-701B-4BBF-BFE0-059A170E6160">
+        <omgdi:waypoint x="1152.5614197530865" y="269.38823529411764"></omgdi:waypoint>
+        <omgdi:waypoint x="1186.996876951905" y="300.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-8783CCAB-B7F9-4226-B6E8-A8BC4AE96357" id="BPMNEdge_sid-8783CCAB-B7F9-4226-B6E8-A8BC4AE96357">
+        <omgdi:waypoint x="1132.1910828025477" y="270.1656050955414"></omgdi:waypoint>
+        <omgdi:waypoint x="1103.451875" y="300.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-A80DB987-D3FD-420F-83C2-15A993C4687A" id="BPMNEdge_sid-A80DB987-D3FD-420F-83C2-15A993C4687A">
+        <omgdi:waypoint x="1197.183752417795" y="379.95000000000005"></omgdi:waypoint>
+        <omgdi:waypoint x="1151.283867631851" y="432.70713547052736"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-6C207C12-E2AB-4494-8341-FDF171C269A5" id="BPMNEdge_sid-6C207C12-E2AB-4494-8341-FDF171C269A5">
+        <omgdi:waypoint x="469.9499999999229" y="280.0"></omgdi:waypoint>
+        <omgdi:waypoint x="516.0" y="280.0"></omgdi:waypoint>
+        <omgdi:waypoint x="516.0" y="100.0"></omgdi:waypoint>
+        <omgdi:waypoint x="595.0" y="100.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-F4A18254-4742-4340-8CF6-387D5264D910" id="BPMNEdge_sid-F4A18254-4742-4340-8CF6-387D5264D910">
+        <omgdi:waypoint x="1142.0" y="463.34065135895025"></omgdi:waypoint>
+        <omgdi:waypoint x="1142.0" y="510.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="eor-ipprov_start" id="BPMNEdge_eor-ipprov_start">
+        <omgdi:waypoint x="144.9499984899576" y="40.0"></omgdi:waypoint>
+        <omgdi:waypoint x="189.99999999999312" y="40.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-581F54E3-9B3C-4375-8394-0805B335DBEB" id="BPMNEdge_sid-581F54E3-9B3C-4375-8394-0805B335DBEB">
+        <omgdi:waypoint x="847.3499999999996" y="101.0"></omgdi:waypoint>
+        <omgdi:waypoint x="894.9999999999851" y="101.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-8652BB82-DB48-46EC-9411-F84F8CDCC99D" id="BPMNEdge_sid-8652BB82-DB48-46EC-9411-F84F8CDCC99D">
+        <omgdi:waypoint x="289.95000000000005" y="160.0"></omgdi:waypoint>
+        <omgdi:waypoint x="369.99999999997226" y="160.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-D5634D58-E6D6-428D-A526-586C72097EBE" id="BPMNEdge_sid-D5634D58-E6D6-428D-A526-586C72097EBE">
+        <omgdi:waypoint x="1142.0" y="139.95"></omgdi:waypoint>
+        <omgdi:waypoint x="1142.0" y="240.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-EE8653AD-EE8B-44E6-8930-8C23E9158C5E" id="BPMNEdge_sid-EE8653AD-EE8B-44E6-8930-8C23E9158C5E">
+        <omgdi:waypoint x="645.0" y="139.95"></omgdi:waypoint>
+        <omgdi:waypoint x="645.0" y="240.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-4288D9AE-F1E8-489F-8BD1-64CD71DBEF0D" id="BPMNEdge_sid-4288D9AE-F1E8-489F-8BD1-64CD71DBEF0D">
+        <omgdi:waypoint x="1094.75" y="379.95000000000005"></omgdi:waypoint>
+        <omgdi:waypoint x="1133.4634146341464" y="431.93008310249303"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-CCDEE120-04CD-46AC-9221-553EDD45AE55" id="BPMNEdge_sid-CCDEE120-04CD-46AC-9221-553EDD45AE55">
+        <omgdi:waypoint x="994.9499999999963" y="100.74619289340102"></omgdi:waypoint>
+        <omgdi:waypoint x="1091.9999999999973" y="100.2535532994924"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="eor-ipprov_end" id="BPMNEdge_eor-ipprov_end">
+        <omgdi:waypoint x="1191.949999999712" y="550.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1272.0" y="550.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

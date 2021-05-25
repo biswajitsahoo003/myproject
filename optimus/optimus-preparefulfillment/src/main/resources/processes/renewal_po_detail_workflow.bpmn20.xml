@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <process id="renewal_po_detail_workflow" name="renewal_po_detail_workflow" isExecutable="true">
+    <documentation>renewal_po_detail_workflow</documentation>
+    <startEvent id="order-cpe-process_start"></startEvent>
+    <endEvent id="sid-C2BD9892-E6E3-4697-93E9-2522BD37E459"></endEvent>
+    <userTask id="renewal-update-po-details" name="Renewal Update PO Details">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <serviceTask id="reminder-renewal-update-po-details" name="Reminder" flowable:async="true" flowable:delegateExpression="${ notificationDelegate  }"></serviceTask>
+    <sequenceFlow id="sid-084156A0-04CA-40B3-B95B-D6E6469FF6C2" sourceRef="sid-A5C4973F-6186-4506-8440-942CA0996A0E" targetRef="reminder-renewal-update-po-details"></sequenceFlow>
+    <boundaryEvent id="sid-A5C4973F-6186-4506-8440-942CA0996A0E" attachedToRef="renewal-update-po-details" cancelActivity="false">
+      <timerEventDefinition>
+        <timeCycle>${ remainderCycle }</timeCycle>
+      </timerEventDefinition>
+    </boundaryEvent>
+    <sequenceFlow id="po_detail_activity_start" sourceRef="order-cpe-process_start" targetRef="renewal-update-po-details">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ activityStartListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="po_detail_activity_end" sourceRef="renewal-update-po-details" targetRef="sid-C2BD9892-E6E3-4697-93E9-2522BD37E459">
+      <extensionElements>
+        <flowable:executionListener event="end" delegateExpression="${ activityEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_renewal_po_detail_workflow">
+    <bpmndi:BPMNPlane bpmnElement="renewal_po_detail_workflow" id="BPMNPlane_renewal_po_detail_workflow">
+      <bpmndi:BPMNShape bpmnElement="order-cpe-process_start" id="BPMNShape_order-cpe-process_start">
+        <omgdc:Bounds height="30.0" width="30.0" x="180.0" y="165.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-C2BD9892-E6E3-4697-93E9-2522BD37E459" id="BPMNShape_sid-C2BD9892-E6E3-4697-93E9-2522BD37E459">
+        <omgdc:Bounds height="28.0" width="28.0" x="545.0" y="166.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="renewal-update-po-details" id="BPMNShape_renewal-update-po-details">
+        <omgdc:Bounds height="80.0" width="100.0" x="330.0" y="140.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="reminder-renewal-update-po-details" id="BPMNShape_reminder-renewal-update-po-details">
+        <omgdc:Bounds height="80.0" width="100.0" x="509.0" y="10.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-A5C4973F-6186-4506-8440-942CA0996A0E" id="BPMNShape_sid-A5C4973F-6186-4506-8440-942CA0996A0E">
+        <omgdc:Bounds height="31.0" width="31.0" x="376.49603351149153" y="123.71348606092872"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-084156A0-04CA-40B3-B95B-D6E6469FF6C2" id="BPMNEdge_sid-084156A0-04CA-40B3-B95B-D6E6469FF6C2">
+        <omgdi:waypoint x="407.31461637266676" y="132.53752001788826"></omgdi:waypoint>
+        <omgdi:waypoint x="509.0" y="77.18748058532955"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="po_detail_activity_start" id="BPMNEdge_po_detail_activity_start">
+        <omgdi:waypoint x="209.94999927705652" y="180.0"></omgdi:waypoint>
+        <omgdi:waypoint x="330.0" y="180.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="po_detail_activity_end" id="BPMNEdge_po_detail_activity_end">
+        <omgdi:waypoint x="429.95000000000005" y="180.0"></omgdi:waypoint>
+        <omgdi:waypoint x="545.0" y="180.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

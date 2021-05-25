@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <signal id="reopen-site-readiness-signal" name="reopen-site-readiness-signal" flowable:scope="global"></signal>
+  <process id="network_augmentation_workflow" name="network_augmentation_workflow" isExecutable="true">
+    <documentation>network_augmentation_workflow</documentation>
+    <sequenceFlow id="sid-C25B93EE-E6F5-4F28-8380-AFD3F2308C83" sourceRef="sid-9388D333-B4DA-4AF8-A280-A53E1A3AB662" targetRef="reminder-network-augmentation"></sequenceFlow>
+    <userTask id="network-augmentation" name="Confirm Network">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <startEvent id="network-augmentation-process_start">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ processStartListener }"></flowable:executionListener>
+      </extensionElements>
+    </startEvent>
+    <serviceTask id="reminder-network-augmentation" name="reminder" flowable:async="true" flowable:delegateExpression="${ notificationDelegate }"></serviceTask>
+    <boundaryEvent id="sid-9388D333-B4DA-4AF8-A280-A53E1A3AB662" attachedToRef="network-augmentation" cancelActivity="false">
+      <timerEventDefinition>
+        <timeCycle>${ remainderCycle }</timeCycle>
+      </timerEventDefinition>
+    </boundaryEvent>
+    <endEvent id="network-augmentation-process_end">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ processEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </endEvent>
+    <sequenceFlow id="sid-55BE32BC-79E9-4FFE-A127-039F15FCD014" sourceRef="network-augmentation" targetRef="sid-E50C3496-5896-4771-BD7D-5113561AB197"></sequenceFlow>
+    <exclusiveGateway id="sid-E50C3496-5896-4771-BD7D-5113561AB197" default="sid-2B906448-13BF-437E-B997-B454D130BDEC"></exclusiveGateway>
+    <userTask id="network-augmentation-dependency" name="Confirm Network Dependency">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="sid-F6D4D2E3-D52E-4CEA-9912-4EAC17400BC2" sourceRef="network-augmentation-dependency" targetRef="network-augmentation"></sequenceFlow>
+    <sequenceFlow id="sid-CE191C58-484E-456D-937C-EF6DBEE79455" sourceRef="network-augmentation-dependency" targetRef="sid-BB5F3E6F-74B5-4448-AA62-FABE8D55D848"></sequenceFlow>
+    <exclusiveGateway id="sid-BB5F3E6F-74B5-4448-AA62-FABE8D55D848"></exclusiveGateway>
+    <sequenceFlow id="sid-2B906448-13BF-437E-B997-B454D130BDEC" sourceRef="sid-E50C3496-5896-4771-BD7D-5113561AB197" targetRef="sid-BB5F3E6F-74B5-4448-AA62-FABE8D55D848"></sequenceFlow>
+    <sequenceFlow id="network-augmentation-activity_start" sourceRef="network-augmentation-process_start" targetRef="network-augmentation">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ activityStartListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="network-augmentation-activity_end" sourceRef="sid-BB5F3E6F-74B5-4448-AA62-FABE8D55D848" targetRef="network-augmentation-process_end">
+      <extensionElements>
+        <flowable:executionListener event="end" delegateExpression="${ activityEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="sid-9F5CF642-6E80-405B-A9D4-411A6AB3BBC1" name="FIELD_OPS" sourceRef="sid-E50C3496-5896-4771-BD7D-5113561AB197" targetRef="network-augmentation-dependency">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${var:get(action) == "FIELD_OPS_CONFIRM_NETWORK"}]]></conditionExpression>
+    </sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_network_augmentation_workflow">
+    <bpmndi:BPMNPlane bpmnElement="network_augmentation_workflow" id="BPMNPlane_network_augmentation_workflow">
+      <bpmndi:BPMNShape bpmnElement="network-augmentation" id="BPMNShape_network-augmentation">
+        <omgdc:Bounds height="80.0" width="117.00000000000006" x="165.0" y="105.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="network-augmentation-process_start" id="BPMNShape_network-augmentation-process_start">
+        <omgdc:Bounds height="30.0" width="30.0" x="90.0" y="130.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="reminder-network-augmentation" id="BPMNShape_reminder-network-augmentation">
+        <omgdc:Bounds height="44.0" width="82.99999999999989" x="156.60698210704268" y="15.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-9388D333-B4DA-4AF8-A280-A53E1A3AB662" id="BPMNShape_sid-9388D333-B4DA-4AF8-A280-A53E1A3AB662">
+        <omgdc:Bounds height="31.0" width="31.0" x="182.60698210704263" y="88.65194454545451"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="network-augmentation-process_end" id="BPMNShape_network-augmentation-process_end">
+        <omgdc:Bounds height="28.0" width="28.0" x="810.0" y="131.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-E50C3496-5896-4771-BD7D-5113561AB197" id="BPMNShape_sid-E50C3496-5896-4771-BD7D-5113561AB197">
+        <omgdc:Bounds height="40.0" width="40.0" x="330.0" y="125.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="network-augmentation-dependency" id="BPMNShape_network-augmentation-dependency">
+        <omgdc:Bounds height="80.0" width="117.0" x="480.0" y="105.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-BB5F3E6F-74B5-4448-AA62-FABE8D55D848" id="BPMNShape_sid-BB5F3E6F-74B5-4448-AA62-FABE8D55D848">
+        <omgdc:Bounds height="40.0" width="40.0" x="675.0" y="125.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-55BE32BC-79E9-4FFE-A127-039F15FCD014" id="BPMNEdge_sid-55BE32BC-79E9-4FFE-A127-039F15FCD014">
+        <omgdi:waypoint x="281.9499999999937" y="145.88620073710584"></omgdi:waypoint>
+        <omgdi:waypoint x="330.61212717002047" y="145.61184685209545"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-CE191C58-484E-456D-937C-EF6DBEE79455" id="BPMNEdge_sid-CE191C58-484E-456D-937C-EF6DBEE79455">
+        <omgdi:waypoint x="596.9499999999944" y="145.18614649681527"></omgdi:waypoint>
+        <omgdi:waypoint x="675.4361022364217" y="145.43610223642173"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-9F5CF642-6E80-405B-A9D4-411A6AB3BBC1" id="BPMNEdge_sid-9F5CF642-6E80-405B-A9D4-411A6AB3BBC1">
+        <omgdi:waypoint x="369.49545575692963" y="145.44933333333333"></omgdi:waypoint>
+        <omgdi:waypoint x="480.0" y="145.15545212765957"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-2B906448-13BF-437E-B997-B454D130BDEC" id="BPMNEdge_sid-2B906448-13BF-437E-B997-B454D130BDEC">
+        <omgdi:waypoint x="350.5" y="125.5"></omgdi:waypoint>
+        <omgdi:waypoint x="350.5" y="97.0"></omgdi:waypoint>
+        <omgdi:waypoint x="695.5" y="97.0"></omgdi:waypoint>
+        <omgdi:waypoint x="695.5" y="125.5"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-F6D4D2E3-D52E-4CEA-9912-4EAC17400BC2" id="BPMNEdge_sid-F6D4D2E3-D52E-4CEA-9912-4EAC17400BC2">
+        <omgdi:waypoint x="552.0894434228428" y="184.95"></omgdi:waypoint>
+        <omgdi:waypoint x="552.0894434228428" y="212.0"></omgdi:waypoint>
+        <omgdi:waypoint x="223.50000000000003" y="212.0"></omgdi:waypoint>
+        <omgdi:waypoint x="223.50000000000003" y="184.95"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="network-augmentation-activity_start" id="BPMNEdge_network-augmentation-activity_start">
+        <omgdi:waypoint x="119.9499971178374" y="145.0"></omgdi:waypoint>
+        <omgdi:waypoint x="164.99999999997937" y="145.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="network-augmentation-activity_end" id="BPMNEdge_network-augmentation-activity_end">
+        <omgdi:waypoint x="714.5165690866486" y="145.42578125"></omgdi:waypoint>
+        <omgdi:waypoint x="810.0001009915921" y="145.054279921789"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-C25B93EE-E6F5-4F28-8380-AFD3F2308C83" id="BPMNEdge_sid-C25B93EE-E6F5-4F28-8380-AFD3F2308C83">
+        <omgdi:waypoint x="198.10698210704263" y="88.65194454545451"></omgdi:waypoint>
+        <omgdi:waypoint x="198.10698210704263" y="58.95"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

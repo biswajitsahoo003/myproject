@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <process id="standalone-cpe-order-deliver-workflow" name="standalone-cpe-order-deliver-workflow" isExecutable="true">
+    <documentation>standalone-cpe-order-deliver-workflow</documentation>
+    <startEvent id="sid-985A7369-CA4F-4620-8789-27ADAC996C09"></startEvent>
+    <endEvent id="sid-72529BA6-16CE-41F5-83FF-D4AA3F7B459B"></endEvent>
+    <callActivity id="order-cpe-process" name="Order CPE" calledElement="order_cpe_workflow" flowable:calledElementType="key" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false">
+      <extensionElements>
+        <flowable:out source="isCpeAvailableInInventory" target="isCpeAvailableInInventory"></flowable:out>
+        <flowable:out source="isCPEArrangedByCustomer" target="isCPEArrangedByCustomer"></flowable:out>
+        <flowable:out source="cpeSiScope" target="cpeSiScope"></flowable:out>
+        <flowable:out source="isCpeAvailableInInventory" target="isCpeAvailableInInventory"></flowable:out>
+        <flowable:executionListener event="start" delegateExpression="${ processStartListener }"></flowable:executionListener>
+        <flowable:executionListener event="end" delegateExpression="${ processEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </callActivity>
+    <callActivity id="cpe-implementation-process" name="Deliver CPE" calledElement="cpe-implementation-workflow" flowable:calledElementType="key" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ processStartListener }"></flowable:executionListener>
+        <flowable:executionListener event="end" delegateExpression="${ processEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </callActivity>
+    <callActivity id="cpe-config-process" name="CPE Configuration" calledElement="cpe-configuration-workflow" flowable:calledElementType="key" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ processStartListener }"></flowable:executionListener>
+        <flowable:executionListener event="end" delegateExpression="${ processEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </callActivity>
+    <sequenceFlow id="sid-B6381E19-9C55-4CCE-8ADF-03AC921375B4" sourceRef="order-cpe-process" targetRef="cpe-implementation-process"></sequenceFlow>
+    <sequenceFlow id="service_implementation_stage_start" sourceRef="sid-985A7369-CA4F-4620-8789-27ADAC996C09" targetRef="order-cpe-process">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ stageStartListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="sid-1BAA0E69-9A24-4459-9DB4-49B92802F290" sourceRef="cpe-implementation-process" targetRef="cpe-config-process"></sequenceFlow>
+    <sequenceFlow id="service_implementation_stage_end" sourceRef="cpe-config-process" targetRef="sid-72529BA6-16CE-41F5-83FF-D4AA3F7B459B">
+      <extensionElements>
+        <flowable:executionListener event="end" delegateExpression="${ stageEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_standalone-cpe-order-deliver-workflow">
+    <bpmndi:BPMNPlane bpmnElement="standalone-cpe-order-deliver-workflow" id="BPMNPlane_standalone-cpe-order-deliver-workflow">
+      <bpmndi:BPMNShape bpmnElement="sid-985A7369-CA4F-4620-8789-27ADAC996C09" id="BPMNShape_sid-985A7369-CA4F-4620-8789-27ADAC996C09">
+        <omgdc:Bounds height="30.0" width="30.0" x="50.5" y="43.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-72529BA6-16CE-41F5-83FF-D4AA3F7B459B" id="BPMNShape_sid-72529BA6-16CE-41F5-83FF-D4AA3F7B459B">
+        <omgdc:Bounds height="28.0" width="28.0" x="231.5" y="330.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="order-cpe-process" id="BPMNShape_order-cpe-process">
+        <omgdc:Bounds height="53.0" width="80.0" x="205.5" y="32.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="cpe-implementation-process" id="BPMNShape_cpe-implementation-process">
+        <omgdc:Bounds height="50.0" width="93.0" x="199.0" y="120.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="cpe-config-process" id="BPMNShape_cpe-config-process">
+        <omgdc:Bounds height="54.0" width="92.0" x="199.5" y="225.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-B6381E19-9C55-4CCE-8ADF-03AC921375B4" id="BPMNEdge_sid-B6381E19-9C55-4CCE-8ADF-03AC921375B4">
+        <omgdi:waypoint x="245.5" y="84.94999999999999"></omgdi:waypoint>
+        <omgdi:waypoint x="245.5" y="120.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="service_implementation_stage_start" id="BPMNEdge_service_implementation_stage_start">
+        <omgdi:waypoint x="80.44999307946648" y="58.01003169785469"></omgdi:waypoint>
+        <omgdi:waypoint x="205.5" y="58.093942329693526"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-1BAA0E69-9A24-4459-9DB4-49B92802F290" id="BPMNEdge_sid-1BAA0E69-9A24-4459-9DB4-49B92802F290">
+        <omgdi:waypoint x="245.5" y="169.95"></omgdi:waypoint>
+        <omgdi:waypoint x="245.5" y="225.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="service_implementation_stage_end" id="BPMNEdge_service_implementation_stage_end">
+        <omgdi:waypoint x="245.5" y="278.95"></omgdi:waypoint>
+        <omgdi:waypoint x="245.5" y="330.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

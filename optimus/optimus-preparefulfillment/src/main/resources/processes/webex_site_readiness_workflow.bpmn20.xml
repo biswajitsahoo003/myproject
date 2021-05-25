@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <signal id="reopen-site-readiness-signal" name="reopen-site-readiness-signal" flowable:scope="global"></signal>
+  <process id="webex_site_readiness_workflow" name="webex_site_readiness_workflow" isExecutable="true">
+    <documentation>webex_site_readiness_workflow</documentation>
+    <sequenceFlow id="sid-C25B93EE-E6F5-4F28-8380-AFD3F2308C83" sourceRef="sid-9388D333-B4DA-4AF8-A280-A53E1A3AB662" targetRef="customer-reminder-advanced-enrichment"></sequenceFlow>
+    <userTask id="ucwb-customer-endpoint-site-readiness" name="Confirm Site Readiness Details">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <startEvent id="site_readiness_activity_start">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ activityStartListener }"></flowable:executionListener>
+      </extensionElements>
+    </startEvent>
+    <serviceTask id="customer-reminder-advanced-enrichment" name="reminder" flowable:async="true" flowable:delegateExpression="${ notificationDelegate }"></serviceTask>
+    <endEvent id="site_readiness_activity_end">
+      <extensionElements>
+        <flowable:executionListener event="end" delegateExpression="${ activityEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </endEvent>
+    <sequenceFlow id="sid-1D8939A8-4F26-4B4E-997E-4EA39B1AD822" sourceRef="site_readiness_activity_start" targetRef="ucwb-customer-endpoint-site-readiness"></sequenceFlow>
+    <boundaryEvent id="sid-9388D333-B4DA-4AF8-A280-A53E1A3AB662" attachedToRef="ucwb-customer-endpoint-site-readiness" cancelActivity="false">
+      <timerEventDefinition>
+        <timeCycle>${ remainderCycle }</timeCycle>
+      </timerEventDefinition>
+    </boundaryEvent>
+    <sequenceFlow id="sid-55BE32BC-79E9-4FFE-A127-039F15FCD014" sourceRef="ucwb-customer-endpoint-site-readiness" targetRef="site_readiness_activity_end"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_webex_site_readiness_workflow">
+    <bpmndi:BPMNPlane bpmnElement="webex_site_readiness_workflow" id="BPMNPlane_webex_site_readiness_workflow">
+      <bpmndi:BPMNShape bpmnElement="ucwb-customer-endpoint-site-readiness" id="BPMNShape_ucwb-customer-endpoint-site-readiness">
+        <omgdc:Bounds height="80.0" width="117.00000000000006" x="173.3930178929573" y="105.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="site_readiness_activity_start" id="BPMNShape_site_readiness_activity_start">
+        <omgdc:Bounds height="30.0" width="30.0" x="90.0" y="130.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="customer-reminder-advanced-enrichment" id="BPMNShape_customer-reminder-advanced-enrichment">
+        <omgdc:Bounds height="44.0" width="82.99999999999986" x="190.39301789295737" y="15.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="site_readiness_activity_end" id="BPMNShape_site_readiness_activity_end">
+        <omgdc:Bounds height="28.0" width="28.0" x="345.0" y="131.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-9388D333-B4DA-4AF8-A280-A53E1A3AB662" id="BPMNShape_sid-9388D333-B4DA-4AF8-A280-A53E1A3AB662">
+        <omgdc:Bounds height="31.0" width="31.0" x="216.1361390330212" y="88.64381859319298"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-55BE32BC-79E9-4FFE-A127-039F15FCD014" id="BPMNEdge_sid-55BE32BC-79E9-4FFE-A127-039F15FCD014">
+        <omgdi:waypoint x="290.3430178929268" y="146.08498191770775"></omgdi:waypoint>
+        <omgdi:waypoint x="317.6965089464787" y="146.08498191770775"></omgdi:waypoint>
+        <omgdi:waypoint x="345.0047295738022" y="145.36632229961813"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-1D8939A8-4F26-4B4E-997E-4EA39B1AD822" id="BPMNEdge_sid-1D8939A8-4F26-4B4E-997E-4EA39B1AD822">
+        <omgdi:waypoint x="119.94999764110553" y="145.0"></omgdi:waypoint>
+        <omgdi:waypoint x="173.39301789291602" y="145.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-C25B93EE-E6F5-4F28-8380-AFD3F2308C83" id="BPMNEdge_sid-C25B93EE-E6F5-4F28-8380-AFD3F2308C83">
+        <omgdi:waypoint x="231.69524722429713" y="88.64393073276912"></omgdi:waypoint>
+        <omgdi:waypoint x="231.80885028025665" y="58.95"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

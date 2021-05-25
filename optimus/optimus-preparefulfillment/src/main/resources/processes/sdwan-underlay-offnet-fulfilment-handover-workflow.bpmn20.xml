@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <process id="sdwan-underlay-offnet-fulfilment-handover-workflow" name="sdwan-underlay-offnet-fulfilment-handover-workflow" isExecutable="true">
+    <documentation>sdwan-underlay-offnet-fulfilment-handover-workflow</documentation>
+    <startEvent id="startEvent1"></startEvent>
+    <callActivity id="sdwan-offnet-fulfilment-handover-workflow" name="SDWAN OFFNET CB BSO MACD" calledElement="sdwan-offnet-fulfilment-handover-workflow" flowable:calledElementType="key" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false"></callActivity>
+    <sequenceFlow id="sid-F48DC51D-6C3E-4289-BD17-D2C33C93FBB6" sourceRef="startEvent1" targetRef="sdwan-offnet-fulfilment-handover-workflow"></sequenceFlow>
+    <serviceTask id="sdwan-underlay-downtime" name="Service task to determine all underlay and overlay downtime task completed?" flowable:delegateExpression="${sdwanUnderlayDownTimeDelegate}"></serviceTask>
+    <exclusiveGateway id="sid-C691F4FD-326C-43EF-9E12-54E7369ACF55" default="downtime_wait_activity_end"></exclusiveGateway>
+    <intermediateCatchEvent id="sdwan-underlay-wait">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ serviceTaskStartListener }"></flowable:executionListener>
+        <flowable:executionListener event="end" delegateExpression="${ serviceTaskEndListener }"></flowable:executionListener>
+      </extensionElements>
+      <timerEventDefinition>
+        <timeDuration>PT10M</timeDuration>
+      </timerEventDefinition>
+    </intermediateCatchEvent>
+    <callActivity id="sdwan_underlay_service_testing_process" name="Service Testing" calledElement="sdwan_service_macd_testing_workflow" flowable:calledElementType="key" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ processStartListener }"></flowable:executionListener>
+        <flowable:executionListener event="end" delegateExpression="${ processEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </callActivity>
+    <sequenceFlow id="sid-1C037E59-ACDF-4F81-A403-720842215895" sourceRef="sdwan-underlay-wait" targetRef="sdwan-underlay-downtime"></sequenceFlow>
+    <parallelGateway id="sid-59055656-0A73-4CD3-868B-A49CF9DA6725"></parallelGateway>
+    <callActivity id="billing_handover_process" name="Billing Handover" calledElement="billing_handover_workflow" flowable:calledElementType="key" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ processStartListener }"></flowable:executionListener>
+        <flowable:executionListener event="end" delegateExpression="${ processEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </callActivity>
+    <parallelGateway id="sid-79A96239-F0A5-4252-9C3C-27293455BC37"></parallelGateway>
+    <sequenceFlow id="service_activation_stage_end" sourceRef="sdwan_underlay_service_testing_process" targetRef="sid-EE32AB7E-C071-4E41-9E5D-A5F1795833BE">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ stageEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <endEvent id="sid-F31F925C-06E4-4713-B5A3-D8ED8C8BC489"></endEvent>
+    <callActivity id="experience_survey_process" name="Experience Survey" calledElement="sdwan_experience_survey_workflow" flowable:calledElementType="key" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ processStartListener }"></flowable:executionListener>
+        <flowable:executionListener event="end" delegateExpression="${ processEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </callActivity>
+    <sequenceFlow id="experience_survey_stage_end" sourceRef="experience_survey_process" targetRef="sid-F31F925C-06E4-4713-B5A3-D8ED8C8BC489">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ stageEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="experience_survey_stage_start" sourceRef="sid-79A96239-F0A5-4252-9C3C-27293455BC37" targetRef="experience_survey_process">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ stageStartListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="sid-F68280F0-44CF-460D-ACD0-87F0B586BA6C" sourceRef="sdwan-underlay-downtime" targetRef="sid-C691F4FD-326C-43EF-9E12-54E7369ACF55"></sequenceFlow>
+    <parallelGateway id="sid-CB816DDD-9E87-4DCE-8648-39F174914930"></parallelGateway>
+    <parallelGateway id="sid-544B202F-59F4-4961-8AEF-9D8E8EF7F502"></parallelGateway>
+    <sequenceFlow id="service_activation_stage_start" sourceRef="sid-544B202F-59F4-4961-8AEF-9D8E8EF7F502" targetRef="sdwan_underlay_service_testing_process">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ stageStartListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="sid-4CCB3F1D-AFC8-4343-99D8-83A99CBAA46C" sourceRef="sid-C691F4FD-326C-43EF-9E12-54E7369ACF55" targetRef="sdwan-underlay-wait">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${isDownTimeTasksCompleted==false}]]></conditionExpression>
+    </sequenceFlow>
+    <parallelGateway id="sid-EE32AB7E-C071-4E41-9E5D-A5F1795833BE"></parallelGateway>
+    <parallelGateway id="sid-0EF10955-67B7-4864-B008-49F228D644A1"></parallelGateway>
+    <sequenceFlow id="downtime_wait_process_start" sourceRef="sdwan-offnet-fulfilment-handover-workflow" targetRef="sid-0EF10955-67B7-4864-B008-49F228D644A1">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ processStartListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="downtime_wait_activity_start" sourceRef="sid-0EF10955-67B7-4864-B008-49F228D644A1" targetRef="sdwan-underlay-downtime">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ activityStartListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="downtime_wait_activity_end" sourceRef="sid-C691F4FD-326C-43EF-9E12-54E7369ACF55" targetRef="sid-CB816DDD-9E87-4DCE-8648-39F174914930">
+      <extensionElements>
+        <flowable:executionListener event="end" delegateExpression="${ activityEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="downtime_wait_process_end" sourceRef="sid-CB816DDD-9E87-4DCE-8648-39F174914930" targetRef="sid-7A885480-FCBF-4B01-AA50-410321805CE0">
+      <extensionElements>
+        <flowable:executionListener event="end" delegateExpression="${ processEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <parallelGateway id="sid-7A885480-FCBF-4B01-AA50-410321805CE0"></parallelGateway>
+    <sequenceFlow id="service_implementation_stage_end" sourceRef="sid-7A885480-FCBF-4B01-AA50-410321805CE0" targetRef="sid-544B202F-59F4-4961-8AEF-9D8E8EF7F502">
+      <extensionElements>
+        <flowable:executionListener event="end" delegateExpression="${ stageEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="service_delivery_stage_end" sourceRef="billing_handover_process" targetRef="sid-79A96239-F0A5-4252-9C3C-27293455BC37">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ stageEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="sid-28B9CE5B-ED7A-434A-95E0-B35A2640C0C3" sourceRef="sid-59055656-0A73-4CD3-868B-A49CF9DA6725" targetRef="billing_handover_process"></sequenceFlow>
+    <sequenceFlow id="service_delivery_stage_start" sourceRef="sid-EE32AB7E-C071-4E41-9E5D-A5F1795833BE" targetRef="sid-59055656-0A73-4CD3-868B-A49CF9DA6725">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ stageStartListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <callActivity id="assurance_handover_process" name="Assurance Handover" calledElement="sdwan_underlay_assurance_handover_workflow" flowable:calledElementType="key" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ processStartListener }"></flowable:executionListener>
+        <flowable:executionListener event="end" delegateExpression="${ processEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </callActivity>
+    <sequenceFlow id="sid-4A45C5CA-63B4-4636-892B-C9A6EF731A5E" sourceRef="sid-59055656-0A73-4CD3-868B-A49CF9DA6725" targetRef="assurance_handover_process"></sequenceFlow>
+    <sequenceFlow id="sid-2FDE0CBC-A569-4AFD-9837-A90EA8AF4355" sourceRef="assurance_handover_process" targetRef="sid-79A96239-F0A5-4252-9C3C-27293455BC37"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_sdwan-underlay-offnet-fulfilment-handover-workflow">
+    <bpmndi:BPMNPlane bpmnElement="sdwan-underlay-offnet-fulfilment-handover-workflow" id="BPMNPlane_sdwan-underlay-offnet-fulfilment-handover-workflow">
+      <bpmndi:BPMNShape bpmnElement="startEvent1" id="BPMNShape_startEvent1">
+        <omgdc:Bounds height="30.0" width="30.0" x="45.0" y="161.45029553280023"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sdwan-offnet-fulfilment-handover-workflow" id="BPMNShape_sdwan-offnet-fulfilment-handover-workflow">
+        <omgdc:Bounds height="80.0" width="100.0" x="150.0" y="136.95029553280023"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sdwan-underlay-downtime" id="BPMNShape_sdwan-underlay-downtime">
+        <omgdc:Bounds height="106.0" width="149.0" x="423.37721649600167" y="123.45029553280023"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-C691F4FD-326C-43EF-9E12-54E7369ACF55" id="BPMNShape_sid-C691F4FD-326C-43EF-9E12-54E7369ACF55">
+        <omgdc:Bounds height="40.0" width="40.0" x="633.3772164960016" y="156.45029553280023"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sdwan-underlay-wait" id="BPMNShape_sdwan-underlay-wait">
+        <omgdc:Bounds height="31.0" width="31.0" x="637.8772164960016" y="91.45029553280024"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sdwan_underlay_service_testing_process" id="BPMNShape_sdwan_underlay_service_testing_process">
+        <omgdc:Bounds height="80.0" width="100.0" x="1065.0" y="136.95029553280023"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-59055656-0A73-4CD3-868B-A49CF9DA6725" id="BPMNShape_sid-59055656-0A73-4CD3-868B-A49CF9DA6725">
+        <omgdc:Bounds height="40.0" width="40.0" x="1348.3772164960017" y="156.95029553280023"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="billing_handover_process" id="BPMNShape_billing_handover_process">
+        <omgdc:Bounds height="80.0" width="100.0" x="1425.0" y="136.45029553280023"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-79A96239-F0A5-4252-9C3C-27293455BC37" id="BPMNShape_sid-79A96239-F0A5-4252-9C3C-27293455BC37">
+        <omgdc:Bounds height="40.0" width="40.0" x="1558.3772164960017" y="156.95029553280023"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-F31F925C-06E4-4713-B5A3-D8ED8C8BC489" id="BPMNShape_sid-F31F925C-06E4-4713-B5A3-D8ED8C8BC489">
+        <omgdc:Bounds height="28.0" width="28.0" x="1828.3772164960017" y="162.95029553280023"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="experience_survey_process" id="BPMNShape_experience_survey_process">
+        <omgdc:Bounds height="80.0" width="100.0" x="1678.3772164960017" y="136.45029553280023"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-CB816DDD-9E87-4DCE-8648-39F174914930" id="BPMNShape_sid-CB816DDD-9E87-4DCE-8648-39F174914930">
+        <omgdc:Bounds height="40.0" width="40.0" x="708.7333872842704" y="156.45029553280023"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-544B202F-59F4-4961-8AEF-9D8E8EF7F502" id="BPMNShape_sid-544B202F-59F4-4961-8AEF-9D8E8EF7F502">
+        <omgdc:Bounds height="40.0" width="40.0" x="975.0" y="156.95029553280023"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-EE32AB7E-C071-4E41-9E5D-A5F1795833BE" id="BPMNShape_sid-EE32AB7E-C071-4E41-9E5D-A5F1795833BE">
+        <omgdc:Bounds height="40.0" width="40.0" x="1245.0" y="156.45029553280023"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-0EF10955-67B7-4864-B008-49F228D644A1" id="BPMNShape_sid-0EF10955-67B7-4864-B008-49F228D644A1">
+        <omgdc:Bounds height="40.0" width="40.0" x="315.0" y="156.45029553280023"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-7A885480-FCBF-4B01-AA50-410321805CE0" id="BPMNShape_sid-7A885480-FCBF-4B01-AA50-410321805CE0">
+        <omgdc:Bounds height="40.0" width="40.0" x="855.0" y="156.95029553280023"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="assurance_handover_process" id="BPMNShape_assurance_handover_process">
+        <omgdc:Bounds height="80.0" width="100.0" x="1425.0" y="15.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="service_activation_stage_start" id="BPMNEdge_service_activation_stage_start">
+        <omgdi:waypoint x="1014.9452622869608" y="176.95029553280023"></omgdi:waypoint>
+        <omgdi:waypoint x="1064.9999999999632" y="176.95029553280023"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="service_delivery_stage_end" id="BPMNEdge_service_delivery_stage_end">
+        <omgdi:waypoint x="1524.95" y="176.69188648336493"></omgdi:waypoint>
+        <omgdi:waypoint x="1558.4335378649735" y="176.85402803221325"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-4CCB3F1D-AFC8-4343-99D8-83A99CBAA46C" id="BPMNEdge_sid-4CCB3F1D-AFC8-4343-99D8-83A99CBAA46C">
+        <omgdi:waypoint x="653.7333316039152" y="156.8064106407139"></omgdi:waypoint>
+        <omgdi:waypoint x="653.4875708173093" y="122.39959132258949"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-F48DC51D-6C3E-4289-BD17-D2C33C93FBB6" id="BPMNEdge_sid-F48DC51D-6C3E-4289-BD17-D2C33C93FBB6">
+        <omgdi:waypoint x="74.94988715592345" y="176.50368827800588"></omgdi:waypoint>
+        <omgdi:waypoint x="149.99999999999545" y="176.77172410422878"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="service_implementation_stage_end" id="BPMNEdge_service_implementation_stage_end">
+        <omgdi:waypoint x="894.5215994962078" y="177.37046360002714"></omgdi:waypoint>
+        <omgdi:waypoint x="975.0833333333311" y="177.03342053280022"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-1C037E59-ACDF-4F81-A403-720842215895" id="BPMNEdge_sid-1C037E59-ACDF-4F81-A403-720842215895">
+        <omgdi:waypoint x="639.2409869709103" y="113.90378207287553"></omgdi:waypoint>
+        <omgdi:waypoint x="572.3272164960017" y="143.49837245587713"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-4A45C5CA-63B4-4636-892B-C9A6EF731A5E" id="BPMNEdge_sid-4A45C5CA-63B4-4636-892B-C9A6EF731A5E">
+        <omgdi:waypoint x="1368.8772164960017" y="157.45029553280023"></omgdi:waypoint>
+        <omgdi:waypoint x="1368.8772164960017" y="55.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1424.999999999987" y="55.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-28B9CE5B-ED7A-434A-95E0-B35A2640C0C3" id="BPMNEdge_sid-28B9CE5B-ED7A-434A-95E0-B35A2640C0C3">
+        <omgdi:waypoint x="1387.9983058684777" y="177.26955450438865"></omgdi:waypoint>
+        <omgdi:waypoint x="1424.9999999999973" y="176.92097674140348"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="downtime_wait_activity_end" id="BPMNEdge_downtime_wait_activity_end">
+        <omgdi:waypoint x="672.8146595375538" y="176.95029553280023"></omgdi:waypoint>
+        <omgdi:waypoint x="709.2333872842704" y="176.95029553280023"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="service_activation_stage_end" id="BPMNEdge_service_activation_stage_end">
+        <omgdi:waypoint x="1164.9499999998623" y="176.95029553280023"></omgdi:waypoint>
+        <omgdi:waypoint x="1245.5" y="176.95029553280023"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-F68280F0-44CF-460D-ACD0-87F0B586BA6C" id="BPMNEdge_sid-F68280F0-44CF-460D-ACD0-87F0B586BA6C">
+        <omgdi:waypoint x="572.3272164959865" y="176.45029553280023"></omgdi:waypoint>
+        <omgdi:waypoint x="633.3772164960016" y="176.45029553280023"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="experience_survey_stage_start" id="BPMNEdge_experience_survey_stage_start">
+        <omgdi:waypoint x="1597.8735364308186" y="177.3986650980176"></omgdi:waypoint>
+        <omgdi:waypoint x="1678.3772164960017" y="177.18051233496823"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-2FDE0CBC-A569-4AFD-9837-A90EA8AF4355" id="BPMNEdge_sid-2FDE0CBC-A569-4AFD-9837-A90EA8AF4355">
+        <omgdi:waypoint x="1524.95" y="55.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1578.3772164960017" y="55.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1578.3772164960017" y="156.95029553280023"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="downtime_wait_process_start" id="BPMNEdge_downtime_wait_process_start">
+        <omgdi:waypoint x="249.94999999999942" y="176.76511034761504"></omgdi:waypoint>
+        <omgdi:waypoint x="315.0738007380073" y="176.5239117689626"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="experience_survey_stage_end" id="BPMNEdge_experience_survey_stage_end">
+        <omgdi:waypoint x="1778.3272164960017" y="176.66937448016867"></omgdi:waypoint>
+        <omgdi:waypoint x="1828.3772275145504" y="176.88889260294332"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="downtime_wait_activity_start" id="BPMNEdge_downtime_wait_activity_start">
+        <omgdi:waypoint x="354.94644427914426" y="176.45029553280023"></omgdi:waypoint>
+        <omgdi:waypoint x="423.3772164959935" y="176.45029553280023"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="service_delivery_stage_start" id="BPMNEdge_service_delivery_stage_start">
+        <omgdi:waypoint x="1284.3497616944246" y="177.0415089896063"></omgdi:waypoint>
+        <omgdi:waypoint x="1348.7800132440009" y="177.35309228080138"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="downtime_wait_process_end" id="BPMNEdge_downtime_wait_process_end">
+        <omgdi:waypoint x="748.1773083685648" y="176.95029553280023"></omgdi:waypoint>
+        <omgdi:waypoint x="855.0" y="176.95029553280023"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

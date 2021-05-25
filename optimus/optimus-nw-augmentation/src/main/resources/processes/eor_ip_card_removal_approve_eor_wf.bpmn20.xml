@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <process id="eor_ip_card_removal_approve_eor_wf" name="eor_ip_card_removal_approve_eor_wf" isExecutable="true">
+    <documentation>eor_ip_card_removal_approve_eor_wf</documentation>
+    <startEvent id="startEvent1"></startEvent>
+    <serviceTask id="eor_ip_card_removal_approve_eor_task" name="Approve EOR" flowable:delegateExpression="${createDeviceInCramerDelegate}"></serviceTask>
+    <userTask id="eor_ip_card_removal_approve_eor_retry_task" name="Approve EOR retry">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${taskCreateListener}"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${taskCompleteListener}"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <exclusiveGateway id="sid-88F8D446-A3DF-4A42-B752-02B3E2CBA865"></exclusiveGateway>
+    <sequenceFlow id="sid-63FE0883-6AE5-49C6-905B-C5E4CC578BC8" sourceRef="eor_ip_card_removal_approve_eor_task" targetRef="sid-88F8D446-A3DF-4A42-B752-02B3E2CBA865"></sequenceFlow>
+    <endEvent id="eor_ip_card_removal_approve_eor_activity_end">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${activityEndListener}"></flowable:executionListener>
+      </extensionElements>
+    </endEvent>
+    <exclusiveGateway id="sid-C5D0E594-EB1A-4A10-8437-4B8F8BA754CE"></exclusiveGateway>
+    <sequenceFlow id="sid-9773F96D-3E7A-4FDD-95E8-02433A7F94D6" sourceRef="eor_ip_card_removal_approve_eor_retry_task" targetRef="sid-C5D0E594-EB1A-4A10-8437-4B8F8BA754CE"></sequenceFlow>
+    <sequenceFlow id="eor_ip_card_removal_approve_eor_activity_start" sourceRef="startEvent1" targetRef="eor_ip_card_removal_approve_eor_task">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${activityStartListener}"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="sid-110F6A82-FFF8-41D0-924D-FC87AD8EB996" sourceRef="sid-88F8D446-A3DF-4A42-B752-02B3E2CBA865" targetRef="eor_ip_card_removal_approve_eor_activity_end">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${isError==false}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-F9FE78F6-4F86-48B7-A28A-16056426A38A" sourceRef="sid-88F8D446-A3DF-4A42-B752-02B3E2CBA865" targetRef="eor_ip_card_removal_approve_eor_retry_task">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${isError==true}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-07299B32-88E5-4072-AD11-A92E3891A7BE" sourceRef="sid-C5D0E594-EB1A-4A10-8437-4B8F8BA754CE" targetRef="eor_ip_card_removal_approve_eor_task">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${retry==true}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-2B4FC8EE-C2DB-4815-80E1-0289F3DC20BF" sourceRef="sid-C5D0E594-EB1A-4A10-8437-4B8F8BA754CE" targetRef="eor_ip_card_removal_approve_eor_activity_end">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${retry==false}]]></conditionExpression>
+    </sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_eor_ip_card_removal_approve_eor_wf">
+    <bpmndi:BPMNPlane bpmnElement="eor_ip_card_removal_approve_eor_wf" id="BPMNPlane_eor_ip_card_removal_approve_eor_wf">
+      <bpmndi:BPMNShape bpmnElement="startEvent1" id="BPMNShape_startEvent1">
+        <omgdc:Bounds height="30.0" width="30.0" x="100.0" y="163.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="eor_ip_card_removal_approve_eor_task" id="BPMNShape_eor_ip_card_removal_approve_eor_task">
+        <omgdc:Bounds height="80.0" width="100.0" x="175.0" y="138.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="eor_ip_card_removal_approve_eor_retry_task" id="BPMNShape_eor_ip_card_removal_approve_eor_retry_task">
+        <omgdc:Bounds height="80.0" width="100.0" x="330.0" y="255.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-88F8D446-A3DF-4A42-B752-02B3E2CBA865" id="BPMNShape_sid-88F8D446-A3DF-4A42-B752-02B3E2CBA865">
+        <omgdc:Bounds height="40.0" width="40.0" x="360.0" y="158.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="eor_ip_card_removal_approve_eor_activity_end" id="BPMNShape_eor_ip_card_removal_approve_eor_activity_end">
+        <omgdc:Bounds height="28.0" width="28.0" x="510.0" y="164.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-C5D0E594-EB1A-4A10-8437-4B8F8BA754CE" id="BPMNShape_sid-C5D0E594-EB1A-4A10-8437-4B8F8BA754CE">
+        <omgdc:Bounds height="40.0" width="40.0" x="201.5" y="275.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="eor_ip_card_removal_approve_eor_activity_start" id="BPMNEdge_eor_ip_card_removal_approve_eor_activity_start">
+        <omgdi:waypoint x="129.9499984899576" y="178.0"></omgdi:waypoint>
+        <omgdi:waypoint x="174.9999999999917" y="178.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-63FE0883-6AE5-49C6-905B-C5E4CC578BC8" id="BPMNEdge_sid-63FE0883-6AE5-49C6-905B-C5E4CC578BC8">
+        <omgdi:waypoint x="274.9499999999931" y="178.16061093247586"></omgdi:waypoint>
+        <omgdi:waypoint x="360.43548387096774" y="178.43548387096774"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-9773F96D-3E7A-4FDD-95E8-02433A7F94D6" id="BPMNEdge_sid-9773F96D-3E7A-4FDD-95E8-02433A7F94D6">
+        <omgdi:waypoint x="330.0" y="295.1580696202531"></omgdi:waypoint>
+        <omgdi:waypoint x="240.9658672172798" y="295.43968253968256"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-110F6A82-FFF8-41D0-924D-FC87AD8EB996" id="BPMNEdge_sid-110F6A82-FFF8-41D0-924D-FC87AD8EB996">
+        <omgdi:waypoint x="399.50959119496855" y="178.43356643356645"></omgdi:waypoint>
+        <omgdi:waypoint x="510.0000829380081" y="178.04860604497966"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-07299B32-88E5-4072-AD11-A92E3891A7BE" id="BPMNEdge_sid-07299B32-88E5-4072-AD11-A92E3891A7BE">
+        <omgdi:waypoint x="222.4966804979253" y="275.9979253112033"></omgdi:waypoint>
+        <omgdi:waypoint x="223.9787234042553" y="217.95000000000002"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-F9FE78F6-4F86-48B7-A28A-16056426A38A" id="BPMNEdge_sid-F9FE78F6-4F86-48B7-A28A-16056426A38A">
+        <omgdi:waypoint x="380.4181034482758" y="197.5234496124031"></omgdi:waypoint>
+        <omgdi:waypoint x="380.17145922746784" y="255.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-2B4FC8EE-C2DB-4815-80E1-0289F3DC20BF" id="BPMNEdge_sid-2B4FC8EE-C2DB-4815-80E1-0289F3DC20BF">
+        <omgdi:waypoint x="221.99999999999994" y="314.4412753222836"></omgdi:waypoint>
+        <omgdi:waypoint x="222.0" y="404.0"></omgdi:waypoint>
+        <omgdi:waypoint x="524.0" y="404.0"></omgdi:waypoint>
+        <omgdi:waypoint x="524.0" y="191.94992275311844"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

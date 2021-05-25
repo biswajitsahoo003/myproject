@@ -1,0 +1,468 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <process id="sdwan_service_testing_workflow" name="SDWAN Service Testing Workflow" isExecutable="true">
+    <documentation>SDWAN Service Testing Workflow</documentation>
+    <startEvent id="startEvent1"></startEvent>
+    <userTask id="conduct-failover-test" name="Conduct Failover Test" flowable:category="service-testing">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="sid-C064CFEB-8EE9-4213-8C02-B393347018C0" sourceRef="customer-appointment-failover-testing" targetRef="conduct-failover-test"></sequenceFlow>
+    <serviceTask id="sdwan-underlay-e2e-service-testing" name="E2E Service Testing" flowable:delegateExpression="${ e2eServiceTestingDelegate }"></serviceTask>
+    <exclusiveGateway id="sid-18E99AE1-B61D-457D-832F-4EDCF5514889" default="failover_testing_activity_start"></exclusiveGateway>
+    <endEvent id="sid-71455415-E705-4074-97E7-0C943588DABF"></endEvent>
+    <exclusiveGateway id="sid-AC0CAA59-EA58-4C94-8B1D-2316E8F4F987"></exclusiveGateway>
+    <userTask id="customer-appointment-failover-testing" name="Schedule Customer Appointment" flowable:category="service-testing">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <userTask id="sdwan-underlay-e2e-service-testing-jeopardy" name="E2E Service Testing Jeopardy" flowable:category="service-testing">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <exclusiveGateway id="sid-9E395A6A-4E79-4AC4-8C58-E22F13438335" default="sid-4D2339B6-154B-495B-A306-6EABF27052CC"></exclusiveGateway>
+    <exclusiveGateway id="sid-D8743307-06B3-4CE3-89BA-3490476FC3EA" default="sid-3BF431C0-0781-4EF9-98F3-08ADB4333FE3"></exclusiveGateway>
+    <serviceTask id="sdwan-underlay-set-clr" name="Set CLR" flowable:delegateExpression="${ setCLRDelegate }"></serviceTask>
+    <userTask id="sdwan-underlay-validate-e2e-service-testing-results" name="Validate E2E Service Testing Results" flowable:category="service-testing">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <exclusiveGateway id="sid-AA4453C2-988A-4CB1-BC09-3CC6CD77C0BF" default="sid-CBD04972-815E-4C68-89A3-0D1024D8EFB2"></exclusiveGateway>
+    <sequenceFlow id="sid-4D2339B6-154B-495B-A306-6EABF27052CC" name="Yes" sourceRef="sid-9E395A6A-4E79-4AC4-8C58-E22F13438335" targetRef="sdwan-underlay-validate-e2e-service-testing-results"></sequenceFlow>
+    <exclusiveGateway id="sid-DEA8523C-C7B6-4D73-8335-FF86BA4BBCE6"></exclusiveGateway>
+    <sequenceFlow id="sid-F52C50BD-38BB-47A0-AE00-C913AD66F612" name="No" sourceRef="sid-AA4453C2-988A-4CB1-BC09-3CC6CD77C0BF" targetRef="sdwan-underlay-e2e-service-testing">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ var:get(serviceConfigurationAction ) == "POST_VALIDATION" }]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-AE086157-C8C7-4A78-AEB2-352C93B60DFD" sourceRef="sdwan-underlay-e2e-service-testing" targetRef="sid-F79481FF-1F85-41B4-9827-15A4F2EC5044"></sequenceFlow>
+    <receiveTask id="sdwan-underlay-e2e-service-testing-status" name="E2E Service Testing Status">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ serviceTaskStartListener }"></flowable:executionListener>
+        <flowable:executionListener event="end" delegateExpression="${ serviceTaskEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </receiveTask>
+    <sequenceFlow id="sid-4FE09464-44A6-4D53-91A9-C10CD27D5594" sourceRef="sdwan-underlay-e2e-service-testing-status" targetRef="sid-9E395A6A-4E79-4AC4-8C58-E22F13438335"></sequenceFlow>
+    <sequenceFlow id="sid-D0B01768-2BDD-479A-9610-15A9722728BC" sourceRef="sdwan-underlay-validate-e2e-service-testing-results" targetRef="sid-AA4453C2-988A-4CB1-BC09-3CC6CD77C0BF"></sequenceFlow>
+    <sequenceFlow id="sid-CBD04972-815E-4C68-89A3-0D1024D8EFB2" name="Yes" sourceRef="sid-AA4453C2-988A-4CB1-BC09-3CC6CD77C0BF" targetRef="sid-DEA8523C-C7B6-4D73-8335-FF86BA4BBCE6"></sequenceFlow>
+    <sequenceFlow id="sid-84D09622-A1B4-49C2-AF57-98467B31630D" sourceRef="sdwan-underlay-e2e-service-testing-jeopardy" targetRef="sid-D8743307-06B3-4CE3-89BA-3490476FC3EA"></sequenceFlow>
+    <receiveTask id="sdwan-underlay-Set-clr-async" name="Set CLR response">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ serviceTaskStartListener }"></flowable:executionListener>
+        <flowable:executionListener event="end" delegateExpression="${ serviceTaskEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </receiveTask>
+    <exclusiveGateway id="sid-CC54E3E3-AE71-4145-B899-B290DCEBB642"></exclusiveGateway>
+    <sequenceFlow id="sid-6D31BECF-9547-48F6-81F0-EFFE5351BB73" sourceRef="sdwan-underlay-Set-clr-async" targetRef="sid-CC54E3E3-AE71-4145-B899-B290DCEBB642"></sequenceFlow>
+    <exclusiveGateway id="sid-2BCDD7FF-0D9C-4713-8958-0B7FAED92232" default="sid-F370BBF5-798A-4A20-899D-7ECD4E0F6DD9"></exclusiveGateway>
+    <sequenceFlow id="sid-6794D24B-EB4E-4ED2-8E5A-708949819060" sourceRef="sid-CC54E3E3-AE71-4145-B899-B290DCEBB642" targetRef="sid-2BCDD7FF-0D9C-4713-8958-0B7FAED92232"></sequenceFlow>
+    <userTask id="sdwan-underlay-set-clr-jeopardy" name="Set CLR Jeopardy" flowable:category="service-testing">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <exclusiveGateway id="sid-A2A017F6-FF8B-4F9B-8DA0-A5B9787FF5C0"></exclusiveGateway>
+    <userTask id="sdwan-underlay-e2e-service-testing-cim-dependency" name="CIM" flowable:category="service-testing">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="sid-32A6EE2C-A046-4120-9865-723A920F7367" sourceRef="sdwan-underlay-e2e-service-testing-cim-dependency" targetRef="sdwan-underlay-e2e-service-testing-jeopardy"></sequenceFlow>
+    <sequenceFlow id="sid-E596D11F-54BA-4BC8-B13F-4B1FEEF4DC92" name="Retry" sourceRef="sid-D8743307-06B3-4CE3-89BA-3490476FC3EA" targetRef="sdwan-underlay-e2e-service-testing">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ var:get(serviceConfigurationAction ) == "POST_VALIDATION" }]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-3BF431C0-0781-4EF9-98F3-08ADB4333FE3" sourceRef="sid-D8743307-06B3-4CE3-89BA-3490476FC3EA" targetRef="sid-DEA8523C-C7B6-4D73-8335-FF86BA4BBCE6"></sequenceFlow>
+    <sequenceFlow id="sid-43B8DFA7-AF31-4BE6-8AE9-A775A414BB90" sourceRef="sid-D8743307-06B3-4CE3-89BA-3490476FC3EA" targetRef="sdwan-underlay-e2e-service-testing-cim-dependency">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ var:get(action) == "CIM" }]]></conditionExpression>
+    </sequenceFlow>
+    <exclusiveGateway id="sid-7F339469-135F-4359-B355-D70FC28D5DDE" default="sid-3C927EF3-D85B-499A-87F6-B941AF7C260C"></exclusiveGateway>
+    <sequenceFlow id="sid-15933E31-BE41-4D4D-8C8B-08BDDA5A64FA" sourceRef="sdwan-underlay-set-clr-jeopardy" targetRef="sid-7F339469-135F-4359-B355-D70FC28D5DDE"></sequenceFlow>
+    <intermediateCatchEvent id="sdwan-underlay-set-clr-wait">
+      <timerEventDefinition>
+        <timeDuration>PT1M</timeDuration>
+      </timerEventDefinition>
+    </intermediateCatchEvent>
+    <sequenceFlow id="sid-8372AF00-54E0-4880-BF16-CC1D7F458807" sourceRef="sid-A8DD8D3B-88F6-4CCF-AA91-7EDF93847B39" targetRef="sdwan-underlay-set-clr-wait"></sequenceFlow>
+    <sequenceFlow id="sid-5C9D4A18-F2E3-4232-A019-2518031875E2" sourceRef="sdwan-underlay-set-clr-wait" targetRef="sdwan-underlay-set-clr"></sequenceFlow>
+    <sequenceFlow id="sid-7E5DED86-E409-438A-B35A-C80F4B168BAE" sourceRef="sid-7F339469-135F-4359-B355-D70FC28D5DDE" targetRef="sdwan-underlay-set-clr">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ var:get(action) == "retry" }]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-3C927EF3-D85B-499A-87F6-B941AF7C260C" sourceRef="sid-7F339469-135F-4359-B355-D70FC28D5DDE" targetRef="sid-A2A017F6-FF8B-4F9B-8DA0-A5B9787FF5C0"></sequenceFlow>
+    <exclusiveGateway id="sid-D45E883E-B8E1-4753-8756-ACEEAAEA9320" default="sid-9FD7F6B1-0942-4FD0-B843-76FB67AEFF07"></exclusiveGateway>
+    <sequenceFlow id="sid-834B83BF-9167-493B-879A-C4EE4CC02BF9" sourceRef="sdwan-underlay-set-clr" targetRef="sid-D45E883E-B8E1-4753-8756-ACEEAAEA9320"></sequenceFlow>
+    <sequenceFlow id="sid-9FD7F6B1-0942-4FD0-B843-76FB67AEFF07" sourceRef="sid-D45E883E-B8E1-4753-8756-ACEEAAEA9320" targetRef="sid-CC54E3E3-AE71-4145-B899-B290DCEBB642"></sequenceFlow>
+    <sequenceFlow id="sid-21A0682B-BE31-42D4-846E-E6EC0824E7F5" sourceRef="sid-2BCDD7FF-0D9C-4713-8958-0B7FAED92232" targetRef="sid-A2A017F6-FF8B-4F9B-8DA0-A5B9787FF5C0">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ var:get(setCLRSuccess) == true }]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-F370BBF5-798A-4A20-899D-7ECD4E0F6DD9" sourceRef="sid-2BCDD7FF-0D9C-4713-8958-0B7FAED92232" targetRef="sdwan-underlay-set-clr-jeopardy"></sequenceFlow>
+    <exclusiveGateway id="sid-A8DD8D3B-88F6-4CCF-AA91-7EDF93847B39"></exclusiveGateway>
+    <sequenceFlow id="sid-9252F4E8-5A01-4127-AB53-95EAEE6AE329" sourceRef="sid-DEA8523C-C7B6-4D73-8335-FF86BA4BBCE6" targetRef="sid-A8DD8D3B-88F6-4CCF-AA91-7EDF93847B39"></sequenceFlow>
+    <boundaryEvent id="sid-DC01A733-5F74-4907-BC47-66C965BE508C" attachedToRef="customer-appointment-failover-testing" cancelActivity="false">
+      <timerEventDefinition>
+        <timeCycle>${ remainderCycle }</timeCycle>
+      </timerEventDefinition>
+    </boundaryEvent>
+    <sequenceFlow id="sid-A55F4256-67E2-42DE-A1E8-B77FB9E7C621" sourceRef="sid-DC01A733-5F74-4907-BC47-66C965BE508C" targetRef="customer-reminder-customer-appointment-failover-testing"></sequenceFlow>
+    <serviceTask id="customer-reminder-customer-appointment-failover-testing" name="reminder" flowable:async="true" flowable:delegateExpression="${ notificationDelegate }"></serviceTask>
+    <receiveTask id="sdwan-underlay" name="Wait for service acceptance to complete">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ serviceTaskStartListener }"></flowable:executionListener>
+        <flowable:executionListener event="end" delegateExpression="${ serviceTaskEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </receiveTask>
+    <sequenceFlow id="sid-D1364253-31E6-41BC-9AC0-A71A4A3425A5" name="No" sourceRef="sid-18E99AE1-B61D-457D-832F-4EDCF5514889" targetRef="sid-AC0CAA59-EA58-4C94-8B1D-2316E8F4F987">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ failoverTestingRequired == false }]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="failover_testing_activity_end" sourceRef="conduct-failover-test" targetRef="sid-AC0CAA59-EA58-4C94-8B1D-2316E8F4F987">
+      <extensionElements>
+        <flowable:executionListener event="end" delegateExpression="${ activityEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="failover_testing_activity_start" name="Yes" sourceRef="sid-18E99AE1-B61D-457D-832F-4EDCF5514889" targetRef="customer-appointment-failover-testing">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ activityStartListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="sid-E806ACF2-CF8D-4340-9AA3-4C0A1AD77E23" sourceRef="sid-A2A017F6-FF8B-4F9B-8DA0-A5B9787FF5C0" targetRef="sid-18E99AE1-B61D-457D-832F-4EDCF5514889"></sequenceFlow>
+    <sequenceFlow id="sid-C0839C76-4989-42F4-BF55-24EC6B002478" sourceRef="sid-D45E883E-B8E1-4753-8756-ACEEAAEA9320" targetRef="sdwan-underlay-Set-clr-async">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ var:get(setCLRSyncSuccess)  == true }]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sdwan-e2e-testing" sourceRef="sid-AC0CAA59-EA58-4C94-8B1D-2316E8F4F987" targetRef="sdwan-underlay">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ downtimeEventEndListener}"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="sdwan_underlay_e2e_service_testing_activity_start" sourceRef="startEvent1" targetRef="sdwan-underlay-e2e-service-testing">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ activityStartListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="sdwan_underlay_e2e_service_testing_activity_end" sourceRef="sdwan-underlay" targetRef="sid-71455415-E705-4074-97E7-0C943588DABF">
+      <extensionElements>
+        <flowable:executionListener event="end" delegateExpression="${ activityEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <boundaryEvent id="sid-2F13B512-6A62-4ECA-A992-D3D667D5CF42" attachedToRef="sdwan-underlay-e2e-service-testing-status" cancelActivity="true">
+      <timerEventDefinition>
+        <timeDuration>PT1H</timeDuration>
+      </timerEventDefinition>
+    </boundaryEvent>
+    <boundaryEvent id="Set-clr-async-wait" attachedToRef="sdwan-underlay-Set-clr-async" cancelActivity="true">
+      <timerEventDefinition>
+        <timeDuration>PT1H</timeDuration>
+      </timerEventDefinition>
+    </boundaryEvent>
+    <sequenceFlow id="sdwan-underlay-Set-clr-async-wait-time" sourceRef="Set-clr-async-wait" targetRef="sid-CC54E3E3-AE71-4145-B899-B290DCEBB642">
+      <extensionElements>
+        <flowable:executionListener event="take" delegateExpression="${timeEventEndListener}"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="sdwan-underlay-e2e-service-testing-status-wait-time" sourceRef="sid-2F13B512-6A62-4ECA-A992-D3D667D5CF42" targetRef="sid-9E395A6A-4E79-4AC4-8C58-E22F13438335">
+      <extensionElements>
+        <flowable:executionListener event="take" delegateExpression="${timeEventEndListener}"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <exclusiveGateway id="sid-F79481FF-1F85-41B4-9827-15A4F2EC5044" default="sid-C7093134-03B2-4CFD-8FAC-BBC98E97BE35"></exclusiveGateway>
+    <sequenceFlow id="sid-C7093134-03B2-4CFD-8FAC-BBC98E97BE35" sourceRef="sid-F79481FF-1F85-41B4-9827-15A4F2EC5044" targetRef="sdwan-underlay-e2e-service-testing-status"></sequenceFlow>
+    <sequenceFlow id="sid-981E5231-F398-4D5A-AD69-1161D09C69A0" sourceRef="sid-F79481FF-1F85-41B4-9827-15A4F2EC5044" targetRef="sid-9E395A6A-4E79-4AC4-8C58-E22F13438335">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ var:get(e2eServiceTestingMessageSent ) == false }]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-27ED9E26-5591-4933-9B0E-EAFD920FB2C9" name="No" sourceRef="sid-9E395A6A-4E79-4AC4-8C58-E22F13438335" targetRef="sdwan-underlay-e2e-service-testing-jeopardy">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ var:get(e2eServiceTestingCompleted ) == false || var:get(e2eServiceTestingMessageSent ) == false}]]></conditionExpression>
+    </sequenceFlow>
+    <textAnnotation id="sid-42809AB5-CD20-49B1-B7A9-C95465A579F9">
+      <text>Is Failover testing required ?</text>
+    </textAnnotation>
+    <association id="sid-83A2959E-96E9-46A2-906A-F770AE09DB73" sourceRef="sid-18E99AE1-B61D-457D-832F-4EDCF5514889" targetRef="sid-42809AB5-CD20-49B1-B7A9-C95465A579F9" associationDirection="None"></association>
+    <textAnnotation id="sid-BCB7C22B-5E75-4CA1-BBEC-054E056E5440">
+      <text>E2E Success?</text>
+    </textAnnotation>
+    <association id="sid-ACB822F7-61D5-48C0-94B6-F752CEDAE351" sourceRef="sid-AA4453C2-988A-4CB1-BC09-3CC6CD77C0BF" targetRef="sid-BCB7C22B-5E75-4CA1-BBEC-054E056E5440" associationDirection="None"></association>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_sdwan_service_testing_workflow">
+    <bpmndi:BPMNPlane bpmnElement="sdwan_service_testing_workflow" id="BPMNPlane_sdwan_service_testing_workflow">
+      <bpmndi:BPMNShape bpmnElement="startEvent1" id="BPMNShape_startEvent1">
+        <omgdc:Bounds height="30.0" width="30.0" x="15.0" y="147.4936784476546"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="conduct-failover-test" id="BPMNShape_conduct-failover-test">
+        <omgdc:Bounds height="71.0" width="105.0" x="1457.0" y="92.23735689530918"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sdwan-underlay-e2e-service-testing" id="BPMNShape_sdwan-underlay-e2e-service-testing">
+        <omgdc:Bounds height="69.0" width="92.0" x="150.0" y="127.99367844765459"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-18E99AE1-B61D-457D-832F-4EDCF5514889" id="BPMNShape_sid-18E99AE1-B61D-457D-832F-4EDCF5514889">
+        <omgdc:Bounds height="40.0" width="40.0" x="1227.0" y="107.73735689530918"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-71455415-E705-4074-97E7-0C943588DABF" id="BPMNShape_sid-71455415-E705-4074-97E7-0C943588DABF">
+        <omgdc:Bounds height="28.0" width="28.0" x="1825.0" y="194.98735689530918"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-AC0CAA59-EA58-4C94-8B1D-2316E8F4F987" id="BPMNShape_sid-AC0CAA59-EA58-4C94-8B1D-2316E8F4F987">
+        <omgdc:Bounds height="40.0" width="40.0" x="1582.0" y="188.98735689530918"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="customer-appointment-failover-testing" id="BPMNShape_customer-appointment-failover-testing">
+        <omgdc:Bounds height="63.0" width="98.0" x="1326.0" y="96.23735689530918"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sdwan-underlay-e2e-service-testing-jeopardy" id="BPMNShape_sdwan-underlay-e2e-service-testing-jeopardy">
+        <omgdc:Bounds height="62.0" width="111.0" x="444.5" y="193.9936784476546"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-9E395A6A-4E79-4AC4-8C58-E22F13438335" id="BPMNShape_sid-9E395A6A-4E79-4AC4-8C58-E22F13438335">
+        <omgdc:Bounds height="40.0" width="40.0" x="480.0" y="113.49367844765459"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-D8743307-06B3-4CE3-89BA-3490476FC3EA" id="BPMNShape_sid-D8743307-06B3-4CE3-89BA-3490476FC3EA">
+        <omgdc:Bounds height="40.0" width="40.0" x="480.0" y="293.4936784476546"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sdwan-underlay-set-clr" id="BPMNShape_sdwan-underlay-set-clr">
+        <omgdc:Bounds height="63.0" width="79.0" x="885.0" y="130.99367844765464"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sdwan-underlay-validate-e2e-service-testing-results" id="BPMNShape_sdwan-underlay-validate-e2e-service-testing-results">
+        <omgdc:Bounds height="71.0" width="106.0" x="555.0" y="98.49367844765459"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-AA4453C2-988A-4CB1-BC09-3CC6CD77C0BF" id="BPMNShape_sid-AA4453C2-988A-4CB1-BC09-3CC6CD77C0BF">
+        <omgdc:Bounds height="40.0" width="40.0" x="690.0" y="113.49367844765459"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-DEA8523C-C7B6-4D73-8335-FF86BA4BBCE6" id="BPMNShape_sid-DEA8523C-C7B6-4D73-8335-FF86BA4BBCE6">
+        <omgdc:Bounds height="40.0" width="40.0" x="765.0" y="113.99367844765459"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sdwan-underlay-e2e-service-testing-status" id="BPMNShape_sdwan-underlay-e2e-service-testing-status">
+        <omgdc:Bounds height="69.0" width="92.0" x="300.0" y="60.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sdwan-underlay-Set-clr-async" id="BPMNShape_sdwan-underlay-Set-clr-async">
+        <omgdc:Bounds height="69.0" width="92.0" x="945.0" y="222.4936784476546"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-CC54E3E3-AE71-4145-B899-B290DCEBB642" id="BPMNShape_sid-CC54E3E3-AE71-4145-B899-B290DCEBB642">
+        <omgdc:Bounds height="40.0" width="40.0" x="1065.0" y="236.9936784476546"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-2BCDD7FF-0D9C-4713-8958-0B7FAED92232" id="BPMNShape_sid-2BCDD7FF-0D9C-4713-8958-0B7FAED92232">
+        <omgdc:Bounds height="40.0" width="40.0" x="1140.0" y="236.9936784476546"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sdwan-underlay-set-clr-jeopardy" id="BPMNShape_sdwan-underlay-set-clr-jeopardy">
+        <omgdc:Bounds height="62.0" width="111.0" x="1104.5" y="312.4936784476546"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-A2A017F6-FF8B-4F9B-8DA0-A5B9787FF5C0" id="BPMNShape_sid-A2A017F6-FF8B-4F9B-8DA0-A5B9787FF5C0">
+        <omgdc:Bounds height="40.0" width="40.0" x="1140.0" y="107.73735689530918"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sdwan-underlay-e2e-service-testing-cim-dependency" id="BPMNShape_sdwan-underlay-e2e-service-testing-cim-dependency">
+        <omgdc:Bounds height="62.0" width="111.0" x="615.0" y="193.9936784476546"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-7F339469-135F-4359-B355-D70FC28D5DDE" id="BPMNShape_sid-7F339469-135F-4359-B355-D70FC28D5DDE">
+        <omgdc:Bounds height="40.0" width="40.0" x="1260.5" y="323.4936784476546"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sdwan-underlay-set-clr-wait" id="BPMNShape_sdwan-underlay-set-clr-wait">
+        <omgdc:Bounds height="31.0" width="31.0" x="825.0" y="43.49367844765459"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-D45E883E-B8E1-4753-8756-ACEEAAEA9320" id="BPMNShape_sid-D45E883E-B8E1-4753-8756-ACEEAAEA9320">
+        <omgdc:Bounds height="40.0" width="40.0" x="1009.0" y="142.49367844765464"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-A8DD8D3B-88F6-4CCF-AA91-7EDF93847B39" id="BPMNShape_sid-A8DD8D3B-88F6-4CCF-AA91-7EDF93847B39">
+        <omgdc:Bounds height="40.0" width="40.0" x="765.0" y="38.99367844765459"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-DC01A733-5F74-4907-BC47-66C965BE508C" id="BPMNShape_sid-DC01A733-5F74-4907-BC47-66C965BE508C">
+        <omgdc:Bounds height="31.0" width="31.0" x="1332.011730849764" y="49.10517424924731"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="customer-reminder-customer-appointment-failover-testing" id="BPMNShape_customer-reminder-customer-appointment-failover-testing">
+        <omgdc:Bounds height="56.0" width="228.0" x="1439.011730849764" y="30.993678447654588"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sdwan-underlay" id="BPMNShape_sdwan-underlay">
+        <omgdc:Bounds height="80.0" width="100.0" x="1665.0" y="168.98735689530918"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-2F13B512-6A62-4ECA-A992-D3D667D5CF42" id="BPMNShape_sid-2F13B512-6A62-4ECA-A992-D3D667D5CF42">
+        <omgdc:Bounds height="31.0" width="31.0" x="324.986944880511" y="28.554711917473384"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="Set-clr-async-wait" id="BPMNShape_Set-clr-async-wait">
+        <omgdc:Bounds height="31.0" width="31.0" x="1006.1370990873734" y="191.39794443351894"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-42809AB5-CD20-49B1-B7A9-C95465A579F9" id="BPMNShape_sid-42809AB5-CD20-49B1-B7A9-C95465A579F9">
+        <omgdc:Bounds height="38.0" width="196.0" x="1206.0" y="26.487356895309176"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-83A2959E-96E9-46A2-906A-F770AE09DB73" id="BPMNShape_sid-83A2959E-96E9-46A2-906A-F770AE09DB73">
+        <omgdc:Bounds height="52.62433150821738" width="47.42429875048833" x="1256.5757012495117" y="64.48735689530918"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-BCB7C22B-5E75-4CA1-BBEC-054E056E5440" id="BPMNShape_sid-BCB7C22B-5E75-4CA1-BBEC-054E056E5440">
+        <omgdc:Bounds height="29.0" width="104.0" x="600.0" y="44.49367844765459"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-ACB822F7-61D5-48C0-94B6-F752CEDAE351" id="BPMNShape_sid-ACB822F7-61D5-48C0-94B6-F752CEDAE351">
+        <omgdc:Bounds height="49.90601162395089" width="48.242477903152576" x="652.0" y="73.49367844765459"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-F79481FF-1F85-41B4-9827-15A4F2EC5044" id="BPMNShape_sid-F79481FF-1F85-41B4-9827-15A4F2EC5044">
+        <omgdc:Bounds height="40.0" width="40.0" x="271.0" y="142.4936784476546"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-AE086157-C8C7-4A78-AEB2-352C93B60DFD" id="BPMNEdge_sid-AE086157-C8C7-4A78-AEB2-352C93B60DFD">
+        <omgdi:waypoint x="241.94999999999908" y="162.73425436388496"></omgdi:waypoint>
+        <omgdi:waypoint x="271.3947368421047" y="162.88841528975985"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-6D31BECF-9547-48F6-81F0-EFFE5351BB73" id="BPMNEdge_sid-6D31BECF-9547-48F6-81F0-EFFE5351BB73">
+        <omgdi:waypoint x="1036.95" y="256.9936784476546"></omgdi:waypoint>
+        <omgdi:waypoint x="1065.0" y="256.9936784476546"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-43B8DFA7-AF31-4BE6-8AE9-A775A414BB90" id="BPMNEdge_sid-43B8DFA7-AF31-4BE6-8AE9-A775A414BB90">
+        <omgdi:waypoint x="513.1331081081081" y="306.6597016136777"></omgdi:waypoint>
+        <omgdi:waypoint x="615.0" y="253.77564325703875"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="failover_testing_activity_end" id="BPMNEdge_failover_testing_activity_end">
+        <omgdi:waypoint x="1561.9499999999996" y="127.31885703580937"></omgdi:waypoint>
+        <omgdi:waypoint x="1602.0" y="127.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1602.0" y="188.98735689530918"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-84D09622-A1B4-49C2-AF57-98467B31630D" id="BPMNEdge_sid-84D09622-A1B4-49C2-AF57-98467B31630D">
+        <omgdi:waypoint x="500.0" y="255.9436784476546"></omgdi:waypoint>
+        <omgdi:waypoint x="500.0" y="293.4936784476546"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-5C9D4A18-F2E3-4232-A019-2518031875E2" id="BPMNEdge_sid-5C9D4A18-F2E3-4232-A019-2518031875E2">
+        <omgdi:waypoint x="850.2364236193621" y="70.98980897010927"></omgdi:waypoint>
+        <omgdi:waypoint x="898.9347826086956" y="130.99367844765464"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-C0839C76-4989-42F4-BF55-24EC6B002478" id="BPMNEdge_sid-C0839C76-4989-42F4-BF55-24EC6B002478">
+        <omgdi:waypoint x="1023.2641509433962" y="176.72216901369242"></omgdi:waypoint>
+        <omgdi:waypoint x="1004.85291005291" y="222.4936784476546"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-83A2959E-96E9-46A2-906A-F770AE09DB73" id="BPMNEdge_sid-83A2959E-96E9-46A2-906A-F770AE09DB73">
+        <omgdi:waypoint x="1256.4565488565488" y="117.21760637555867"></omgdi:waypoint>
+        <omgdi:waypoint x="1304.0" y="64.48735689530918"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-C064CFEB-8EE9-4213-8C02-B393347018C0" id="BPMNEdge_sid-C064CFEB-8EE9-4213-8C02-B393347018C0">
+        <omgdi:waypoint x="1423.9499999999755" y="127.73735689530918"></omgdi:waypoint>
+        <omgdi:waypoint x="1457.0" y="127.73735689530918"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sdwan_underlay_e2e_service_testing_activity_end" id="BPMNEdge_sdwan_underlay_e2e_service_testing_activity_end">
+        <omgdi:waypoint x="1764.9499999999377" y="208.98735689530918"></omgdi:waypoint>
+        <omgdi:waypoint x="1825.0" y="208.98735689530918"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-32A6EE2C-A046-4120-9865-723A920F7367" id="BPMNEdge_sid-32A6EE2C-A046-4120-9865-723A920F7367">
+        <omgdi:waypoint x="615.0" y="224.9936784476546"></omgdi:waypoint>
+        <omgdi:waypoint x="555.4499999999952" y="224.9936784476546"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sdwan-underlay-Set-clr-async-wait-time" id="BPMNEdge_sdwan-underlay-Set-clr-async-wait-time">
+        <omgdi:waypoint x="1033.756315109483" y="216.48036296254438"></omgdi:waypoint>
+        <omgdi:waypoint x="1073.8258486251104" y="248.16301799656196"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-4D2339B6-154B-495B-A306-6EABF27052CC" id="BPMNEdge_sid-4D2339B6-154B-495B-A306-6EABF27052CC">
+        <omgdi:waypoint x="519.8489640883978" y="133.58561393152556"></omgdi:waypoint>
+        <omgdi:waypoint x="554.9999999999977" y="133.7483080772842"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-4FE09464-44A6-4D53-91A9-C10CD27D5594" id="BPMNEdge_sid-4FE09464-44A6-4D53-91A9-C10CD27D5594">
+        <omgdi:waypoint x="391.95" y="106.13480210824498"></omgdi:waypoint>
+        <omgdi:waypoint x="484.01423422613806" y="129.45275039640438"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-981E5231-F398-4D5A-AD69-1161D09C69A0" id="BPMNEdge_sid-981E5231-F398-4D5A-AD69-1161D09C69A0">
+        <omgdi:waypoint x="308.9772058823527" y="160.51468685101597"></omgdi:waypoint>
+        <omgdi:waypoint x="482.4789915966385" y="135.96647256530164"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-21A0682B-BE31-42D4-846E-E6EC0824E7F5" id="BPMNEdge_sid-21A0682B-BE31-42D4-846E-E6EC0824E7F5">
+        <omgdi:waypoint x="1160.0" y="236.9936784476546"></omgdi:waypoint>
+        <omgdi:waypoint x="1160.0" y="147.64504138173675"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-CBD04972-815E-4C68-89A3-0D1024D8EFB2" id="BPMNEdge_sid-CBD04972-815E-4C68-89A3-0D1024D8EFB2">
+        <omgdi:waypoint x="729.804861111111" y="133.6257976529526"></omgdi:waypoint>
+        <omgdi:waypoint x="765.0962301587301" y="133.86122811652876"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sdwan_underlay_e2e_service_testing_activity_start" id="BPMNEdge_sdwan_underlay_e2e_service_testing_activity_start">
+        <omgdi:waypoint x="44.94999933672415" y="162.4936784476546"></omgdi:waypoint>
+        <omgdi:waypoint x="150.0" y="162.4936784476546"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-9FD7F6B1-0942-4FD0-B843-76FB67AEFF07" id="BPMNEdge_sid-9FD7F6B1-0942-4FD0-B843-76FB67AEFF07">
+        <omgdi:waypoint x="1036.4232558139536" y="175.0187282484515"></omgdi:waypoint>
+        <omgdi:waypoint x="1077.5581395348836" y="244.42445534008485"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-3BF431C0-0781-4EF9-98F3-08ADB4333FE3" id="BPMNEdge_sid-3BF431C0-0781-4EF9-98F3-08ADB4333FE3">
+        <omgdi:waypoint x="519.9155022658147" y="313.4590942529825"></omgdi:waypoint>
+        <omgdi:waypoint x="785.0" y="313.0"></omgdi:waypoint>
+        <omgdi:waypoint x="785.0" y="153.89922604368917"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-E806ACF2-CF8D-4340-9AA3-4C0A1AD77E23" id="BPMNEdge_sid-E806ACF2-CF8D-4340-9AA3-4C0A1AD77E23">
+        <omgdi:waypoint x="1179.9385476463615" y="127.73735689530918"></omgdi:waypoint>
+        <omgdi:waypoint x="1227.0" y="127.73735689530918"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-6794D24B-EB4E-4ED2-8E5A-708949819060" id="BPMNEdge_sid-6794D24B-EB4E-4ED2-8E5A-708949819060">
+        <omgdi:waypoint x="1104.9367177097204" y="256.9936784476546"></omgdi:waypoint>
+        <omgdi:waypoint x="1140.0" y="256.9936784476546"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-15933E31-BE41-4D4D-8C8B-08BDDA5A64FA" id="BPMNEdge_sid-15933E31-BE41-4D4D-8C8B-08BDDA5A64FA">
+        <omgdi:waypoint x="1215.45" y="343.4936784476546"></omgdi:waypoint>
+        <omgdi:waypoint x="1260.5" y="343.4936784476546"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-F370BBF5-798A-4A20-899D-7ECD4E0F6DD9" id="BPMNEdge_sid-F370BBF5-798A-4A20-899D-7ECD4E0F6DD9">
+        <omgdi:waypoint x="1160.0" y="276.932159971904"></omgdi:waypoint>
+        <omgdi:waypoint x="1160.0" y="312.4936784476546"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-D1364253-31E6-41BC-9AC0-A71A4A3425A5" id="BPMNEdge_sid-D1364253-31E6-41BC-9AC0-A71A4A3425A5">
+        <omgdi:waypoint x="1256.5023155708282" y="138.18473311094235"></omgdi:waypoint>
+        <omgdi:waypoint x="1320.0" y="208.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1582.0236552625465" y="208.9175759053638"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-27ED9E26-5591-4933-9B0E-EAFD920FB2C9" id="BPMNEdge_sid-27ED9E26-5591-4933-9B0E-EAFD920FB2C9">
+        <omgdi:waypoint x="500.0" y="153.43278870966333"></omgdi:waypoint>
+        <omgdi:waypoint x="500.0" y="193.9936784476546"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-E596D11F-54BA-4BC8-B13F-4B1FEEF4DC92" id="BPMNEdge_sid-E596D11F-54BA-4BC8-B13F-4B1FEEF4DC92">
+        <omgdi:waypoint x="480.0291516203413" y="313.4612522606696"></omgdi:waypoint>
+        <omgdi:waypoint x="196.0" y="313.0"></omgdi:waypoint>
+        <omgdi:waypoint x="196.0" y="196.9436784476546"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-C7093134-03B2-4CFD-8FAC-BBC98E97BE35" id="BPMNEdge_sid-C7093134-03B2-4CFD-8FAC-BBC98E97BE35">
+        <omgdi:waypoint x="300.340088480342" y="151.855922538223"></omgdi:waypoint>
+        <omgdi:waypoint x="318.5485615225505" y="128.95"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-ACB822F7-61D5-48C0-94B6-F752CEDAE351" id="BPMNEdge_sid-ACB822F7-61D5-48C0-94B6-F752CEDAE351">
+        <omgdi:waypoint x="700.1694915254237" y="123.32404316351548"></omgdi:waypoint>
+        <omgdi:waypoint x="652.0" y="73.49367844765459"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-834B83BF-9167-493B-879A-C4EE4CC02BF9" id="BPMNEdge_sid-834B83BF-9167-493B-879A-C4EE4CC02BF9">
+        <omgdi:waypoint x="963.9499999999999" y="162.49367844765464"></omgdi:waypoint>
+        <omgdi:waypoint x="1009.0" y="162.49367844765464"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-A55F4256-67E2-42DE-A1E8-B77FB9E7C621" id="BPMNEdge_sid-A55F4256-67E2-42DE-A1E8-B77FB9E7C621">
+        <omgdi:waypoint x="1362.635692806032" y="61.4224112870684"></omgdi:waypoint>
+        <omgdi:waypoint x="1379.0" y="58.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1439.0117308497618" y="58.34269162924047"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-7E5DED86-E409-438A-B35A-C80F4B168BAE" id="BPMNEdge_sid-7E5DED86-E409-438A-B35A-C80F4B168BAE">
+        <omgdi:waypoint x="1280.6813427933098" y="363.24456336083864"></omgdi:waypoint>
+        <omgdi:waypoint x="1281.0" y="398.0"></omgdi:waypoint>
+        <omgdi:waypoint x="924.0" y="398.0"></omgdi:waypoint>
+        <omgdi:waypoint x="924.4331228143" y="193.94367844765466"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-3C927EF3-D85B-499A-87F6-B941AF7C260C" id="BPMNEdge_sid-3C927EF3-D85B-499A-87F6-B941AF7C260C">
+        <omgdi:waypoint x="1273.3328484982108" y="330.6599872318399"></omgdi:waypoint>
+        <omgdi:waypoint x="1167.1492336230347" y="140.52479542700527"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sdwan-e2e-testing" id="BPMNEdge_sdwan-e2e-testing">
+        <omgdi:waypoint x="1621.9411803712885" y="208.98735689530918"></omgdi:waypoint>
+        <omgdi:waypoint x="1665.0" y="208.98735689530918"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-9252F4E8-5A01-4127-AB53-95EAEE6AE329" id="BPMNEdge_sid-9252F4E8-5A01-4127-AB53-95EAEE6AE329">
+        <omgdi:waypoint x="785.0" y="113.99367844765459"></omgdi:waypoint>
+        <omgdi:waypoint x="785.0" y="78.90692944898971"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sdwan-underlay-e2e-service-testing-status-wait-time" id="BPMNEdge_sdwan-underlay-e2e-service-testing-status-wait-time">
+        <omgdi:waypoint x="353.96474797194554" y="51.612160372127036"></omgdi:waypoint>
+        <omgdi:waypoint x="487.1722992423118" y="126.30844123306862"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-F52C50BD-38BB-47A0-AE00-C913AD66F612" id="BPMNEdge_sid-F52C50BD-38BB-47A0-AE00-C913AD66F612">
+        <omgdi:waypoint x="710.0" y="113.49367844765459"></omgdi:waypoint>
+        <omgdi:waypoint x="710.0" y="24.0"></omgdi:waypoint>
+        <omgdi:waypoint x="199.0" y="24.0"></omgdi:waypoint>
+        <omgdi:waypoint x="196.74624344705424" y="127.99367844765459"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-D0B01768-2BDD-479A-9610-15A9722728BC" id="BPMNEdge_sid-D0B01768-2BDD-479A-9610-15A9722728BC">
+        <omgdi:waypoint x="660.9499999999967" y="133.73387452608597"></omgdi:waypoint>
+        <omgdi:waypoint x="690.0975609756047" y="133.5909955208253"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="failover_testing_activity_start" id="BPMNEdge_failover_testing_activity_start">
+        <omgdi:waypoint x="1266.9422131147542" y="127.73735689530918"></omgdi:waypoint>
+        <omgdi:waypoint x="1326.0" y="127.73735689530918"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-8372AF00-54E0-4880-BF16-CC1D7F458807" id="BPMNEdge_sid-8372AF00-54E0-4880-BF16-CC1D7F458807">
+        <omgdi:waypoint x="804.9320593525108" y="58.99367844765459"></omgdi:waypoint>
+        <omgdi:waypoint x="825.0" y="58.99367844765459"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

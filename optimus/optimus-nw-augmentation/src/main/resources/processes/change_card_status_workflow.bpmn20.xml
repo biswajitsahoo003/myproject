@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <process id="change_card_status_workflow" name="change_card_status_workflow" isExecutable="true">
+    <documentation>change_card_status_workflow</documentation>
+    <startEvent id="startEvent1" flowable:formFieldValidation="true"></startEvent>
+    <endEvent id="change_card_status_activity_end">
+      <extensionElements>
+        <flowable:executionListener event="end" delegateExpression="${activityEndListener}"></flowable:executionListener>
+      </extensionElements>
+    </endEvent>
+    <serviceTask id="change_card_status_in_cramer_task" name="Change card status" flowable:delegateExpression="${createDeviceInCramerDelegate}"></serviceTask>
+    <sequenceFlow id="change_card_status_activity_start" sourceRef="startEvent1" targetRef="change_card_status_in_cramer_task">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${activityStartListener}"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <exclusiveGateway id="sid-75F97E41-278A-4137-8C2A-2F97C289496E"></exclusiveGateway>
+    <sequenceFlow id="sid-5F05DB67-BA07-4098-9289-1B6811EBE47D" sourceRef="change_card_status_in_cramer_task" targetRef="sid-75F97E41-278A-4137-8C2A-2F97C289496E"></sequenceFlow>
+    <userTask id="change_card_status_in_cramer_retry_task" name="Change Card Status Retry" flowable:formFieldValidation="true">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${taskCreateListener}"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${taskCompleteListener}"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <exclusiveGateway id="sid-06E79CAC-0681-4C5F-8523-5C00AB9D55E8"></exclusiveGateway>
+    <sequenceFlow id="sid-A10F7467-497B-4096-937D-51C099EE8886" sourceRef="sid-75F97E41-278A-4137-8C2A-2F97C289496E" targetRef="change_card_status_in_cramer_retry_task">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${isError == true}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-55483435-6125-4750-AA39-93A5CD2B2566" sourceRef="change_card_status_in_cramer_retry_task" targetRef="sid-06E79CAC-0681-4C5F-8523-5C00AB9D55E8"></sequenceFlow>
+    <sequenceFlow id="sid-F39D818D-217D-4B4C-92DA-BDF1A55744A8" sourceRef="sid-06E79CAC-0681-4C5F-8523-5C00AB9D55E8" targetRef="change_card_status_in_cramer_task">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${retry == true}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-35DE70D6-37F6-46C8-A20A-1A5D448C927B" sourceRef="sid-06E79CAC-0681-4C5F-8523-5C00AB9D55E8" targetRef="change_card_status_activity_end">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${isError == false}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-DF0EDCD6-1E6D-46DF-B01C-26BF85D62555" sourceRef="sid-75F97E41-278A-4137-8C2A-2F97C289496E" targetRef="change_card_status_activity_end">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${isError == false}]]></conditionExpression>
+    </sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_change_card_status_workflow">
+    <bpmndi:BPMNPlane bpmnElement="change_card_status_workflow" id="BPMNPlane_change_card_status_workflow">
+      <bpmndi:BPMNShape bpmnElement="startEvent1" id="BPMNShape_startEvent1">
+        <omgdc:Bounds height="30.0" width="30.0" x="45.0" y="85.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="change_card_status_activity_end" id="BPMNShape_change_card_status_activity_end">
+        <omgdc:Bounds height="28.0" width="28.0" x="480.0" y="86.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="change_card_status_in_cramer_task" id="BPMNShape_change_card_status_in_cramer_task">
+        <omgdc:Bounds height="80.0" width="100.0" x="135.0" y="60.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-75F97E41-278A-4137-8C2A-2F97C289496E" id="BPMNShape_sid-75F97E41-278A-4137-8C2A-2F97C289496E">
+        <omgdc:Bounds height="40.0" width="40.0" x="355.0" y="80.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="change_card_status_in_cramer_retry_task" id="BPMNShape_change_card_status_in_cramer_retry_task">
+        <omgdc:Bounds height="80.0" width="100.0" x="325.0" y="195.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-06E79CAC-0681-4C5F-8523-5C00AB9D55E8" id="BPMNShape_sid-06E79CAC-0681-4C5F-8523-5C00AB9D55E8">
+        <omgdc:Bounds height="40.0" width="40.0" x="165.0" y="215.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-5F05DB67-BA07-4098-9289-1B6811EBE47D" id="BPMNEdge_sid-5F05DB67-BA07-4098-9289-1B6811EBE47D">
+        <omgdi:waypoint x="234.94999999999624" y="100.13110236220471"></omgdi:waypoint>
+        <omgdi:waypoint x="355.44736842105203" y="100.44736842105263"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-55483435-6125-4750-AA39-93A5CD2B2566" id="BPMNEdge_sid-55483435-6125-4750-AA39-93A5CD2B2566">
+        <omgdi:waypoint x="324.9999999999997" y="235.13179419525065"></omgdi:waypoint>
+        <omgdi:waypoint x="204.4548835362596" y="235.44973544973544"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-35DE70D6-37F6-46C8-A20A-1A5D448C927B" id="BPMNEdge_sid-35DE70D6-37F6-46C8-A20A-1A5D448C927B">
+        <omgdi:waypoint x="185.5" y="254.43763054830288"></omgdi:waypoint>
+        <omgdi:waypoint x="185.5" y="312.0"></omgdi:waypoint>
+        <omgdi:waypoint x="494.0" y="312.0"></omgdi:waypoint>
+        <omgdi:waypoint x="494.0" y="113.94992342067404"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-F39D818D-217D-4B4C-92DA-BDF1A55744A8" id="BPMNEdge_sid-F39D818D-217D-4B4C-92DA-BDF1A55744A8">
+        <omgdi:waypoint x="185.42592592592592" y="215.42592592592592"></omgdi:waypoint>
+        <omgdi:waypoint x="185.14741697416974" y="139.95"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="change_card_status_activity_start" id="BPMNEdge_change_card_status_activity_start">
+        <omgdi:waypoint x="74.94999695038214" y="100.0"></omgdi:waypoint>
+        <omgdi:waypoint x="134.99999999998693" y="100.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-DF0EDCD6-1E6D-46DF-B01C-26BF85D62555" id="BPMNEdge_sid-DF0EDCD6-1E6D-46DF-B01C-26BF85D62555">
+        <omgdi:waypoint x="394.52220575783235" y="100.41949152542372"></omgdi:waypoint>
+        <omgdi:waypoint x="480.00011927917643" y="100.05886043233181"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-A10F7467-497B-4096-937D-51C099EE8886" id="BPMNEdge_sid-A10F7467-497B-4096-937D-51C099EE8886">
+        <omgdi:waypoint x="375.42910447761193" y="119.51359060402685"></omgdi:waypoint>
+        <omgdi:waypoint x="375.14851301115243" y="195.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

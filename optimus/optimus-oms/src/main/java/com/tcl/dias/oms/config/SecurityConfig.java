@@ -1,0 +1,65 @@
+package com.tcl.dias.oms.config;
+
+import org.keycloak.adapters.KeycloakConfigResolver;
+import org.keycloak.adapters.springboot.KeycloakSpringBootConfigResolver;
+import org.keycloak.adapters.springsecurity.authentication.KeycloakAuthenticationProvider;
+import org.keycloak.adapters.springsecurity.filter.KeycloakAuthenticationProcessingFilter;
+import org.keycloak.adapters.springsecurity.filter.KeycloakPreAuthActionsFilter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
+import org.springframework.security.web.authentication.preauth.x509.X509AuthenticationFilter;
+import org.springframework.security.web.authentication.session.NullAuthenticatedSessionStrategy;
+import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
+
+import com.google.common.collect.ObjectArrays;
+import com.tcl.dias.common.config.CustomKeycloakAuthenticationProvider;
+import com.tcl.dias.common.constants.UserActionsConstants;
+
+/**
+ * 
+ * This file contains the SecurityConfig.java class. This class have all the
+ * security configs
+ * 
+ *
+ * @author Manojkumar R
+ * @link http://www.tatacommunications.com/
+ * @copyright 2018 Tata Communications Limited
+ */
+@Configuration
+@EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
+public class SecurityConfig extends SecurityConfigUtils {
+
+	@Override
+	protected void configure(HttpSecurity http) throws Exception {
+
+		http.csrf().disable().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+				.sessionAuthenticationStrategy(sessionAuthenticationStrategy()).and()
+				.addFilterBefore(keycloakPreAuthActionsFilter(), LogoutFilter.class)
+				.addFilterBefore(keycloakAuthenticationProcessingFilter(), X509AuthenticationFilter.class)
+				.exceptionHandling().authenticationEntryPoint(authenticationEntryPoint()).and().authorizeRequests()
+				.antMatchers("/v1/cof/**")
+				.hasAnyAuthority(ObjectArrays.concat(UserActionsConstants.CUSTOMER_ACCESS_GROUP,
+						UserActionsConstants.PARTNER_ACCESS_GROUP, String.class))
+				.antMatchers("/v1/users/**")
+				.hasAnyAuthority(ObjectArrays.concat(ObjectArrays.concat(UserActionsConstants.CUSTOMER_ACCESS_GROUP,
+						UserActionsConstants.PARTNER_ACCESS_GROUP, String.class),UserActionsConstants.MISC_ACCESS_GROUP, String.class))
+				.antMatchers("/isv/**")
+				.hasAnyAuthority(ObjectArrays.concat(UserActionsConstants.INTERNAL_ACCESS_GROUP,
+						UserActionsConstants.COMMERCIAL_ACCESS_GROUP, String.class))
+				.antMatchers("/v1/**")
+				.hasAnyAuthority(ObjectArrays.concat(UserActionsConstants.CUSTOMER_ACCESS_GROUP,
+						UserActionsConstants.PARTNER_ACCESS_GROUP, String.class))
+				.antMatchers("/lr/**").authenticated().and().authorizeRequests();
+	}
+}

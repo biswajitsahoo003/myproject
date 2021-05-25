@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <process id="plan_teamsdr_service_testing_workflow" name="plan_teamsdr_service_testing_workflow" isExecutable="true">
+    <documentation>plan_teamsdr_service_testing_workflow</documentation>
+    <startEvent id="order_ucaas_webex_licence_activity_start"></startEvent>
+    <serviceTask id="teamsdr-perform-uat-for-mg_plan" name="Teamsdr Perform UAT and hardening for SBC and update Inventory tool" flowable:delegateExpression="${ taskPlanDelegate }">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[e2e_service_testing_activity_start_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="teamsdr-srn-generation-endpoint_plan" name="Teamsdr SRN Generation" flowable:delegateExpression="${ taskPlanDelegate }">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[teamsdr-perform-uat-for-mg_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="e2e_service_testing_activity_end_plan" name="e2e service testing activity end" flowable:delegateExpression="${activityPlanEndDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[teamsdr-srn-generation-endpoint_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="e2e_service_testing_activity_start_plan" name="e2e service testing activity start" flowable:delegateExpression="${activityPlanStartDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[service_testing_process_start_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <endEvent id="order_ucaas_webex_licence_activity_end"></endEvent>
+    <sequenceFlow id="sid-EA3E9DF2-0BCB-4339-B626-5D05568B384F" sourceRef="order_ucaas_webex_licence_activity_start" targetRef="e2e_service_testing_activity_start_plan"></sequenceFlow>
+    <sequenceFlow id="sid-5C127A88-17DD-45A7-A1DF-350BD752D16F" sourceRef="e2e_service_testing_activity_start_plan" targetRef="teamsdr-perform-uat-for-mg_plan"></sequenceFlow>
+    <sequenceFlow id="sid-9FAAB90C-10B9-4D83-8669-6B32298DD13B" sourceRef="teamsdr-perform-uat-for-mg_plan" targetRef="teamsdr-srn-generation-endpoint_plan"></sequenceFlow>
+    <sequenceFlow id="sid-FAABABFD-A184-4AA1-88AD-C80E074F337A" sourceRef="teamsdr-srn-generation-endpoint_plan" targetRef="e2e_service_testing_activity_end_plan"></sequenceFlow>
+    <sequenceFlow id="sid-F69B7598-44DE-498C-BAB9-AC5B41D4F90A" sourceRef="e2e_service_testing_activity_end_plan" targetRef="order_ucaas_webex_licence_activity_end"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_plan_teamsdr_service_testing_workflow">
+    <bpmndi:BPMNPlane bpmnElement="plan_teamsdr_service_testing_workflow" id="BPMNPlane_plan_teamsdr_service_testing_workflow">
+      <bpmndi:BPMNShape bpmnElement="order_ucaas_webex_licence_activity_start" id="BPMNShape_order_ucaas_webex_licence_activity_start">
+        <omgdc:Bounds height="30.0" width="30.0" x="30.0" y="149.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="teamsdr-perform-uat-for-mg_plan" id="BPMNShape_teamsdr-perform-uat-for-mg_plan">
+        <omgdc:Bounds height="92.99999999999994" width="152.0" x="255.0" y="113.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="teamsdr-srn-generation-endpoint_plan" id="BPMNShape_teamsdr-srn-generation-endpoint_plan">
+        <omgdc:Bounds height="55.99999999999994" width="112.0" x="465.0" y="131.5"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="e2e_service_testing_activity_end_plan" id="BPMNShape_e2e_service_testing_activity_end_plan">
+        <omgdc:Bounds height="78.99999999999994" width="121.0" x="630.0" y="120.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="e2e_service_testing_activity_start_plan" id="BPMNShape_e2e_service_testing_activity_start_plan">
+        <omgdc:Bounds height="78.99999999999994" width="121.0" x="90.0" y="120.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="order_ucaas_webex_licence_activity_end" id="BPMNShape_order_ucaas_webex_licence_activity_end">
+        <omgdc:Bounds height="28.0" width="28.0" x="810.0" y="145.49999999999997"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-FAABABFD-A184-4AA1-88AD-C80E074F337A" id="BPMNEdge_sid-FAABABFD-A184-4AA1-88AD-C80E074F337A">
+        <omgdi:waypoint x="576.95" y="159.49999999999997"></omgdi:waypoint>
+        <omgdi:waypoint x="630.0" y="159.49999999999997"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-F69B7598-44DE-498C-BAB9-AC5B41D4F90A" id="BPMNEdge_sid-F69B7598-44DE-498C-BAB9-AC5B41D4F90A">
+        <omgdi:waypoint x="750.94999999994" y="159.49999999999997"></omgdi:waypoint>
+        <omgdi:waypoint x="810.0" y="159.49999999999997"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-9FAAB90C-10B9-4D83-8669-6B32298DD13B" id="BPMNEdge_sid-9FAAB90C-10B9-4D83-8669-6B32298DD13B">
+        <omgdi:waypoint x="406.94999999997515" y="159.49999999999997"></omgdi:waypoint>
+        <omgdi:waypoint x="465.0" y="159.49999999999997"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-5C127A88-17DD-45A7-A1DF-350BD752D16F" id="BPMNEdge_sid-5C127A88-17DD-45A7-A1DF-350BD752D16F">
+        <omgdi:waypoint x="210.94999999990404" y="159.49999999999997"></omgdi:waypoint>
+        <omgdi:waypoint x="255.0" y="159.49999999999997"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-EA3E9DF2-0BCB-4339-B626-5D05568B384F" id="BPMNEdge_sid-EA3E9DF2-0BCB-4339-B626-5D05568B384F">
+        <omgdi:waypoint x="59.936669510402666" y="163.3607600742106"></omgdi:waypoint>
+        <omgdi:waypoint x="90.0" y="162.0784360189573"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

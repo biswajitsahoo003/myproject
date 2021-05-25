@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <process id="teamsdr_customer_handover_workflow" name="teamsdr_customer_handover_workflow" isExecutable="true">
+    <documentation>teamsdr_customer_handover_workflow</documentation>
+    <startEvent id="customer_handover_acceptance_activity_start">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ activityStartListener }"></flowable:executionListener>
+      </extensionElements>
+    </startEvent>
+    <userTask id="teamsdr-customer-handover" name="Teamsdr Customer Handover">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <serviceTask id="reminder-teamsdr-customer-handover" name="Reminder" flowable:async="true" flowable:delegateExpression="${ notificationDelegate  }"></serviceTask>
+    <sequenceFlow id="sid-FB820A89-E84E-4A8F-A547-A362FA6FDD5E" sourceRef="sid-A4C1D770-6D4A-48FE-9DF2-2A9B05F4DE60" targetRef="reminder-teamsdr-customer-handover"></sequenceFlow>
+    <endEvent id="customer_handover_acceptance_activity_end">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ activityEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </endEvent>
+    <sequenceFlow id="sid-8CCA6203-11AA-45AC-915B-6C2783F3BE4C" sourceRef="teamsdr-customer-handover" targetRef="customer_handover_acceptance_activity_end"></sequenceFlow>
+    <sequenceFlow id="sid-6F026D3B-9745-46F6-8988-FBE92CB53F2A" sourceRef="customer_handover_acceptance_activity_start" targetRef="teamsdr-customer-handover"></sequenceFlow>
+    <boundaryEvent id="sid-A4C1D770-6D4A-48FE-9DF2-2A9B05F4DE60" attachedToRef="teamsdr-customer-handover" cancelActivity="false">
+      <timerEventDefinition>
+        <timeCycle>${ remainderCycle }</timeCycle>
+      </timerEventDefinition>
+    </boundaryEvent>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_teamsdr_customer_handover_workflow">
+    <bpmndi:BPMNPlane bpmnElement="teamsdr_customer_handover_workflow" id="BPMNPlane_teamsdr_customer_handover_workflow">
+      <bpmndi:BPMNShape bpmnElement="customer_handover_acceptance_activity_start" id="BPMNShape_customer_handover_acceptance_activity_start">
+        <omgdc:Bounds height="30.0" width="30.0" x="60.0" y="153.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="teamsdr-customer-handover" id="BPMNShape_teamsdr-customer-handover">
+        <omgdc:Bounds height="66.0" width="100.0" x="315.0" y="135.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="reminder-teamsdr-customer-handover" id="BPMNShape_reminder-teamsdr-customer-handover">
+        <omgdc:Bounds height="46.0" width="84.0" x="310.1233207253786" y="270.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="customer_handover_acceptance_activity_end" id="BPMNShape_customer_handover_acceptance_activity_end">
+        <omgdc:Bounds height="28.0" width="28.0" x="546.0" y="154.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-A4C1D770-6D4A-48FE-9DF2-2A9B05F4DE60" id="BPMNShape_sid-A4C1D770-6D4A-48FE-9DF2-2A9B05F4DE60">
+        <omgdc:Bounds height="31.0" width="31.0" x="336.6233207253786" y="185.97936611401556"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-8CCA6203-11AA-45AC-915B-6C2783F3BE4C" id="BPMNEdge_sid-8CCA6203-11AA-45AC-915B-6C2783F3BE4C">
+        <omgdi:waypoint x="414.9499999999802" y="168.0"></omgdi:waypoint>
+        <omgdi:waypoint x="546.0" y="168.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-6F026D3B-9745-46F6-8988-FBE92CB53F2A" id="BPMNEdge_sid-6F026D3B-9745-46F6-8988-FBE92CB53F2A">
+        <omgdi:waypoint x="89.94999978261554" y="168.0"></omgdi:waypoint>
+        <omgdi:waypoint x="314.99999999998045" y="168.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-FB820A89-E84E-4A8F-A547-A362FA6FDD5E" id="BPMNEdge_sid-FB820A89-E84E-4A8F-A547-A362FA6FDD5E">
+        <omgdi:waypoint x="352.1233207253786" y="216.9293638601683"></omgdi:waypoint>
+        <omgdi:waypoint x="352.1233207253786" y="270.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <signal id="service-configuration-ack-timeout-signal" name="service-configuration-ack-timeout-signal" flowable:scope="global"></signal>
+  <process id="terminate_offnet_po_workflow" name="terminate_offnet_po_workflow" isExecutable="true">
+    <documentation>terminate_offnet_po_workflow</documentation>
+    <startEvent id="terminate_offnet_po_activity_start"></startEvent>
+    <endEvent id="terminate_offnet_po_activity_end"></endEvent>
+    <serviceTask id="terminate-offnet-po" name="Terminate Offnet PO" flowable:delegateExpression="${ terminateOffnetPODelegate}"></serviceTask>
+    <exclusiveGateway id="sid-F9D96EF0-9A8F-40B2-B098-50AC281DBDB9" default="sid-2158C895-E38E-4D07-94EB-4C3F5634E026"></exclusiveGateway>
+    <sequenceFlow id="sid-20C46582-CB57-4F10-BAC7-CDB60A4D63A4" sourceRef="terminate-offnet-po" targetRef="sid-F9D96EF0-9A8F-40B2-B098-50AC281DBDB9"></sequenceFlow>
+    <userTask id="terminate-offnet-po-jeopardy" name="Terminate Offnet PO Jeopardy">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="sid-2158C895-E38E-4D07-94EB-4C3F5634E026" name="Yes" sourceRef="sid-F9D96EF0-9A8F-40B2-B098-50AC281DBDB9" targetRef="sid-E2A2A3A4-1B1A-453F-A871-BC0FFC1A4DBF"></sequenceFlow>
+    <sequenceFlow id="sid-06388410-3172-4606-A13B-ACAA6E7F54C9" sourceRef="terminate_offnet_po_activity_start" targetRef="terminate-offnet-po"></sequenceFlow>
+    <exclusiveGateway id="sid-E2A2A3A4-1B1A-453F-A871-BC0FFC1A4DBF"></exclusiveGateway>
+    <sequenceFlow id="sid-04B03C2F-9576-4FD2-8AD2-079E3EA536F9" sourceRef="terminate-offnet-po-jeopardy" targetRef="sid-E2A2A3A4-1B1A-453F-A871-BC0FFC1A4DBF"></sequenceFlow>
+    <sequenceFlow id="sid-298C34A6-CCC4-44E3-A029-988135EF153B" sourceRef="sid-E2A2A3A4-1B1A-453F-A871-BC0FFC1A4DBF" targetRef="terminate_offnet_po_activity_end"></sequenceFlow>
+    <sequenceFlow id="sid-EE4F93EE-F16A-439A-88C2-C6BE67887CFA" sourceRef="sid-F9D96EF0-9A8F-40B2-B098-50AC281DBDB9" targetRef="terminate-offnet-po-jeopardy">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ var:get(terminateOffnetPOSuccess) == false}]]></conditionExpression>
+    </sequenceFlow>
+    <textAnnotation id="sid-9EB79F7B-0625-41DC-83A6-7C436BD02F6A">
+      <text>IP Configuration Success?</text>
+    </textAnnotation>
+    <association id="sid-3E565E0C-C01D-4C73-9F2B-740AE4FE244F" sourceRef="sid-F9D96EF0-9A8F-40B2-B098-50AC281DBDB9" targetRef="sid-9EB79F7B-0625-41DC-83A6-7C436BD02F6A" associationDirection="None"></association>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_terminate_offnet_po_workflow">
+    <bpmndi:BPMNPlane bpmnElement="terminate_offnet_po_workflow" id="BPMNPlane_terminate_offnet_po_workflow">
+      <bpmndi:BPMNShape bpmnElement="terminate_offnet_po_activity_start" id="BPMNShape_terminate_offnet_po_activity_start">
+        <omgdc:Bounds height="30.0" width="30.0" x="148.5" y="181.56341897490998"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="terminate_offnet_po_activity_end" id="BPMNShape_terminate_offnet_po_activity_end">
+        <omgdc:Bounds height="28.0" width="28.0" x="673.5" y="182.56341897490998"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="terminate-offnet-po" id="BPMNShape_terminate-offnet-po">
+        <omgdc:Bounds height="80.0" width="100.0" x="258.5" y="156.56341897490998"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-F9D96EF0-9A8F-40B2-B098-50AC281DBDB9" id="BPMNShape_sid-F9D96EF0-9A8F-40B2-B098-50AC281DBDB9">
+        <omgdc:Bounds height="40.0" width="40.0" x="405.0" y="176.56341897490998"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="terminate-offnet-po-jeopardy" id="BPMNShape_terminate-offnet-po-jeopardy">
+        <omgdc:Bounds height="80.00000000000001" width="100.0" x="375.0" y="45.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-9EB79F7B-0625-41DC-83A6-7C436BD02F6A" id="BPMNShape_sid-9EB79F7B-0625-41DC-83A6-7C436BD02F6A">
+        <omgdc:Bounds height="32.0" width="99.99999999999989" x="463.5" y="221.43658102509002"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-3E565E0C-C01D-4C73-9F2B-740AE4FE244F" id="BPMNShape_sid-3E565E0C-C01D-4C73-9F2B-740AE4FE244F">
+        <omgdc:Bounds height="16.871067387599254" width="25.404244179838088" x="437.43459666008096" y="204.8212878847174"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-E2A2A3A4-1B1A-453F-A871-BC0FFC1A4DBF" id="BPMNShape_sid-E2A2A3A4-1B1A-453F-A871-BC0FFC1A4DBF">
+        <omgdc:Bounds height="40.0" width="40.0" x="568.5" y="176.56341897490998"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-04B03C2F-9576-4FD2-8AD2-079E3EA536F9" id="BPMNEdge_sid-04B03C2F-9576-4FD2-8AD2-079E3EA536F9">
+        <omgdi:waypoint x="474.95000000000005" y="85.0"></omgdi:waypoint>
+        <omgdi:waypoint x="588.5" y="85.0"></omgdi:waypoint>
+        <omgdi:waypoint x="588.5" y="176.56341897490998"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-3E565E0C-C01D-4C73-9F2B-740AE4FE244F" id="BPMNEdge_sid-3E565E0C-C01D-4C73-9F2B-740AE4FE244F">
+        <omgdi:waypoint x="436.9859900533284" y="204.5249876045272"></omgdi:waypoint>
+        <omgdi:waypoint x="463.5" y="222.1314339028278"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-20C46582-CB57-4F10-BAC7-CDB60A4D63A4" id="BPMNEdge_sid-20C46582-CB57-4F10-BAC7-CDB60A4D63A4">
+        <omgdi:waypoint x="358.4499999999914" y="196.77688051337148"></omgdi:waypoint>
+        <omgdi:waypoint x="405.4141630901288" y="196.97758206503875"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-06388410-3172-4606-A13B-ACAA6E7F54C9" id="BPMNEdge_sid-06388410-3172-4606-A13B-ACAA6E7F54C9">
+        <omgdi:waypoint x="178.449999130768" y="196.56341897490998"></omgdi:waypoint>
+        <omgdi:waypoint x="258.4999999999807" y="196.56341897490998"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-EE4F93EE-F16A-439A-88C2-C6BE67887CFA" id="BPMNEdge_sid-EE4F93EE-F16A-439A-88C2-C6BE67887CFA">
+        <omgdi:waypoint x="425.0" y="176.56341897490998"></omgdi:waypoint>
+        <omgdi:waypoint x="425.0" y="124.95000000000002"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-2158C895-E38E-4D07-94EB-4C3F5634E026" id="BPMNEdge_sid-2158C895-E38E-4D07-94EB-4C3F5634E026">
+        <omgdi:waypoint x="444.88333839611175" y="196.62405727278232"></omgdi:waypoint>
+        <omgdi:waypoint x="568.9388379204829" y="197.00225689539926"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-298C34A6-CCC4-44E3-A029-988135EF153B" id="BPMNEdge_sid-298C34A6-CCC4-44E3-A029-988135EF153B">
+        <omgdi:waypoint x="608.0369266055019" y="196.96648019939977"></omgdi:waypoint>
+        <omgdi:waypoint x="673.5001739538759" y="196.63423046164624"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

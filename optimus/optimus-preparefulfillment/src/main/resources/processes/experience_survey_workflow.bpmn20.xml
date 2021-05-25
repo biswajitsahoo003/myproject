@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <signal id="reopen-site-readiness-signal" name="reopen-site-readiness-signal" flowable:scope="global"></signal>
+  <process id="experience_survey_workflow" name="experience_survey_workflow" isExecutable="true">
+    <documentation>experience_survey_workflow</documentation>
+    <sequenceFlow id="sid-C25B93EE-E6F5-4F28-8380-AFD3F2308C83" sourceRef="sid-9388D333-B4DA-4AF8-A280-A53E1A3AB662" targetRef="customer-reminder-experience-survey"></sequenceFlow>
+    <userTask id="experience-survey" name="Experience Survey">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <startEvent id="experience_survey_activity_start">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ activityStartListener }"></flowable:executionListener>
+      </extensionElements>
+    </startEvent>
+    <serviceTask id="customer-reminder-experience-survey" name="reminder" flowable:async="true" flowable:delegateExpression="${ notificationDelegate }"></serviceTask>
+    <boundaryEvent id="sid-9388D333-B4DA-4AF8-A280-A53E1A3AB662" attachedToRef="experience-survey" cancelActivity="false">
+      <timerEventDefinition>
+        <timeCycle>${ remainderCycle }</timeCycle>
+      </timerEventDefinition>
+    </boundaryEvent>
+    <endEvent id="experience_survey_activity_end">
+      <extensionElements>
+        <flowable:executionListener event="end" delegateExpression="${ activityEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </endEvent>
+    <sequenceFlow id="sid-54368AFD-BB10-4261-96EB-43AB9FB94E64" sourceRef="experience-survey" targetRef="experience_survey_activity_end"></sequenceFlow>
+    <serviceTask id="set-service-active" name="Set Service Active" flowable:delegateExpression="${ setServiceActiveDelegate }"></serviceTask>
+    <serviceTask id="service-inventory-handover" name="Service Inventory" flowable:delegateExpression="${ serviceHandoverDeligate  }"></serviceTask>
+    <sequenceFlow id="sid-B9E41513-432F-4B35-A71A-27C620E44550" sourceRef="set-service-active" targetRef="service-inventory-handover"></sequenceFlow>
+    <sequenceFlow id="sid-D0A0918D-5094-4ECA-BFBB-28ED183F304E" sourceRef="service-inventory-handover" targetRef="experience-survey"></sequenceFlow>
+    <sequenceFlow id="sid-1D8939A8-4F26-4B4E-997E-4EA39B1AD822" sourceRef="experience_survey_activity_start" targetRef="sid-0F8397D0-A58A-4D4B-A006-C929174E576C"></sequenceFlow>
+    <intermediateCatchEvent id="sid-0F8397D0-A58A-4D4B-A006-C929174E576C">
+      <timerEventDefinition>
+        <timeDuration>PT1M</timeDuration>
+      </timerEventDefinition>
+    </intermediateCatchEvent>
+    <sequenceFlow id="sid-BAE49505-9BDD-4950-AF1C-EDAA3715197F" sourceRef="sid-0F8397D0-A58A-4D4B-A006-C929174E576C" targetRef="set-service-active"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_experience_survey_workflow">
+    <bpmndi:BPMNPlane bpmnElement="experience_survey_workflow" id="BPMNPlane_experience_survey_workflow">
+      <bpmndi:BPMNShape bpmnElement="experience-survey" id="BPMNShape_experience-survey">
+        <omgdc:Bounds height="80.0" width="117.0" x="570.0" y="105.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="experience_survey_activity_start" id="BPMNShape_experience_survey_activity_start">
+        <omgdc:Bounds height="30.0" width="30.0" x="90.0" y="127.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="customer-reminder-experience-survey" id="BPMNShape_customer-reminder-experience-survey">
+        <omgdc:Bounds height="44.0" width="82.99999999999989" x="561.6069821070427" y="15.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-9388D333-B4DA-4AF8-A280-A53E1A3AB662" id="BPMNShape_sid-9388D333-B4DA-4AF8-A280-A53E1A3AB662">
+        <omgdc:Bounds height="31.0" width="31.0" x="587.6069821070425" y="88.65194454545451"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="experience_survey_activity_end" id="BPMNShape_experience_survey_activity_end">
+        <omgdc:Bounds height="28.0" width="28.0" x="735.0" y="131.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="set-service-active" id="BPMNShape_set-service-active">
+        <omgdc:Bounds height="80.0" width="100.0" x="300.0" y="102.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="service-inventory-handover" id="BPMNShape_service-inventory-handover">
+        <omgdc:Bounds height="80.0" width="100.0" x="435.0" y="102.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-0F8397D0-A58A-4D4B-A006-C929174E576C" id="BPMNShape_sid-0F8397D0-A58A-4D4B-A006-C929174E576C">
+        <omgdc:Bounds height="31.0" width="31.0" x="195.0" y="126.5"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-54368AFD-BB10-4261-96EB-43AB9FB94E64" id="BPMNEdge_sid-54368AFD-BB10-4261-96EB-43AB9FB94E64">
+        <omgdi:waypoint x="686.9499999999356" y="145.0"></omgdi:waypoint>
+        <omgdi:waypoint x="735.0" y="145.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-B9E41513-432F-4B35-A71A-27C620E44550" id="BPMNEdge_sid-B9E41513-432F-4B35-A71A-27C620E44550">
+        <omgdi:waypoint x="399.95000000000005" y="142.0"></omgdi:waypoint>
+        <omgdi:waypoint x="435.0" y="142.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-BAE49505-9BDD-4950-AF1C-EDAA3715197F" id="BPMNEdge_sid-BAE49505-9BDD-4950-AF1C-EDAA3715197F">
+        <omgdi:waypoint x="226.94989897363428" y="142.44244640770864"></omgdi:waypoint>
+        <omgdi:waypoint x="299.99999999999045" y="142.1796762589928"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-D0A0918D-5094-4ECA-BFBB-28ED183F304E" id="BPMNEdge_sid-D0A0918D-5094-4ECA-BFBB-28ED183F304E">
+        <omgdi:waypoint x="534.9499999999992" y="143.04425087108012"></omgdi:waypoint>
+        <omgdi:waypoint x="569.9999999999994" y="143.77700348432055"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-1D8939A8-4F26-4B4E-997E-4EA39B1AD822" id="BPMNEdge_sid-1D8939A8-4F26-4B4E-997E-4EA39B1AD822">
+        <omgdi:waypoint x="119.9498031843834" y="142.07051832779834"></omgdi:waypoint>
+        <omgdi:waypoint x="195.0000337904714" y="142.42452912386432"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-C25B93EE-E6F5-4F28-8380-AFD3F2308C83" id="BPMNEdge_sid-C25B93EE-E6F5-4F28-8380-AFD3F2308C83">
+        <omgdi:waypoint x="603.1069821070425" y="88.65194454545451"></omgdi:waypoint>
+        <omgdi:waypoint x="603.1069821070427" y="58.95"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

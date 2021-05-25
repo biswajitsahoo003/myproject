@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <process id="gsc_remove_numbers_workflow" name="gsc_remove_numbers_workflow" isExecutable="true">
+    <startEvent id="service_implementation_stage_start" flowable:formFieldValidation="true">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${updateCaseAttributesListener}"></flowable:executionListener>
+        <flowable:executionListener event="start" delegateExpression="${ stageStartListener }"></flowable:executionListener>
+      </extensionElements>
+    </startEvent>
+    <userTask id="gsc-remove-numbers" name="Remove Numbers" flowable:formFieldValidation="true">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <endEvent id="service_implementation_stage_end">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ stageEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </endEvent>
+    <parallelGateway id="sid-AA2C6D3C-825D-4315-9654-A96DF4C2305F"></parallelGateway>
+    <parallelGateway id="sid-65036D50-F717-4A96-90C6-772A48692019"></parallelGateway>
+    <sequenceFlow id="gsc_number_provisioning_process_start" sourceRef="service_implementation_stage_start" targetRef="sid-65036D50-F717-4A96-90C6-772A48692019">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ processStartListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="gsc_number_provisioning_process_end" sourceRef="sid-AA2C6D3C-825D-4315-9654-A96DF4C2305F" targetRef="service_implementation_stage_end">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ processEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="gsc_number_provisioning_activity_start" sourceRef="sid-65036D50-F717-4A96-90C6-772A48692019" targetRef="gsc-remove-numbers">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ activityStartListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="gsc_number_provisioning_activity_end" sourceRef="gsc-remove-numbers" targetRef="sid-AA2C6D3C-825D-4315-9654-A96DF4C2305F">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ activityEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_gsc_remove_numbers_workflow">
+    <bpmndi:BPMNPlane bpmnElement="gsc_remove_numbers_workflow" id="BPMNPlane_gsc_remove_numbers_workflow">
+      <bpmndi:BPMNShape bpmnElement="service_implementation_stage_start" id="BPMNShape_service_implementation_stage_start">
+        <omgdc:Bounds height="30.0" width="30.0" x="30.0" y="170.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="gsc-remove-numbers" id="BPMNShape_gsc-remove-numbers">
+        <omgdc:Bounds height="80.0" width="100.0" x="180.0" y="145.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="service_implementation_stage_end" id="BPMNShape_service_implementation_stage_end">
+        <omgdc:Bounds height="28.0" width="28.0" x="390.0" y="171.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-AA2C6D3C-825D-4315-9654-A96DF4C2305F" id="BPMNShape_sid-AA2C6D3C-825D-4315-9654-A96DF4C2305F">
+        <omgdc:Bounds height="40.0" width="40.0" x="314.0" y="165.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-65036D50-F717-4A96-90C6-772A48692019" id="BPMNShape_sid-65036D50-F717-4A96-90C6-772A48692019">
+        <omgdc:Bounds height="40.0" width="40.0" x="105.0" y="165.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="gsc_number_provisioning_process_end" id="BPMNEdge_gsc_number_provisioning_process_end">
+        <omgdi:waypoint x="353.9357703281027" y="185.0"></omgdi:waypoint>
+        <omgdi:waypoint x="390.0" y="185.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="gsc_number_provisioning_activity_start" id="BPMNEdge_gsc_number_provisioning_activity_start">
+        <omgdi:waypoint x="144.9405090389256" y="185.0"></omgdi:waypoint>
+        <omgdi:waypoint x="180.0" y="185.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="gsc_number_provisioning_process_start" id="BPMNEdge_gsc_number_provisioning_process_start">
+        <omgdi:waypoint x="59.949997146068426" y="185.0"></omgdi:waypoint>
+        <omgdi:waypoint x="105.0" y="185.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="gsc_number_provisioning_activity_end" id="BPMNEdge_gsc_number_provisioning_activity_end">
+        <omgdi:waypoint x="279.95000000000005" y="185.0"></omgdi:waypoint>
+        <omgdi:waypoint x="314.0" y="185.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

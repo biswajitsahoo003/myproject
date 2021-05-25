@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <process id="order_webex_licence_workflow" name="order_webex_licence_workflow" isExecutable="true">
+    <documentation>order_webex_licence_workflow</documentation>
+    <startEvent id="order_ucaas_webex_licence_activity_start">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ activityStartListener }"></flowable:executionListener>
+      </extensionElements>
+    </startEvent>
+    <endEvent id="order_ucaas_webex_licence_activity_end">
+      <extensionElements>
+        <flowable:executionListener event="end" delegateExpression="${ activityEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </endEvent>
+    <userTask id="ucwb-pr-licence" name="Prepare PR for Webex Licence">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <userTask id="ucwb-provide-wbsglcc-details" name="Provide WBS GLCC Details">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="sid-A955AF09-0CD2-4493-A83B-7DF54A3847CF" sourceRef="order_ucaas_webex_licence_activity_start" targetRef="ucwb-provide-wbsglcc-details"></sequenceFlow>
+    <userTask id="ucwb-po-licence" name="Prepare PO for Webex Licence">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="sid-CDA4CC14-DBBC-41BB-96DE-320393A9D0E2" sourceRef="ucwb-pr-licence" targetRef="ucwb-po-licence"></sequenceFlow>
+    <userTask id="ucwb-po-licence-release" name="Release PO for Webex Licence">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="sid-6C305F96-552B-413A-977C-A13FD0CE072F" sourceRef="ucwb-po-licence" targetRef="ucwb-po-licence-release"></sequenceFlow>
+    <serviceTask id="reminder-ucwb-provide-wbsglcc-details" name="Reminder" flowable:delegateExpression="${ notificationDelegate  }"></serviceTask>
+    <sequenceFlow id="sid-433311C3-20F5-4AA9-82EB-AFCAB51D8A16" sourceRef="sid-836125BF-09BE-46DA-82DA-3876D8318777" targetRef="reminder-ucwb-provide-wbsglcc-details"></sequenceFlow>
+    <serviceTask id="reminder-ucwb-po-licence-release" name="Reminder" flowable:async="true" flowable:exclusive="false" flowable:delegateExpression="${ notificationDelegate  }"></serviceTask>
+    <sequenceFlow id="sid-705829B7-FB8F-4DC1-AF0F-797BF4002CA0" sourceRef="sid-43BAD269-DE3B-4846-BB93-A3B6E2EB9A48" targetRef="reminder-ucwb-po-licence-release"></sequenceFlow>
+    <serviceTask id="reminder-ucwb-po-licence" name="Reminder" flowable:async="true" flowable:exclusive="false" flowable:delegateExpression="${ notificationDelegate  }"></serviceTask>
+    <serviceTask id="reminder-ucwb-pr-licence" name="Reminder" flowable:async="true" flowable:exclusive="false" flowable:delegateExpression="${ notificationDelegate  }"></serviceTask>
+    <sequenceFlow id="sid-AE9233F3-C83A-4338-B029-04E0C6EDB7E0" sourceRef="sid-15132A5B-3939-4E77-97BF-5F270813D49E" targetRef="reminder-ucwb-pr-licence"></sequenceFlow>
+    <sequenceFlow id="sid-CF85504B-DE77-4B8F-ADBF-182DC5B58CCA" sourceRef="ucwb-provide-wbsglcc-details" targetRef="ucwb-pr-licence"></sequenceFlow>
+    <sequenceFlow id="sid-EFC288B3-7FD6-4AF9-A32D-79279633EA6E" sourceRef="sid-95B37DCA-F777-44C4-B749-AA0CAFAC085D" targetRef="reminder-ucwb-po-licence"></sequenceFlow>
+    <boundaryEvent id="sid-43BAD269-DE3B-4846-BB93-A3B6E2EB9A48" attachedToRef="ucwb-po-licence-release" cancelActivity="false">
+      <timerEventDefinition>
+        <timeCycle>${ remainderCycle }</timeCycle>
+      </timerEventDefinition>
+    </boundaryEvent>
+    <boundaryEvent id="sid-95B37DCA-F777-44C4-B749-AA0CAFAC085D" attachedToRef="ucwb-po-licence" cancelActivity="false">
+      <timerEventDefinition>
+        <timeCycle>${ remainderCycle }</timeCycle>
+      </timerEventDefinition>
+    </boundaryEvent>
+    <boundaryEvent id="sid-15132A5B-3939-4E77-97BF-5F270813D49E" attachedToRef="ucwb-pr-licence" cancelActivity="false">
+      <timerEventDefinition>
+        <timeCycle>${ remainderCycle }</timeCycle>
+      </timerEventDefinition>
+    </boundaryEvent>
+    <boundaryEvent id="sid-836125BF-09BE-46DA-82DA-3876D8318777" attachedToRef="ucwb-provide-wbsglcc-details" cancelActivity="false">
+      <timerEventDefinition>
+        <timeCycle>${ remainderCycle }</timeCycle>
+      </timerEventDefinition>
+    </boundaryEvent>
+    <sequenceFlow id="sid-8715137F-3F63-4613-BEBF-4F9E921B69DF" sourceRef="ucwb-po-licence-release" targetRef="order_ucaas_webex_licence_activity_end"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_order_webex_licence_workflow">
+    <bpmndi:BPMNPlane bpmnElement="order_webex_licence_workflow" id="BPMNPlane_order_webex_licence_workflow">
+      <bpmndi:BPMNShape bpmnElement="order_ucaas_webex_licence_activity_start" id="BPMNShape_order_ucaas_webex_licence_activity_start">
+        <omgdc:Bounds height="30.0" width="30.0" x="75.0" y="135.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="order_ucaas_webex_licence_activity_end" id="BPMNShape_order_ucaas_webex_licence_activity_end">
+        <omgdc:Bounds height="28.0" width="28.0" x="810.0" y="136.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ucwb-pr-licence" id="BPMNShape_ucwb-pr-licence">
+        <omgdc:Bounds height="52.0" width="134.0" x="304.0" y="124.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ucwb-provide-wbsglcc-details" id="BPMNShape_ucwb-provide-wbsglcc-details">
+        <omgdc:Bounds height="50.0" width="121.0" x="150.0" y="125.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ucwb-po-licence" id="BPMNShape_ucwb-po-licence">
+        <omgdc:Bounds height="52.0" width="134.0" x="469.0" y="124.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ucwb-po-licence-release" id="BPMNShape_ucwb-po-licence-release">
+        <omgdc:Bounds height="52.0" width="134.0" x="637.8242391344014" y="124.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="reminder-ucwb-provide-wbsglcc-details" id="BPMNShape_reminder-ucwb-provide-wbsglcc-details">
+        <omgdc:Bounds height="40.0" width="90.00000000000003" x="158.38697707231015" y="35.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="reminder-ucwb-po-licence-release" id="BPMNShape_reminder-ucwb-po-licence-release">
+        <omgdc:Bounds height="40.0" width="90.0" x="647.5890926571806" y="35.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="reminder-ucwb-po-licence" id="BPMNShape_reminder-ucwb-po-licence">
+        <omgdc:Bounds height="40.0" width="90.0" x="478.96481887183484" y="35.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="reminder-ucwb-pr-licence" id="BPMNShape_reminder-ucwb-pr-licence">
+        <omgdc:Bounds height="40.0" width="90.0" x="321.61711125700026" y="35.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-43BAD269-DE3B-4846-BB93-A3B6E2EB9A48" id="BPMNShape_sid-43BAD269-DE3B-4846-BB93-A3B6E2EB9A48">
+        <omgdc:Bounds height="31.000000000000014" width="31.0" x="677.0890926571806" y="108.13611055790066"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-95B37DCA-F777-44C4-B749-AA0CAFAC085D" id="BPMNShape_sid-95B37DCA-F777-44C4-B749-AA0CAFAC085D">
+        <omgdc:Bounds height="31.0" width="31.0" x="508.4648188718347" y="108.13347797004482"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-15132A5B-3939-4E77-97BF-5F270813D49E" id="BPMNShape_sid-15132A5B-3939-4E77-97BF-5F270813D49E">
+        <omgdc:Bounds height="31.0" width="31.0" x="351.11711125700026" y="108.05664749077084"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-836125BF-09BE-46DA-82DA-3876D8318777" id="BPMNShape_sid-836125BF-09BE-46DA-82DA-3876D8318777">
+        <omgdc:Bounds height="31.0" width="31.0" x="187.88697707231015" y="109.31823216859027"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-705829B7-FB8F-4DC1-AF0F-797BF4002CA0" id="BPMNEdge_sid-705829B7-FB8F-4DC1-AF0F-797BF4002CA0">
+        <omgdi:waypoint x="692.5890926571806" y="108.13611055790066"></omgdi:waypoint>
+        <omgdi:waypoint x="692.5890926571806" y="74.94999999999999"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-8715137F-3F63-4613-BEBF-4F9E921B69DF" id="BPMNEdge_sid-8715137F-3F63-4613-BEBF-4F9E921B69DF">
+        <omgdi:waypoint x="771.7742391344002" y="150.0"></omgdi:waypoint>
+        <omgdi:waypoint x="810.0" y="150.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-CF85504B-DE77-4B8F-ADBF-182DC5B58CCA" id="BPMNEdge_sid-CF85504B-DE77-4B8F-ADBF-182DC5B58CCA">
+        <omgdi:waypoint x="270.95000000000005" y="150.0"></omgdi:waypoint>
+        <omgdi:waypoint x="304.0" y="150.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-CDA4CC14-DBBC-41BB-96DE-320393A9D0E2" id="BPMNEdge_sid-CDA4CC14-DBBC-41BB-96DE-320393A9D0E2">
+        <omgdi:waypoint x="437.95000000000005" y="150.0"></omgdi:waypoint>
+        <omgdi:waypoint x="468.99999999992576" y="150.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-A955AF09-0CD2-4493-A83B-7DF54A3847CF" id="BPMNEdge_sid-A955AF09-0CD2-4493-A83B-7DF54A3847CF">
+        <omgdi:waypoint x="104.94999874155133" y="150.0"></omgdi:waypoint>
+        <omgdi:waypoint x="150.0" y="150.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-EFC288B3-7FD6-4AF9-A32D-79279633EA6E" id="BPMNEdge_sid-EFC288B3-7FD6-4AF9-A32D-79279633EA6E">
+        <omgdi:waypoint x="523.9648188718347" y="108.13347797004482"></omgdi:waypoint>
+        <omgdi:waypoint x="523.9648188718348" y="74.94999999999999"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-433311C3-20F5-4AA9-82EB-AFCAB51D8A16" id="BPMNEdge_sid-433311C3-20F5-4AA9-82EB-AFCAB51D8A16">
+        <omgdi:waypoint x="203.38697707231015" y="109.31823216859027"></omgdi:waypoint>
+        <omgdi:waypoint x="203.38697707231015" y="74.94999999999999"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-6C305F96-552B-413A-977C-A13FD0CE072F" id="BPMNEdge_sid-6C305F96-552B-413A-977C-A13FD0CE072F">
+        <omgdi:waypoint x="602.9499999999357" y="150.0"></omgdi:waypoint>
+        <omgdi:waypoint x="637.824239134341" y="150.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-AE9233F3-C83A-4338-B029-04E0C6EDB7E0" id="BPMNEdge_sid-AE9233F3-C83A-4338-B029-04E0C6EDB7E0">
+        <omgdi:waypoint x="366.61711125700026" y="108.05664749077084"></omgdi:waypoint>
+        <omgdi:waypoint x="366.61711125700026" y="74.94999999999999"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

@@ -1,0 +1,37 @@
+package com.tcl.dias.common.beans;
+
+/**
+ * @author archanac
+ * @link http://www.tatacommunications.com/
+ * @copyright 2020 Tata Communications Limited
+ */
+public class CustomerDataBean {
+
+    private Integer customerId;
+    private String customerName;
+
+    public Integer getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(Integer customerId) {
+        this.customerId = customerId;
+    }
+
+    public String getCustomerName() {
+        return customerName;
+    }
+
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
+    }
+
+
+    @Override
+    public String toString() {
+        return "CustomerDataBean{" +
+                "customerId=" + customerId +
+                ", customerName='" + customerName + '\'' +
+                '}';
+    }
+}

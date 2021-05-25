@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <process id="validate_document_workflow" name="Validate_Document_Workflow" isExecutable="true">
+    <documentation>validate_document_workflow</documentation>
+    <sequenceFlow id="sid-22C262ED-BBEF-4523-A57C-2C5F482B356A" sourceRef="validate_supporting_document_activity_start" targetRef="validate-supporting-document"></sequenceFlow>
+    <sequenceFlow id="sid-4DB4678D-6513-48A0-828B-0EB0D022E92C" sourceRef="validate-supporting-document" targetRef="sid-D0306039-0E45-4D53-90C1-0CF775D3C2E5"></sequenceFlow>
+    <sequenceFlow id="sid-F2AF2559-413F-4FF3-90DF-F3F5E8D3684C" sourceRef="notify-customer-about-document-deficiency" targetRef="upload-supporting-document"></sequenceFlow>
+    <sequenceFlow id="sid-C599B76F-3E29-4D8F-84C0-AF6B297EA5F6" sourceRef="upload-supporting-document" targetRef="validate-supporting-document"></sequenceFlow>
+    <userTask id="validate-supporting-document" name="Validate Supporting Document">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <startEvent id="validate_supporting_document_activity_start">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ activityStartListener }"></flowable:executionListener>
+      </extensionElements>
+    </startEvent>
+    <exclusiveGateway id="sid-D0306039-0E45-4D53-90C1-0CF775D3C2E5" default="sid-1CBE6131-1B10-4C9F-8D4E-E552A0D5E2F8"></exclusiveGateway>
+    <userTask id="upload-supporting-document" name="Upload Documents">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <endEvent id="validate_supporting_document_activity_end">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ activityEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </endEvent>
+    <serviceTask id="notify-customer-about-document-deficiency" name="Notify Customer about document deficiency" flowable:delegateExpression="${ notificationDelegate }"></serviceTask>
+    <sequenceFlow id="sid-1CBE6131-1B10-4C9F-8D4E-E552A0D5E2F8" name="No" sourceRef="sid-D0306039-0E45-4D53-90C1-0CF775D3C2E5" targetRef="notify-customer-about-document-deficiency"></sequenceFlow>
+    <sequenceFlow id="sid-D55F36D5-5106-4497-B594-2E7A6339636D" name="Yes" sourceRef="sid-D0306039-0E45-4D53-90C1-0CF775D3C2E5" targetRef="sid-8C5A2E41-D6B9-4CDF-9FED-0CAFB5C3984B">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ isValidDocuments == true }]]></conditionExpression>
+    </sequenceFlow>
+    <intermediateCatchEvent id="sid-8C5A2E41-D6B9-4CDF-9FED-0CAFB5C3984B">
+      <timerEventDefinition>
+        <timeDuration>PT2S</timeDuration>
+      </timerEventDefinition>
+    </intermediateCatchEvent>
+    <sequenceFlow id="sid-C7B1153D-E175-4A6B-8FB1-725EFF3C5347" sourceRef="sid-8C5A2E41-D6B9-4CDF-9FED-0CAFB5C3984B" targetRef="validate_supporting_document_activity_end"></sequenceFlow>
+    <serviceTask id="customer-reminder-upload-supporting-document" name="reminder" flowable:async="true" flowable:delegateExpression="${ notificationDelegate }"></serviceTask>
+    <boundaryEvent id="sid-D839F02C-CED8-4D97-B32B-9E0D8BFDFE28" attachedToRef="upload-supporting-document" cancelActivity="false">
+      <timerEventDefinition>
+        <timeCycle>${ remainderCycle }</timeCycle>
+      </timerEventDefinition>
+    </boundaryEvent>
+    <sequenceFlow id="sid-B7F0C471-49FB-41C6-8F67-6A84E4035ABC" sourceRef="sid-D839F02C-CED8-4D97-B32B-9E0D8BFDFE28" targetRef="customer-reminder-upload-supporting-document"></sequenceFlow>
+    <serviceTask id="reminder-validate-supporting-document" name="reminder" flowable:async="true" flowable:delegateExpression="${ notificationDelegate }"></serviceTask>
+    <sequenceFlow id="sid-6BE11E06-36F8-4E31-99FB-F7D4CC3A034C" sourceRef="sid-25AC4AAD-4361-4494-8BC7-0C43EF1630CE" targetRef="reminder-validate-supporting-document"></sequenceFlow>
+    <boundaryEvent id="sid-25AC4AAD-4361-4494-8BC7-0C43EF1630CE" attachedToRef="validate-supporting-document" cancelActivity="false">
+      <timerEventDefinition>
+        <timeCycle>${ remainderCycle }</timeCycle>
+      </timerEventDefinition>
+    </boundaryEvent>
+    <textAnnotation id="sid-C4D1BBE3-D52C-406D-A26F-801CE3F35E22">
+      <text>Is valid document?</text>
+    </textAnnotation>
+    <association id="sid-7ACD86BF-277D-42E9-8242-429B67D67DA6" sourceRef="sid-C4D1BBE3-D52C-406D-A26F-801CE3F35E22" targetRef="sid-D0306039-0E45-4D53-90C1-0CF775D3C2E5" associationDirection="None"></association>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_validate_document_workflow">
+    <bpmndi:BPMNPlane bpmnElement="validate_document_workflow" id="BPMNPlane_validate_document_workflow">
+      <bpmndi:BPMNShape bpmnElement="validate-supporting-document" id="BPMNShape_validate-supporting-document">
+        <omgdc:Bounds height="66.0" width="101.0" x="255.0" y="145.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="validate_supporting_document_activity_start" id="BPMNShape_validate_supporting_document_activity_start">
+        <omgdc:Bounds height="30.0" width="30.0" x="150.0" y="163.5"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-D0306039-0E45-4D53-90C1-0CF775D3C2E5" id="BPMNShape_sid-D0306039-0E45-4D53-90C1-0CF775D3C2E5">
+        <omgdc:Bounds height="40.0" width="40.0" x="289.5" y="251.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="upload-supporting-document" id="BPMNShape_upload-supporting-document">
+        <omgdc:Bounds height="67.0" width="126.0" x="420.0" y="144.5"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="validate_supporting_document_activity_end" id="BPMNShape_validate_supporting_document_activity_end">
+        <omgdc:Bounds height="28.0" width="28.0" x="295.5" y="445.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="notify-customer-about-document-deficiency" id="BPMNShape_notify-customer-about-document-deficiency">
+        <omgdc:Bounds height="61.0" width="132.0" x="420.0" y="235.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-8C5A2E41-D6B9-4CDF-9FED-0CAFB5C3984B" id="BPMNShape_sid-8C5A2E41-D6B9-4CDF-9FED-0CAFB5C3984B">
+        <omgdc:Bounds height="31.0" width="31.0" x="294.0" y="370.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-C4D1BBE3-D52C-406D-A26F-801CE3F35E22" id="BPMNShape_sid-C4D1BBE3-D52C-406D-A26F-801CE3F35E22">
+        <omgdc:Bounds height="50.0" width="100.0" x="195.0" y="220.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-7ACD86BF-277D-42E9-8242-429B67D67DA6" id="BPMNShape_sid-7ACD86BF-277D-42E9-8242-429B67D67DA6">
+        <omgdc:Bounds height="26.0" width="44.5" x="245.0" y="245.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="customer-reminder-upload-supporting-document" id="BPMNShape_customer-reminder-upload-supporting-document">
+        <omgdc:Bounds height="46.0" width="85.0" x="600.0" y="187.01507705985543"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-D839F02C-CED8-4D97-B32B-9E0D8BFDFE28" id="BPMNShape_sid-D839F02C-CED8-4D97-B32B-9E0D8BFDFE28">
+        <omgdc:Bounds height="31.0" width="31.0" x="530.5301541197108" y="194.01507705985543"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="reminder-validate-supporting-document" id="BPMNShape_reminder-validate-supporting-document">
+        <omgdc:Bounds height="46.0" width="85.0" x="300.0" y="60.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-25AC4AAD-4361-4494-8BC7-0C43EF1630CE" id="BPMNShape_sid-25AC4AAD-4361-4494-8BC7-0C43EF1630CE">
+        <omgdc:Bounds height="31.0" width="31.0" x="312.82868969224717" y="129.18245288158525"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-22C262ED-BBEF-4523-A57C-2C5F482B356A" id="BPMNEdge_sid-22C262ED-BBEF-4523-A57C-2C5F482B356A">
+        <omgdi:waypoint x="179.94990732175307" y="178.44661954800054"></omgdi:waypoint>
+        <omgdi:waypoint x="254.99999999999977" y="178.17953736654803"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-F2AF2559-413F-4FF3-90DF-F3F5E8D3684C" id="BPMNEdge_sid-F2AF2559-413F-4FF3-90DF-F3F5E8D3684C">
+        <omgdi:waypoint x="484.95428571428573" y="235.0"></omgdi:waypoint>
+        <omgdi:waypoint x="484.14685714285713" y="211.45000000000002"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-4DB4678D-6513-48A0-828B-0EB0D022E92C" id="BPMNEdge_sid-4DB4678D-6513-48A0-828B-0EB0D022E92C">
+        <omgdi:waypoint x="306.9172043010753" y="210.95000000000002"></omgdi:waypoint>
+        <omgdi:waypoint x="308.6752577319587" y="251.78836251287333"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-7ACD86BF-277D-42E9-8242-429B67D67DA6" id="BPMNEdge_sid-7ACD86BF-277D-42E9-8242-429B67D67DA6">
+        <omgdi:waypoint x="287.6688099808061" y="269.95"></omgdi:waypoint>
+        <omgdi:waypoint x="289.5" y="271.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-C7B1153D-E175-4A6B-8FB1-725EFF3C5347" id="BPMNEdge_sid-C7B1153D-E175-4A6B-8FB1-725EFF3C5347">
+        <omgdi:waypoint x="309.5" y="400.94999650637004"></omgdi:waypoint>
+        <omgdi:waypoint x="309.5" y="445.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-6BE11E06-36F8-4E31-99FB-F7D4CC3A034C" id="BPMNEdge_sid-6BE11E06-36F8-4E31-99FB-F7D4CC3A034C">
+        <omgdi:waypoint x="332.2543498785891" y="129.55237128593984"></omgdi:waypoint>
+        <omgdi:waypoint x="337.4432657846884" y="105.94999999999999"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-C599B76F-3E29-4D8F-84C0-AF6B297EA5F6" id="BPMNEdge_sid-C599B76F-3E29-4D8F-84C0-AF6B297EA5F6">
+        <omgdi:waypoint x="419.99999999996123" y="178.0"></omgdi:waypoint>
+        <omgdi:waypoint x="355.95000000000005" y="178.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-B7F0C471-49FB-41C6-8F67-6A84E4035ABC" id="BPMNEdge_sid-B7F0C471-49FB-41C6-8F67-6A84E4035ABC">
+        <omgdi:waypoint x="562.4801520032912" y="210.01507705985543"></omgdi:waypoint>
+        <omgdi:waypoint x="600.0" y="210.01507705985543"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-D55F36D5-5106-4497-B594-2E7A6339636D" id="BPMNEdge_sid-D55F36D5-5106-4497-B594-2E7A6339636D">
+        <omgdi:waypoint x="309.5" y="290.9412958115182"></omgdi:waypoint>
+        <omgdi:waypoint x="309.5" y="370.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-1CBE6131-1B10-4C9F-8D4E-E552A0D5E2F8" id="BPMNEdge_sid-1CBE6131-1B10-4C9F-8D4E-E552A0D5E2F8">
+        <omgdi:waypoint x="328.84711538461477" y="270.3956043956044"></omgdi:waypoint>
+        <omgdi:waypoint x="420.0" y="267.55509915014164"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

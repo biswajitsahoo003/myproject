@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <process id="customer_training_workflow" name="customer_training_workflow" isExecutable="true">
+    <documentation>customer_training_workflow</documentation>
+    <startEvent id="webex_customer_training_activity_start">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ activityStartListener }"></flowable:executionListener>
+      </extensionElements>
+    </startEvent>
+    <endEvent id="webex_customer_training_activity_end">
+      <extensionElements>
+        <flowable:executionListener event="end" delegateExpression="${ activityEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </endEvent>
+    <userTask id="ucwb-customer-boarding-training" name="Customer Onboarding">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <serviceTask id="reminder-ucwb-customer-boarding-training" name="Reminder" flowable:async="true" flowable:exclusive="false" flowable:delegateExpression="${ notificationDelegate  }"></serviceTask>
+    <userTask id="ucwb-customer-adoption-training" name="Customer Adoption">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="sid-4D85042E-C3D9-4CAB-A43A-5746C210B702" sourceRef="sid-47DB25F3-74CE-4868-A1DF-840631C7249F" targetRef="reminder-ucwb-customer-boarding-training"></sequenceFlow>
+    <serviceTask id="reminder-ucwb-customer-adoption-training" name="Reminder" flowable:async="true" flowable:exclusive="false" flowable:delegateExpression="${ notificationDelegate  }"></serviceTask>
+    <sequenceFlow id="sid-A8D2C456-653A-4107-92FF-7E9460237913" sourceRef="ucwb-customer-boarding-training" targetRef="ucwb-customer-adoption-training"></sequenceFlow>
+    <sequenceFlow id="sid-44ABAEF6-9F09-43D0-A133-BB77A122C47E" sourceRef="sid-E045A88F-E848-4011-BAEB-CC76944185FB" targetRef="reminder-ucwb-customer-adoption-training"></sequenceFlow>
+    <boundaryEvent id="sid-47DB25F3-74CE-4868-A1DF-840631C7249F" attachedToRef="ucwb-customer-boarding-training" cancelActivity="false">
+      <timerEventDefinition>
+        <timeCycle>${ remainderCycle }</timeCycle>
+      </timerEventDefinition>
+    </boundaryEvent>
+    <sequenceFlow id="sid-A955AF09-0CD2-4493-A83B-7DF54A3847CF" sourceRef="webex_customer_training_activity_start" targetRef="ucwb-customer-boarding-training"></sequenceFlow>
+    <boundaryEvent id="sid-E045A88F-E848-4011-BAEB-CC76944185FB" attachedToRef="ucwb-customer-adoption-training" cancelActivity="false">
+      <timerEventDefinition>
+        <timeCycle>${ remainderCycle }</timeCycle>
+      </timerEventDefinition>
+    </boundaryEvent>
+    <sequenceFlow id="sid-E7F13946-9F2E-4580-B720-56CEEA94FD59" sourceRef="ucwb-customer-adoption-training" targetRef="webex_customer_training_activity_end"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_customer_training_workflow">
+    <bpmndi:BPMNPlane bpmnElement="customer_training_workflow" id="BPMNPlane_customer_training_workflow">
+      <bpmndi:BPMNShape bpmnElement="webex_customer_training_activity_start" id="BPMNShape_webex_customer_training_activity_start">
+        <omgdc:Bounds height="30.0" width="30.0" x="30.0" y="140.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="webex_customer_training_activity_end" id="BPMNShape_webex_customer_training_activity_end">
+        <omgdc:Bounds height="27.99999999999997" width="28.0" x="585.0000000000001" y="141.00000000000003"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ucwb-customer-boarding-training" id="BPMNShape_ucwb-customer-boarding-training">
+        <omgdc:Bounds height="48.0" width="124.99999999999997" x="150.00000000000003" y="131.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="reminder-ucwb-customer-boarding-training" id="BPMNShape_reminder-ucwb-customer-boarding-training">
+        <omgdc:Bounds height="39.99999999999997" width="90.0000000000001" x="118.28643993914788" y="230.00000000000003"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ucwb-customer-adoption-training" id="BPMNShape_ucwb-customer-adoption-training">
+        <omgdc:Bounds height="55.9999999999999" width="111.99999999999989" x="345.0" y="127.00000000000004"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="reminder-ucwb-customer-adoption-training" id="BPMNShape_reminder-ucwb-customer-adoption-training">
+        <omgdc:Bounds height="39.99999999999997" width="90.0" x="317.1269661748506" y="240.00000000000003"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-47DB25F3-74CE-4868-A1DF-840631C7249F" id="BPMNShape_sid-47DB25F3-74CE-4868-A1DF-840631C7249F">
+        <omgdc:Bounds height="31.0" width="31.0" x="147.78643993914793" y="163.83642727353694"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-E045A88F-E848-4011-BAEB-CC76944185FB" id="BPMNShape_sid-E045A88F-E848-4011-BAEB-CC76944185FB">
+        <omgdc:Bounds height="31.0" width="31.0" x="346.62696617485057" y="168.08311310672752"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-A955AF09-0CD2-4493-A83B-7DF54A3847CF" id="BPMNEdge_sid-A955AF09-0CD2-4493-A83B-7DF54A3847CF">
+        <omgdi:waypoint x="59.94999891126233" y="155.0"></omgdi:waypoint>
+        <omgdi:waypoint x="150.00000000000003" y="155.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-E7F13946-9F2E-4580-B720-56CEEA94FD59" id="BPMNEdge_sid-E7F13946-9F2E-4580-B720-56CEEA94FD59">
+        <omgdi:waypoint x="456.94999999991126" y="155.0"></omgdi:waypoint>
+        <omgdi:waypoint x="585.0000000000001" y="155.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-44ABAEF6-9F09-43D0-A133-BB77A122C47E" id="BPMNEdge_sid-44ABAEF6-9F09-43D0-A133-BB77A122C47E">
+        <omgdi:waypoint x="362.12696617485057" y="199.03310987455856"></omgdi:waypoint>
+        <omgdi:waypoint x="362.1269661748506" y="240.00000000000003"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-A8D2C456-653A-4107-92FF-7E9460237913" id="BPMNEdge_sid-A8D2C456-653A-4107-92FF-7E9460237913">
+        <omgdi:waypoint x="274.94999999994957" y="155.0"></omgdi:waypoint>
+        <omgdi:waypoint x="344.9999999999719" y="155.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-4D85042E-C3D9-4CAB-A43A-5746C210B702" id="BPMNEdge_sid-4D85042E-C3D9-4CAB-A43A-5746C210B702">
+        <omgdi:waypoint x="163.28643993914793" y="194.78642349399803"></omgdi:waypoint>
+        <omgdi:waypoint x="163.28643993914793" y="230.00000000000003"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

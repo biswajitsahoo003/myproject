@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <process id="cpe-recovery-workflow" name="Cpe Recovery Workflow" isExecutable="true">
+    <documentation>Cpe Recovery Workflow</documentation>
+    <startEvent id="termination_process_start"></startEvent>
+    <endEvent id="termination_process_end"></endEvent>
+    <userTask id="customer-appointment-cpe-recovery" name="Confirm Appointment Cpe Recovery">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <userTask id="arrange-vendor-for-cpe-recovery" name="Cpe Arrange Field Engineer" default="sid-9A239764-6512-4D60-80AB-F52D48349003">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <userTask id="confirm-cpe-recovery" name="Cpe Recovery">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <exclusiveGateway id="sid-4236A0DB-AF26-4C1A-BF8C-F83C37D0B58C" default="sid-4F955A53-2A66-4107-B313-ADBFBF98B32A"></exclusiveGateway>
+    <sequenceFlow id="sid-90F6F82D-EDA7-4174-BBD3-6C4DA0675016" sourceRef="termination_process_start" targetRef="customer-appointment-cpe-recovery"></sequenceFlow>
+    <sequenceFlow id="sid-509CDA1B-81BE-4270-A24A-0FFF3CD7E94A" sourceRef="customer-appointment-cpe-recovery" targetRef="arrange-vendor-for-cpe-recovery"></sequenceFlow>
+    <sequenceFlow id="sid-CCC5BB16-D577-4659-988B-9A60960790A9" sourceRef="confirm-cpe-recovery" targetRef="sid-4236A0DB-AF26-4C1A-BF8C-F83C37D0B58C"></sequenceFlow>
+    <sequenceFlow id="sid-4F955A53-2A66-4107-B313-ADBFBF98B32A" sourceRef="sid-4236A0DB-AF26-4C1A-BF8C-F83C37D0B58C" targetRef="termination_process_end"></sequenceFlow>
+    <sequenceFlow id="sid-FE8EB4D6-9FA9-4BAA-AA88-3F4639B1F5D2" sourceRef="sid-4236A0DB-AF26-4C1A-BF8C-F83C37D0B58C" targetRef="customer-appointment-cpe-recovery_reopen">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ var:get(action) == "SCML-CPE-REAPP" }]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="customer-appointment-cpe-recovery_reopen" name="Confirm Appointment Cpe Recovery">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <exclusiveGateway id="sid-A351D33F-136C-4681-94F0-6000693A658B"></exclusiveGateway>
+    <sequenceFlow id="sid-47E89854-FB43-42A3-AEB8-A7A1E4C86FA7" sourceRef="customer-appointment-cpe-recovery_reopen" targetRef="sid-A351D33F-136C-4681-94F0-6000693A658B"></sequenceFlow>
+    <sequenceFlow id="sid-9A239764-6512-4D60-80AB-F52D48349003" sourceRef="arrange-vendor-for-cpe-recovery" targetRef="sid-A351D33F-136C-4681-94F0-6000693A658B"></sequenceFlow>
+    <sequenceFlow id="sid-1B0AE36D-5599-4A57-BD2A-01F692172D9D" sourceRef="sid-A351D33F-136C-4681-94F0-6000693A658B" targetRef="confirm-cpe-recovery"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_cpe-recovery-workflow">
+    <bpmndi:BPMNPlane bpmnElement="cpe-recovery-workflow" id="BPMNPlane_cpe-recovery-workflow">
+      <bpmndi:BPMNShape bpmnElement="termination_process_start" id="BPMNShape_termination_process_start">
+        <omgdc:Bounds height="30.0" width="30.0" x="15.0" y="321.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="termination_process_end" id="BPMNShape_termination_process_end">
+        <omgdc:Bounds height="28.0" width="28.0" x="825.0" y="323.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="customer-appointment-cpe-recovery" id="BPMNShape_customer-appointment-cpe-recovery">
+        <omgdc:Bounds height="56.0" width="94.0" x="120.0" y="308.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="arrange-vendor-for-cpe-recovery" id="BPMNShape_arrange-vendor-for-cpe-recovery">
+        <omgdc:Bounds height="56.0" width="94.0" x="270.0" y="308.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="confirm-cpe-recovery" id="BPMNShape_confirm-cpe-recovery">
+        <omgdc:Bounds height="56.0" width="94.0" x="585.0" y="308.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-4236A0DB-AF26-4C1A-BF8C-F83C37D0B58C" id="BPMNShape_sid-4236A0DB-AF26-4C1A-BF8C-F83C37D0B58C">
+        <omgdc:Bounds height="40.0" width="40.0" x="720.0" y="316.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="customer-appointment-cpe-recovery_reopen" id="BPMNShape_customer-appointment-cpe-recovery_reopen">
+        <omgdc:Bounds height="56.0" width="94.0" x="465.0" y="150.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-A351D33F-136C-4681-94F0-6000693A658B" id="BPMNShape_sid-A351D33F-136C-4681-94F0-6000693A658B">
+        <omgdc:Bounds height="40.0" width="40.0" x="419.0" y="311.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-47E89854-FB43-42A3-AEB8-A7A1E4C86FA7" id="BPMNEdge_sid-47E89854-FB43-42A3-AEB8-A7A1E4C86FA7">
+        <omgdi:waypoint x="465.0" y="178.0"></omgdi:waypoint>
+        <omgdi:waypoint x="439.0" y="178.0"></omgdi:waypoint>
+        <omgdi:waypoint x="439.0" y="311.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-90F6F82D-EDA7-4174-BBD3-6C4DA0675016" id="BPMNEdge_sid-90F6F82D-EDA7-4174-BBD3-6C4DA0675016">
+        <omgdi:waypoint x="44.94999902632787" y="336.0"></omgdi:waypoint>
+        <omgdi:waypoint x="120.0" y="336.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-509CDA1B-81BE-4270-A24A-0FFF3CD7E94A" id="BPMNEdge_sid-509CDA1B-81BE-4270-A24A-0FFF3CD7E94A">
+        <omgdi:waypoint x="213.95" y="336.0"></omgdi:waypoint>
+        <omgdi:waypoint x="269.99999999986113" y="336.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-CCC5BB16-D577-4659-988B-9A60960790A9" id="BPMNEdge_sid-CCC5BB16-D577-4659-988B-9A60960790A9">
+        <omgdi:waypoint x="678.9499999999999" y="336.0"></omgdi:waypoint>
+        <omgdi:waypoint x="720.0" y="336.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-1B0AE36D-5599-4A57-BD2A-01F692172D9D" id="BPMNEdge_sid-1B0AE36D-5599-4A57-BD2A-01F692172D9D">
+        <omgdi:waypoint x="458.0125443937087" y="331.93286802030457"></omgdi:waypoint>
+        <omgdi:waypoint x="584.9999999999991" y="334.9012987012987"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-4F955A53-2A66-4107-B313-ADBFBF98B32A" id="BPMNEdge_sid-4F955A53-2A66-4107-B313-ADBFBF98B32A">
+        <omgdi:waypoint x="759.7407342657342" y="336.1995"></omgdi:waypoint>
+        <omgdi:waypoint x="825.0003422705477" y="336.8585929236829"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-9A239764-6512-4D60-80AB-F52D48349003" id="BPMNEdge_sid-9A239764-6512-4D60-80AB-F52D48349003">
+        <omgdi:waypoint x="363.95000000000005" y="334.2734693877551"></omgdi:waypoint>
+        <omgdi:waypoint x="420.20866141732256" y="332.20688976377954"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-FE8EB4D6-9FA9-4BAA-AA88-3F4639B1F5D2" id="BPMNEdge_sid-FE8EB4D6-9FA9-4BAA-AA88-3F4639B1F5D2">
+        <omgdi:waypoint x="740.0" y="316.0"></omgdi:waypoint>
+        <omgdi:waypoint x="740.0" y="169.0"></omgdi:waypoint>
+        <omgdi:waypoint x="558.949999999905" y="169.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

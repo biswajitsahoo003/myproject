@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <process id="plan-commercial_vetting_termination_workflow" name="plan-commercial_vetting_termination_workflow" isExecutable="true">
+    <documentation>plan-commercial_vetting_termination_workflow</documentation>
+    <startEvent id="sid-C3B46B54-877F-4B2F-B309-5CE94351E998"></startEvent>
+    <endEvent id="sid-7E0C946C-0F1E-4CC2-B604-0CB4EFFB993E"></endEvent>
+    <callActivity id="validate_supporting_document_process" name="Validate Document Process Plan" calledElement="plan_validate_document_workflow" flowable:calledElementType="key" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false">
+      <extensionElements>
+        <flowable:in source="startTrackingProcess" target="startTrackingProcess"></flowable:in>
+        <flowable:in source="customerDelayProcess" target="customerDelayProcess"></flowable:in>
+        <flowable:in source="validate_supporting_document_activity_end_plan_endDate" target="validate_supporting_document_activity_end_plan_endDate"></flowable:in>
+        <flowable:out source="startTrackingProcess" target="startTrackingProcess"></flowable:out>
+        <flowable:out source="customerDelayProcess" target="customerDelayProcess"></flowable:out>
+        <flowable:out source="validate_supporting_document_activity_end_plan_endDate" target="validate_supporting_document_activity_end_plan_endDate"></flowable:out>
+      </extensionElements>
+    </callActivity>
+    <serviceTask id="commercial-vetting-termination_plan" name="Commercial Vetting Plan" flowable:delegateExpression="${taskPlanDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[commercial_vetting_activity_start_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="sid-1B2AB708-9C43-4353-8BF1-412F157E6F2C" sourceRef="sid-C3B46B54-877F-4B2F-B309-5CE94351E998" targetRef="commercial_vetting_activity_start_plan"></sequenceFlow>
+    <serviceTask id="commercial_vetting_activity_start_plan" name="commercial_vetting_activity_start_plan" flowable:delegateExpression="${activityPlanStartDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[commercial_vetting_process_start_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="sid-7CB7AA23-2154-4BAB-9917-6C7D649FEDB6" sourceRef="commercial_vetting_activity_start_plan" targetRef="commercial-vetting-termination_plan"></sequenceFlow>
+    <serviceTask id="commercial_vetting_activity_end_plan" name="commercial_vetting_activity_end_plan" flowable:delegateExpression="${activityPlanEndDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[validate_supporting_document_process_end_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="sid-2D49F913-6FCD-49A1-A156-301F784A21F7" sourceRef="commercial_vetting_activity_end_plan" targetRef="sid-7E0C946C-0F1E-4CC2-B604-0CB4EFFB993E"></sequenceFlow>
+    <sequenceFlow id="sid-6796494D-A005-4FDA-85E0-54D9447B6717" sourceRef="commercial-vetting-termination_plan" targetRef="validate_supporting_document_process_start_plan"></sequenceFlow>
+    <sequenceFlow id="sid-FB7BFF6A-3267-4127-8903-701B5BD71727" sourceRef="validate_supporting_document_process" targetRef="validate_supporting_document_process_end_plan"></sequenceFlow>
+    <serviceTask id="validate_supporting_document_process_start_plan" name="validate_supporting_document_process_start_plan" flowable:delegateExpression="${processPlanStartDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[commercial-vetting-termination_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="validate_supporting_document_process_end_plan" name="validate_supporting_document_process_end_plan" flowable:delegateExpression="${processPlanEndDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[validate_supporting_document_activity_end_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="sid-241176DD-E320-4C69-80F0-827DFE081EDB" sourceRef="validate_supporting_document_process_start_plan" targetRef="validate_supporting_document_process"></sequenceFlow>
+    <sequenceFlow id="sid-006A7D55-2560-411F-A364-86151AA1147A" sourceRef="validate_supporting_document_process_end_plan" targetRef="commercial_vetting_activity_end_plan"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_plan-commercial_vetting_termination_workflow">
+    <bpmndi:BPMNPlane bpmnElement="plan-commercial_vetting_termination_workflow" id="BPMNPlane_plan-commercial_vetting_termination_workflow">
+      <bpmndi:BPMNShape bpmnElement="sid-C3B46B54-877F-4B2F-B309-5CE94351E998" id="BPMNShape_sid-C3B46B54-877F-4B2F-B309-5CE94351E998">
+        <omgdc:Bounds height="30.0" width="30.0" x="15.0" y="160.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-7E0C946C-0F1E-4CC2-B604-0CB4EFFB993E" id="BPMNShape_sid-7E0C946C-0F1E-4CC2-B604-0CB4EFFB993E">
+        <omgdc:Bounds height="28.0" width="28.0" x="945.0" y="161.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="validate_supporting_document_process" id="BPMNShape_validate_supporting_document_process">
+        <omgdc:Bounds height="80.0" width="100.0" x="540.0" y="135.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="commercial-vetting-termination_plan" id="BPMNShape_commercial-vetting-termination_plan">
+        <omgdc:Bounds height="80.0" width="100.0" x="240.0" y="135.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="commercial_vetting_activity_start_plan" id="BPMNShape_commercial_vetting_activity_start_plan">
+        <omgdc:Bounds height="80.0" width="100.0" x="90.0" y="135.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="commercial_vetting_activity_end_plan" id="BPMNShape_commercial_vetting_activity_end_plan">
+        <omgdc:Bounds height="80.0" width="100.0" x="825.0" y="135.04421816382603"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="validate_supporting_document_process_start_plan" id="BPMNShape_validate_supporting_document_process_start_plan">
+        <omgdc:Bounds height="80.0" width="100.0" x="390.0" y="135.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="validate_supporting_document_process_end_plan" id="BPMNShape_validate_supporting_document_process_end_plan">
+        <omgdc:Bounds height="80.0" width="100.0" x="690.0" y="135.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-1B2AB708-9C43-4353-8BF1-412F157E6F2C" id="BPMNEdge_sid-1B2AB708-9C43-4353-8BF1-412F157E6F2C">
+        <omgdi:waypoint x="44.9499984899576" y="175.0"></omgdi:waypoint>
+        <omgdi:waypoint x="90.0" y="175.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-FB7BFF6A-3267-4127-8903-701B5BD71727" id="BPMNEdge_sid-FB7BFF6A-3267-4127-8903-701B5BD71727">
+        <omgdi:waypoint x="639.9499999999581" y="175.0"></omgdi:waypoint>
+        <omgdi:waypoint x="690.0" y="175.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-2D49F913-6FCD-49A1-A156-301F784A21F7" id="BPMNEdge_sid-2D49F913-6FCD-49A1-A156-301F784A21F7">
+        <omgdi:waypoint x="924.9499999994725" y="175.0178978282153"></omgdi:waypoint>
+        <omgdi:waypoint x="944.9999982113917" y="175.00734381566167"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-7CB7AA23-2154-4BAB-9917-6C7D649FEDB6" id="BPMNEdge_sid-7CB7AA23-2154-4BAB-9917-6C7D649FEDB6">
+        <omgdi:waypoint x="189.9499999999581" y="175.0"></omgdi:waypoint>
+        <omgdi:waypoint x="240.0" y="175.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-006A7D55-2560-411F-A364-86151AA1147A" id="BPMNEdge_sid-006A7D55-2560-411F-A364-86151AA1147A">
+        <omgdi:waypoint x="789.9499999999999" y="175.01636072061567"></omgdi:waypoint>
+        <omgdi:waypoint x="824.999999999955" y="175.02784106611267"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-6796494D-A005-4FDA-85E0-54D9447B6717" id="BPMNEdge_sid-6796494D-A005-4FDA-85E0-54D9447B6717">
+        <omgdi:waypoint x="339.9499999993903" y="175.49079786763116"></omgdi:waypoint>
+        <omgdi:waypoint x="389.9999999999468" y="175.47544564346248"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-241176DD-E320-4C69-80F0-827DFE081EDB" id="BPMNEdge_sid-241176DD-E320-4C69-80F0-827DFE081EDB">
+        <omgdi:waypoint x="489.9499999999581" y="175.0"></omgdi:waypoint>
+        <omgdi:waypoint x="540.0" y="175.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

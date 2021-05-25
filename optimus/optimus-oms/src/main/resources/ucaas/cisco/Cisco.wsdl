@@ -1,0 +1,3549 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions targetNamespace="http://www.openapplications.org/oagis/9" xmlns:ns="urn:cisco:b2bngc:services:1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:b2bngc="http://www.openapplications.org/oagis/9" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:ebms="http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/" xmlns:tns="http://www.openapplications.org/oagis/9">
+  <wsdl:documentation>WSDL for any service using WSX.
+		This documents the
+		required SOAP Headers for both PUSH and PULL operations.</wsdl:documentation>
+  <wsdl:types>
+    <xsd:schema attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/" xmlns="http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:s1="http://www.openapplications.org/oagis/9/codelists" xmlns:s2="http://www.openapplications.org/oagis/9/currencycode/54217:2001" xmlns:s6="http://www.openapplications.org/oagis/9/qualifieddatatypes/1.1" xmlns:s5="http://www.openapplications.org/oagis/9/unitcode/66411:2001" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:s4="http://www.openapplications.org/oagis/9/IANAMIMEMediaTypes:2003" xmlns:s0="http://www.openapplications.org/oagis/9/unqualifieddatatypes/1.1" xmlns:s3="http://www.openapplications.org/oagis/9/languagecode/5639:1988" xmlns:s7="urn:cisco:b2bngc:services:1.0" xmlns:tns="http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/">
+      <xsd:annotation>
+        <xsd:appinfo>Schema for ebMS-3 XML Infoset</xsd:appinfo>
+        <xsd:documentation xml:lang="en">This schema defines
+					the XML Infoset of ebMS-3 headers. These headers
+					are
+					placed within
+					the SOAP Header element of either a SOAP 1.1 or SOAP 1.2
+					message.
+					From
+					http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/core/ebms-header-3_0-200704.xsd</xsd:documentation>
+      </xsd:annotation>
+      <xsd:element name="Messaging" type="Messaging"/>
+      <xsd:complexType name="Messaging">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">The eb:Messaging
+						element is the top element of ebMS-3 headers, and it
+						is
+						placed
+						within the SOAP Header element (either SOAP 1.1 or SOAP 1.2). The
+						eb:Messaging element may contain several instances of
+						eb:SignalMessage
+						and eb:UserMessage elements. However in the core
+						part of the ebMS-3
+						specification, only one instance of either
+						eb:UserMessage or
+						eb:SignalMessage
+						must be present. The second part
+						of ebMS-3 specification may need to
+						include
+						multiple instances of
+						either eb:SignalMessage, eb:UserMessage or both.
+						Therefore, this
+						schema is allowing multiple instances of
+						eb:SignalMessage
+						and
+						eb:UserMessage elements for part 2 of the ebMS-3 specification.
+						Note
+						that the eb:Messaging element cannot be empty (at least one of
+						eb:SignalMessage or eb:UserMessage element must present).</xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" name="SignalMessage" type="SignalMessage"/>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" name="UserMessage" type="UserMessage"/>
+        </xsd:sequence>
+        <xsd:attributeGroup ref="tns:headerExtension"/>
+      </xsd:complexType>
+      <xsd:complexType name="SignalMessage">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">In the core part of
+						ebMS-3 specification, an eb:Signal Message is
+						allowed to
+						contain
+						eb:MessageInfo and at most one Receipt Signal, at most one
+						eb:PullRequest
+						element, and/or a series of eb:Error elements. In
+						part 2 of the ebMS-3
+						specification, new signals may be introduced,
+						and for this reason,
+						an extensibility point is added here to the
+						eb:SignalMessage
+						element to
+						allow it to contain any elements.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+          <xsd:element name="MessageInfo" type="MessageInfo"/>
+          <xsd:element minOccurs="0" name="PullRequest" type="PullRequest"/>
+          <xsd:element minOccurs="0" name="Receipt" type="Receipt"/>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" name="Error" type="Error"/>
+          <xsd:any maxOccurs="unbounded" minOccurs="0" namespace="##other" processContents="lax"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="Error">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" name="Description" type="xs:anyType"/>
+          <xsd:element minOccurs="0" name="ErrorDetail" type="xsd:token"/>
+        </xsd:sequence>
+        <xsd:attribute name="category" type="xsd:token" use="optional"/>
+        <xsd:attribute name="refToMessageInError" type="xsd:token" use="optional"/>
+        <xsd:attribute name="errorCode" type="xsd:token" use="required"/>
+        <xsd:attribute name="origin" type="xsd:token" use="optional"/>
+        <xsd:attribute name="severity" type="xsd:token" use="required"/>
+        <xsd:attribute name="shortDescription" type="xsd:token" use="optional"/>
+      </xsd:complexType>
+      <xsd:complexType name="PullRequest">
+        <xsd:sequence>
+          <xsd:any maxOccurs="unbounded" minOccurs="0" namespace="##other" processContents="lax"/>
+        </xsd:sequence>
+        <xsd:attributeGroup ref="pullAttributes"/>
+      </xsd:complexType>
+      <xsd:complexType name="Receipt">
+        <xsd:sequence>
+          <xsd:element ref="NonRepudiationInformation"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="UserMessage">
+        <xsd:sequence>
+          <xsd:element name="MessageInfo" type="MessageInfo"/>
+          <xsd:element name="PartyInfo" type="PartyInfo"/>
+          <xsd:element name="CollaborationInfo" type="CollaborationInfo"/>
+          <xsd:element minOccurs="0" name="MessageProperties" type="tns:MessageProperties"/>
+          <xsd:element minOccurs="0" name="PayloadInfo" type="tns:PayloadInfo"/>
+        </xsd:sequence>
+        <xsd:attribute name="mpc" type="xsd:anyURI" use="optional"/>
+      </xsd:complexType>
+      <xsd:complexType name="MessageInfo">
+        <xsd:sequence>
+          <xsd:element name="Timestamp" type="tns:non-empty-string"/>
+          <xsd:element name="MessageId" type="tns:non-empty-string"/>
+          <xsd:element minOccurs="0" name="RefToMessageId" type="tns:non-empty-string"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="PartyInfo">
+        <xsd:sequence>
+          <xsd:element name="From" type="tns:From"/>
+          <xsd:element name="To" type="tns:To"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="PartyId">
+        <xsd:simpleContent>
+          <xsd:extension base="tns:non-empty-string">
+            <xsd:attribute name="type" type="tns:non-empty-string"/>
+          </xsd:extension>
+        </xsd:simpleContent>
+      </xsd:complexType>
+      <xsd:complexType name="From">
+        <xsd:sequence>
+          <xsd:element maxOccurs="unbounded" name="PartyId" type="tns:PartyId"/>
+          <xsd:element name="Role" type="tns:non-empty-string"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="To">
+        <xsd:sequence>
+          <xsd:element maxOccurs="unbounded" name="PartyId" type="tns:PartyId"/>
+          <xsd:element name="Role" type="tns:non-empty-string"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="CollaborationInfo">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" name="AgreementRef" type="tns:AgreementRef"/>
+          <xsd:element minOccurs="0" name="Service" type="tns:Service"/>
+          <xsd:element minOccurs="0" name="Action" type="xsd:token"/>
+          <xsd:element minOccurs="0" name="ConversationId" type="xsd:token"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="Service">
+        <xsd:simpleContent>
+          <xsd:extension base="tns:non-empty-string">
+            <xsd:attribute name="type" type="tns:non-empty-string" use="optional"/>
+          </xsd:extension>
+        </xsd:simpleContent>
+      </xsd:complexType>
+      <xsd:complexType name="AgreementRef">
+        <xsd:simpleContent>
+          <xsd:extension base="tns:non-empty-string">
+            <xsd:attribute name="type" type="tns:non-empty-string" use="optional"/>
+            <xsd:attribute name="pmode" type="tns:non-empty-string" use="optional"/>
+          </xsd:extension>
+        </xsd:simpleContent>
+      </xsd:complexType>
+      <xsd:complexType name="PayloadInfo">
+        <xsd:sequence>
+          <xsd:element maxOccurs="unbounded" name="PartInfo" type="tns:PartInfo"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="PartInfo">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" name="Schema" type="tns:Schema"/>
+          <xsd:element minOccurs="0" name="Description" type="xs:anyType"/>
+          <xsd:element minOccurs="0" name="PartProperties" type="tns:PartProperties"/>
+        </xsd:sequence>
+        <xsd:attribute name="href" type="xsd:token"/>
+      </xsd:complexType>
+      <xsd:complexType name="Schema">
+        <xsd:attribute name="location" type="xsd:anyURI" use="required"/>
+        <xsd:attribute name="version" type="tns:non-empty-string" use="optional"/>
+        <xsd:attribute name="namespace" type="tns:non-empty-string" use="optional"/>
+      </xsd:complexType>
+      <xsd:complexType name="Property">
+        <xsd:simpleContent>
+          <xsd:extension base="tns:non-empty-string">
+            <xsd:attribute name="name" type="tns:non-empty-string" use="required"/>
+          </xsd:extension>
+        </xsd:simpleContent>
+      </xsd:complexType>
+      <xsd:complexType name="PartProperties">
+        <xsd:sequence>
+          <xsd:element maxOccurs="unbounded" name="Property" type="tns:Property"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="MessageProperties">
+        <xsd:sequence>
+          <xsd:element maxOccurs="unbounded" name="Property" type="Property"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:attributeGroup name="headerExtension">
+        <xsd:attribute name="id" type="xsd:ID" use="optional"/>
+        <xsd:anyAttribute namespace="##other" processContents="lax"/>
+      </xsd:attributeGroup>
+      <xsd:attributeGroup name="pullAttributes">
+        <xsd:attribute name="mpc" type="xsd:anyURI" use="optional"/>
+        <xsd:anyAttribute namespace="##other" processContents="lax"/>
+      </xsd:attributeGroup>
+      <xsd:element name="NonRepudiationInformation">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element maxOccurs="unbounded" minOccurs="0" name="MessagePartNRInformation">
+              <xsd:complexType>
+                <xsd:sequence>
+                  <xsd:element minOccurs="0" name="MessagePartIdentifier" type="xs:string"/>
+                  <xsd:element maxOccurs="unbounded" minOccurs="0" ref="Reference"/>
+                </xsd:sequence>
+              </xsd:complexType>
+            </xsd:element>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="Reference">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element minOccurs="0" name="DigestValue" type="xs:string"/>
+            <xsd:element maxOccurs="unbounded" minOccurs="0" name="DigestMethod">
+              <xsd:complexType>
+                <xsd:attribute form="unqualified" name="Algorithm" type="xs:string"/>
+              </xsd:complexType>
+            </xsd:element>
+          </xsd:sequence>
+          <xsd:attribute form="unqualified" name="URI" type="xs:string"/>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:simpleType name="non-empty-string">
+        <xsd:restriction base="xsd:string">
+          <xsd:minLength value="1"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+    </xsd:schema>
+    <xs:schema attributeFormDefault="unqualified" elementFormDefault="unqualified" targetNamespace="http://ciscoB2BService.ws.cisco.com">
+      <xs:element name="PullResponse" type="xs:anyType"/>
+      <xs:element name="PushRequest" type="xs:anyType"/>
+      <!--<xs:element name="PushResponse" type="xs:anyType" />-->
+      <xs:complexType name="ResponseType">
+        <xs:sequence>
+          <xs:element maxOccurs="1" minOccurs="0" name="DummyString" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+    </xs:schema>
+    <xsd:schema attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://www.openapplications.org/oagis/9/unqualifieddatatypes/1.1" xmlns:ccts="urn:un:unece:uncefact:documentation:1.1" xmlns:oacl="http://www.openapplications.org/oagis/9/codelists" xmlns:udt="http://www.openapplications.org/oagis/9/unqualifieddatatypes/1.1" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+      <xsd:import namespace="http://www.openapplications.org/oagis/9/codelists"/>
+      <xsd:import namespace="http://www.openapplications.org/oagis/9/currencycode/54217:2001"/>
+      <xsd:import namespace="http://www.openapplications.org/oagis/9/languagecode/5639:1988"/>
+      <xsd:import namespace="http://www.openapplications.org/oagis/9/IANAMIMEMediaTypes:2003"/>
+      <xsd:import namespace="http://www.openapplications.org/oagis/9/unitcode/66411:2001"/>
+      <xsd:import namespace="http://www.openapplications.org/oagis/9/qualifieddatatypes/1.1"/>
+      <xsd:import namespace="urn:cisco:b2b:bod:services:1.0"/>
+      <xsd:simpleType name="DateTimeType">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            <ccts:UniqueID>UDT000008</ccts:UniqueID>
+            <ccts:CategoryCode>UDT</ccts:CategoryCode>
+            <ccts:DictionaryEntryName>Date Time. Type</ccts:DictionaryEntryName>
+            <ccts:VersionID>1.0</ccts:VersionID>
+            <ccts:Definition>A particular point in the progression of time together with the relevant supplementary information.</ccts:Definition>
+            <ccts:RepresentationTermName>Date Time</ccts:RepresentationTermName>
+            <ccts:PrimitiveType>string</ccts:PrimitiveType>
+            <ccts:UsageRule>Can be used for a date and/or time.</ccts:UsageRule>
+          </xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:dateTime"/>
+      </xsd:simpleType>
+      <xsd:simpleType name="DateType">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            <ccts:UniqueID>UDT000009</ccts:UniqueID>
+            <ccts:CategoryCode>UDT</ccts:CategoryCode>
+            <ccts:DictionaryEntryName>Date. Type</ccts:DictionaryEntryName>
+            <ccts:VersionID>1.0</ccts:VersionID>
+            <ccts:Definition>One calendar day according the Gregorian calendar.</ccts:Definition>
+            <ccts:RepresentationTermName>Date</ccts:RepresentationTermName>
+            <ccts:PrimitiveType>string</ccts:PrimitiveType>
+          </xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:date"/>
+      </xsd:simpleType>
+      <xsd:simpleType name="NumericType">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            <ccts:UniqueID>UDT0000014</ccts:UniqueID>
+            <ccts:CategoryCode>UDT</ccts:CategoryCode>
+            <ccts:DictionaryEntryName>Numeric. Type</ccts:DictionaryEntryName>
+            <ccts:VersionID>1.0</ccts:VersionID>
+            <ccts:Definition>Numeric information that is assigned or is determined by calculation, counting, or sequencing. It does not require a unit of quantity or unit of measure.</ccts:Definition>
+            <ccts:RepresentationTermName>Numeric</ccts:RepresentationTermName>
+            <ccts:PrimitiveType>string</ccts:PrimitiveType>
+          </xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:decimal"/>
+      </xsd:simpleType>
+      <xsd:simpleType name="IndicatorType">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            <ccts:UniqueID>UDT0000012</ccts:UniqueID>
+            <ccts:CategoryCode>UDT</ccts:CategoryCode>
+            <ccts:DictionaryEntryName>Indicator. Type</ccts:DictionaryEntryName>
+            <ccts:VersionID>1.0</ccts:VersionID>
+            <ccts:Definition>A list of two mutually exclusive Boolean values that express the only possible states of a property.</ccts:Definition>
+            <ccts:RepresentationTermName>Indicator</ccts:RepresentationTermName>
+            <ccts:PrimitiveType>string</ccts:PrimitiveType>
+          </xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:boolean">
+          <xsd:pattern value="false"/>
+          <xsd:pattern value="true"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:simpleType name="PercentType">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            <ccts:UniqueID>UDT0000016</ccts:UniqueID>
+            <ccts:CategoryCode>UDT</ccts:CategoryCode>
+            <ccts:VersionID>1.0</ccts:VersionID>
+            <ccts:DictionaryEntryName>Percent. Type</ccts:DictionaryEntryName>
+            <ccts:Definition>Numeric information that is assigned or is determined by calculation, counting, or sequencing. It does not require a unit of quantity or unit of measure.</ccts:Definition>
+            <ccts:RepresentationTermName>Percent</ccts:RepresentationTermName>
+            <ccts:PrimitiveType>string</ccts:PrimitiveType>
+          </xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:decimal"/>
+      </xsd:simpleType>
+      <xsd:simpleType name="TimeType">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            <ccts:UniqueID>UDT0000010</ccts:UniqueID>
+            <ccts:CategoryCode>UDT</ccts:CategoryCode>
+            <ccts:DictionaryEntryName>Time. Type</ccts:DictionaryEntryName>
+            <ccts:VersionID>1.0</ccts:VersionID>
+            <ccts:Definition>The instance of time that occurs every day.</ccts:Definition>
+            <ccts:RepresentationTermName>Time</ccts:RepresentationTermName>
+            <ccts:PrimitiveType>string</ccts:PrimitiveType>
+          </xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:time"/>
+      </xsd:simpleType>
+      <xsd:complexType name="AmountType">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            <ccts:UniqueID>UDT000001</ccts:UniqueID>
+            <ccts:CategoryCode>UDT</ccts:CategoryCode>
+            <ccts:DictionaryEntryName>Amount. Type</ccts:DictionaryEntryName>
+            <ccts:VersionID>1.0</ccts:VersionID>
+            <ccts:Definition>A number of monetary units specified in a currency where the unit of the currency is explicit or implied.</ccts:Definition>
+            <ccts:RepresentationTermName>Amount</ccts:RepresentationTermName>
+            <ccts:PrimitiveType>decimal</ccts:PrimitiveType>
+          </xsd:documentation>
+        </xsd:annotation>
+        <xsd:simpleContent>
+          <xsd:extension base="xsd:decimal">
+            <xsd:attribute name="currencyID" type="oacl:CurrencyCodeContentType">
+              <xsd:annotation>
+                <xsd:documentation xml:lang="en">
+                  <ccts:UniqueID>UDT000001-SC2</ccts:UniqueID>
+                  <ccts:CategoryCode>SC</ccts:CategoryCode>
+                  <ccts:DictionaryEntryName>Amount Currency. Identifier</ccts:DictionaryEntryName>
+                  <ccts:Definition>The currency of the amount.</ccts:Definition>
+                  <ccts:ObjectClass>Amount Currency</ccts:ObjectClass>
+                  <ccts:PropertyTermName>Identification</ccts:PropertyTermName>
+                  <ccts:RepresentationTermName>Identifier</ccts:RepresentationTermName>
+                  <ccts:PrimitiveType>string</ccts:PrimitiveType>
+                </xsd:documentation>
+              </xsd:annotation>
+            </xsd:attribute>
+          </xsd:extension>
+        </xsd:simpleContent>
+      </xsd:complexType>
+      <xsd:complexType name="CodeType">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            <ccts:UniqueID>UDT000007</ccts:UniqueID>
+            <ccts:CategoryCode>UDT</ccts:CategoryCode>
+            <ccts:DictionaryEntryName>Code. Type</ccts:DictionaryEntryName>
+            <ccts:VersionID>1.0</ccts:VersionID>
+            <ccts:Definition>A character string (letters, figures, or symbols) that for brevity and/or languange independence may be used to represent or replace a definitive value or text of an attribute together with relevant supplementary information.</ccts:Definition>
+            <ccts:RepresentationTermName>Code</ccts:RepresentationTermName>
+            <ccts:PrimitiveType>string</ccts:PrimitiveType>
+            <ccts:UsageRule>Other supplementary components in the CCT are captured as part of the token and name for the schema module containing the code list and thus, are not declared as attributes.</ccts:UsageRule>
+          </xsd:documentation>
+        </xsd:annotation>
+        <xsd:simpleContent>
+          <xsd:extension base="xsd:normalizedString">
+            <xsd:attribute name="listAgencyName" type="xsd:string">
+              <xsd:annotation>
+                <xsd:documentation xml:lang="en">
+                  <ccts:UniqueID>UNDT000007-SC4</ccts:UniqueID>
+                  <ccts:CategoryCode>SC</ccts:CategoryCode>
+                  <ccts:DictionaryEntryName>Code List. Agency Name. Text</ccts:DictionaryEntryName>
+                  <ccts:Definition>The name of the agency that maintains the list of codes.</ccts:Definition>
+                  <ccts:ObjectClass>Code List</ccts:ObjectClass>
+                  <ccts:PropertyTermName>Agency Name</ccts:PropertyTermName>
+                  <ccts:RepresentationTermName>Text</ccts:RepresentationTermName>
+                  <ccts:PrimitiveType>string</ccts:PrimitiveType>
+                </xsd:documentation>
+              </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="listName" type="xsd:string">
+              <xsd:annotation>
+                <xsd:documentation xml:lang="en">
+                  <ccts:UniqueID>UNDT000007-SC5</ccts:UniqueID>
+                  <ccts:CategoryCode>SC</ccts:CategoryCode>
+                  <ccts:DictionaryEntryName>Code List. Name. Text</ccts:DictionaryEntryName>
+                  <ccts:Definition>The name of a list of codes.</ccts:Definition>
+                  <ccts:ObjectClass>Code List</ccts:ObjectClass>
+                  <ccts:PropertyTermName>Name</ccts:PropertyTermName>
+                  <ccts:RepresentationTermName>Text</ccts:RepresentationTermName>
+                  <ccts:PrimitiveType>string</ccts:PrimitiveType>
+                </xsd:documentation>
+              </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="name" type="xsd:string">
+              <xsd:annotation>
+                <xsd:documentation xml:lang="en">
+                  <ccts:UniqueID>UDT000007-SC7</ccts:UniqueID>
+                  <ccts:CategoryCode>SC</ccts:CategoryCode>
+                  <ccts:DictionaryEntryName>Code. Name. Text</ccts:DictionaryEntryName>
+                  <ccts:Definition>The textual equivalent of the code content component.</ccts:Definition>
+                  <ccts:ObjectClass>Code</ccts:ObjectClass>
+                  <ccts:PropertyTermName>Name</ccts:PropertyTermName>
+                  <ccts:RepresentationTermName>Text</ccts:RepresentationTermName>
+                  <ccts:PrimitiveType>string</ccts:PrimitiveType>
+                </xsd:documentation>
+              </xsd:annotation>
+            </xsd:attribute>
+          </xsd:extension>
+        </xsd:simpleContent>
+      </xsd:complexType>
+      <xsd:complexType name="IdentifierType">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            <ccts:UniqueID>UDT0000011</ccts:UniqueID>
+            <ccts:CategoryCode>UDT</ccts:CategoryCode>
+            <ccts:DictionaryEntryName>Identifier. Type</ccts:DictionaryEntryName>
+            <ccts:VersionID>1.0</ccts:VersionID>
+            <ccts:Definition>A character string to identify and distinguish uniquely, one instance of an object in an identification scheme from all other objects in the same scheme together with relevant supplementary information.</ccts:Definition>
+            <ccts:RepresentationTermName>Identifier</ccts:RepresentationTermName>
+            <ccts:PrimitiveType>string</ccts:PrimitiveType>
+            <ccts:UsageRule>Other supplementary components in the CCT are captured as part of the token and name for the schema module containing the identifer list and thus, are not declared as attributes.</ccts:UsageRule>
+          </xsd:documentation>
+        </xsd:annotation>
+        <xsd:simpleContent>
+          <xsd:extension base="xsd:normalizedString">
+            <xsd:attribute name="schemeID" type="xsd:normalizedString">
+              <xsd:annotation>
+                <xsd:documentation xml:lang="en">
+                  <ccts:UniqueID>UNDT000011-SC2</ccts:UniqueID>
+                  <ccts:CategoryCode>SC</ccts:CategoryCode>
+                  <ccts:DictionaryEntryName>Identification Scheme. Identifier</ccts:DictionaryEntryName>
+                  <ccts:Definition>The identification of the identification scheme.</ccts:Definition>
+                  <ccts:ObjectClass>Identification Scheme</ccts:ObjectClass>
+                  <ccts:PropertyTermName>Identification</ccts:PropertyTermName>
+                  <ccts:RepresentationTermName>Identifier</ccts:RepresentationTermName>
+                  <ccts:PrimitiveType>string</ccts:PrimitiveType>
+                </xsd:documentation>
+              </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="schemeName" type="xsd:string">
+              <xsd:annotation>
+                <xsd:documentation xml:lang="en">
+                  <ccts:UniqueID>UNDT000011-SC3</ccts:UniqueID>
+                  <ccts:CategoryCode>SC</ccts:CategoryCode>
+                  <ccts:DictionaryEntryName>Identification Scheme. Name. Text</ccts:DictionaryEntryName>
+                  <ccts:Definition>The name of the identification scheme.</ccts:Definition>
+                  <ccts:ObjectClass>Identification Scheme</ccts:ObjectClass>
+                  <ccts:PropertyTermName>Name</ccts:PropertyTermName>
+                  <ccts:RepresentationTermName>Text</ccts:RepresentationTermName>
+                  <ccts:PrimitiveType>string</ccts:PrimitiveType>
+                </xsd:documentation>
+              </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="schemeAgencyID" type="xsd:normalizedString">
+              <xsd:annotation>
+                <xsd:documentation xml:lang="en">
+                  <ccts:UniqueID>UNDT000011-SC4</ccts:UniqueID>
+                  <ccts:CategoryCode>SC</ccts:CategoryCode>
+                  <ccts:DictionaryEntryName>Identification Scheme Agency. Identifier</ccts:DictionaryEntryName>
+                  <ccts:Definition>The identification of the agency that maintains the identification scheme.</ccts:Definition>
+                  <ccts:ObjectClass>Identification Scheme Agency</ccts:ObjectClass>
+                  <ccts:PropertyTermName>Identification</ccts:PropertyTermName>
+                  <ccts:RepresentationTermName>Identifier</ccts:RepresentationTermName>
+                  <ccts:PrimitiveType>string</ccts:PrimitiveType>
+                  <ccts:UsageRule>Defaults to the UN/EDIFACT data element 3055 code list.</ccts:UsageRule>
+                </xsd:documentation>
+              </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="schemeAgencyName" type="xsd:string">
+              <xsd:annotation>
+                <xsd:documentation xml:lang="en">
+                  <ccts:UniqueID>UNDT000011-SC5</ccts:UniqueID>
+                  <ccts:CategoryCode>SC</ccts:CategoryCode>
+                  <ccts:DictionaryEntryName>Identification Scheme Agency. Name. Text</ccts:DictionaryEntryName>
+                  <ccts:Definition>The name of the agency that maintains the identification scheme.</ccts:Definition>
+                  <ccts:ObjectClass>Identification Scheme Agency</ccts:ObjectClass>
+                  <ccts:PropertyTermName>Agency Name</ccts:PropertyTermName>
+                  <ccts:RepresentationTermName>Text</ccts:RepresentationTermName>
+                  <ccts:PrimitiveType>string</ccts:PrimitiveType>
+                </xsd:documentation>
+              </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="schemeVersionID" type="xsd:normalizedString">
+              <xsd:annotation>
+                <xsd:documentation xml:lang="en">
+                  <ccts:UniqueID>UNDT000011-SC6</ccts:UniqueID>
+                  <ccts:CategoryCode>SC</ccts:CategoryCode>
+                  <ccts:DictionaryEntryName>Identification Scheme. Version. Identifier</ccts:DictionaryEntryName>
+                  <ccts:Definition>The version of the identification scheme.</ccts:Definition>
+                  <ccts:ObjectClass>Identification Scheme</ccts:ObjectClass>
+                  <ccts:PropertyTermName>Version</ccts:PropertyTermName>
+                  <ccts:RepresentationTermName>Identifier</ccts:RepresentationTermName>
+                  <ccts:PrimitiveType>string</ccts:PrimitiveType>
+                </xsd:documentation>
+              </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="schemeDataURI" type="xsd:anyURI">
+              <xsd:annotation>
+                <xsd:documentation xml:lang="en">
+                  <ccts:UniqueID>UDT0000011-SC7</ccts:UniqueID>
+                  <ccts:CategoryCode>SC</ccts:CategoryCode>
+                  <ccts:DictionaryEntryName>Identification Scheme Data. Uniform Resource. Identifier</ccts:DictionaryEntryName>
+                  <ccts:Definition>The Uniform Resource Identifier that identifies where the identification scheme data is located.</ccts:Definition>
+                  <ccts:ObjectClass>Identification Scheme Data</ccts:ObjectClass>
+                  <ccts:PropertyTermName>Uniform Resource Identifier</ccts:PropertyTermName>
+                  <ccts:RepresentationTermName>Identifier</ccts:RepresentationTermName>
+                  <ccts:PrimitiveType>string</ccts:PrimitiveType>
+                </xsd:documentation>
+              </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="schemeURI" type="xsd:anyURI">
+              <xsd:annotation>
+                <xsd:documentation xml:lang="en">
+                  <ccts:UniqueID>UDT0000011-SC8</ccts:UniqueID>
+                  <ccts:CategoryCode>SC</ccts:CategoryCode>
+                  <ccts:DictionaryEntryName>Identification Scheme. Uniform Resource. Identifier</ccts:DictionaryEntryName>
+                  <ccts:Definition>The Uniform Resource Identifier that identifies where the identification scheme is located.</ccts:Definition>
+                  <ccts:ObjectClass>Identification Scheme</ccts:ObjectClass>
+                  <ccts:PropertyTermName>Uniform Resource Identifier</ccts:PropertyTermName>
+                  <ccts:RepresentationTermName>Identifier</ccts:RepresentationTermName>
+                  <ccts:PrimitiveType>string</ccts:PrimitiveType>
+                </xsd:documentation>
+              </xsd:annotation>
+            </xsd:attribute>
+          </xsd:extension>
+        </xsd:simpleContent>
+      </xsd:complexType>
+      <xsd:complexType name="NameType">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            <ccts:UniqueID>UDT0000020</ccts:UniqueID>
+            <ccts:CategoryCode>UDT</ccts:CategoryCode>
+            <ccts:DictionaryEntryName>Name. Type</ccts:DictionaryEntryName>
+            <ccts:VersionID>1.0</ccts:VersionID>
+            <ccts:Definition>A character string that consititues the distinctive designation of a person, place, thing or concept.</ccts:Definition>
+            <ccts:RepresentationTermName>Name</ccts:RepresentationTermName>
+            <ccts:PrimitiveType>string</ccts:PrimitiveType>
+          </xsd:documentation>
+        </xsd:annotation>
+        <xsd:simpleContent>
+          <xsd:extension base="xsd:string"/>
+        </xsd:simpleContent>
+      </xsd:complexType>
+      <xsd:complexType name="QuantityType">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            <ccts:UniqueID>UDT0000018</ccts:UniqueID>
+            <ccts:CategoryCode>UDT</ccts:CategoryCode>
+            <ccts:DictionaryEntryName>Quantity. Type</ccts:DictionaryEntryName>
+            <ccts:VersionID>1.0</ccts:VersionID>
+            <ccts:Definition>A counted number of non-monetary units possibly including fractions.</ccts:Definition>
+            <ccts:RepresentationTermName>Quantity</ccts:RepresentationTermName>
+            <ccts:PrimitiveType>decimal</ccts:PrimitiveType>
+          </xsd:documentation>
+        </xsd:annotation>
+        <xsd:simpleContent>
+          <xsd:extension base="xsd:decimal"/>
+        </xsd:simpleContent>
+      </xsd:complexType>
+      <xsd:complexType name="TextType">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            <ccts:UniqueID>UDT0000019</ccts:UniqueID>
+            <ccts:CategoryCode>UDT</ccts:CategoryCode>
+            <ccts:DictionaryEntryName>Text. Type</ccts:DictionaryEntryName>
+            <ccts:VersionID>1.0</ccts:VersionID>
+            <ccts:Definition>A character string (i.e. a finite set of characters) generally in the form of words of a language.</ccts:Definition>
+            <ccts:RepresentationTermName>Text</ccts:RepresentationTermName>
+            <ccts:PrimitiveType>string</ccts:PrimitiveType>
+          </xsd:documentation>
+        </xsd:annotation>
+        <xsd:simpleContent>
+          <xsd:extension base="xsd:string"/>
+        </xsd:simpleContent>
+      </xsd:complexType>
+    </xsd:schema>
+    <xsd:schema attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://www.openapplications.org/oagis/9/codelists" xmlns="http://www.openapplications.org/oagis/9/codelists" xmlns:clm54217="http://www.openapplications.org/oagis/9/currencycode/54217:2001" xmlns:clm5639="http://www.openapplications.org/oagis/9/languagecode/5639:1988" xmlns:clm66411="http://www.openapplications.org/oagis/9/unitcode/66411:2001" xmlns:clmIANAMIMEMediaTypes="http://www.openapplications.org/oagis/9/IANAMIMEMediaTypes:2003" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+      <xsd:import namespace="http://www.openapplications.org/oagis/9/currencycode/54217:2001"/>
+      <xsd:import namespace="http://www.openapplications.org/oagis/9/languagecode/5639:1988"/>
+      <xsd:import namespace="http://www.openapplications.org/oagis/9/IANAMIMEMediaTypes:2003"/>
+      <xsd:import namespace="http://www.openapplications.org/oagis/9/unitcode/66411:2001"/>
+      <xsd:simpleType name="ChargeCodeContentType">
+        <xsd:union memberTypes="ChargeCodeEnumerationType xsd:normalizedString"/>
+      </xsd:simpleType>
+      <xsd:simpleType name="ChargeCodeEnumerationType">
+        <xsd:restriction base="xsd:normalizedString"/>
+      </xsd:simpleType>
+      <xsd:simpleType name="CountryCodeContentType">
+        <xsd:union memberTypes="CountryCodeEnumerationType xsd:normalizedString"/>
+      </xsd:simpleType>
+      <xsd:simpleType name="CountryCodeEnumerationType">
+        <xsd:restriction base="xsd:normalizedString"/>
+      </xsd:simpleType>
+      <xsd:simpleType name="CountrySubdivisionCodeContentType">
+        <xsd:union memberTypes="CountrySubdivisionCodeEnumerationType xsd:normalizedString"/>
+      </xsd:simpleType>
+      <xsd:simpleType name="CountrySubdivisionCodeEnumerationType">
+        <xsd:restriction base="xsd:normalizedString"/>
+      </xsd:simpleType>
+      <xsd:simpleType name="CurrencyCodeContentType">
+        <xsd:union memberTypes="clm54217:CurrencyCodeContentType xsd:normalizedString"/>
+      </xsd:simpleType>
+      <xsd:simpleType name="LicenseTypeCodeContentType">
+        <xsd:union memberTypes="LicenseTypeCodeEnumerationType xsd:normalizedString"/>
+      </xsd:simpleType>
+      <xsd:simpleType name="LicenseTypeCodeEnumerationType">
+        <xsd:restriction base="xsd:normalizedString">
+          <xsd:enumeration value="Import"/>
+          <xsd:enumeration value="Export"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:simpleType name="PartyCategoryCodeContentType">
+        <xsd:union memberTypes="PartyCategoryCodeEnumerationType xsd:normalizedString"/>
+      </xsd:simpleType>
+      <xsd:simpleType name="PartyCategoryCodeEnumerationType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">This list of Party Categories.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:normalizedString">
+          <xsd:enumeration value="Organization"/>
+          <xsd:enumeration value="Individual"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:simpleType name="PartyRoleCodeContentType">
+        <xsd:union memberTypes="PartyRoleCodeEnumerationType xsd:normalizedString"/>
+      </xsd:simpleType>
+      <xsd:simpleType name="PartyRoleCodeEnumerationType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">This list is the agreed to Party Roles.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:normalizedString"/>
+      </xsd:simpleType>
+      <xsd:simpleType name="PaymentTermCodeContentType">
+        <xsd:union memberTypes="PaymentTermCodeEnumerationType xsd:normalizedString"/>
+      </xsd:simpleType>
+      <xsd:simpleType name="PaymentTermCodeEnumerationType">
+        <xsd:restriction base="xsd:normalizedString">
+          <xsd:enumeration value="Net20"/>
+          <xsd:enumeration value="Net30"/>
+          <xsd:enumeration value="Net45"/>
+          <xsd:enumeration value="Net60"/>
+          <xsd:enumeration value="10Percent30"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:simpleType name="TaxCodeContentType">
+        <xsd:union memberTypes="TaxCodeEnumerationType xsd:normalizedString"/>
+      </xsd:simpleType>
+      <xsd:simpleType name="TaxCodeEnumerationType">
+        <xsd:restriction base="xsd:normalizedString"/>
+      </xsd:simpleType>
+    </xsd:schema>
+    <xsd:schema attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://www.openapplications.org/oagis/9/currencycode/54217:2001" xmlns:clm54217="http://www.openapplications.org/oagis/9/currencycode/54217:2001" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+      <xsd:annotation>
+        <xsd:documentation source="http://www.openapplications.org/platform/1">The following currentcy codes have been updated based upon the changes made by ISO.
+
+Turkish (TRL -> TRY) 
+Romania (ROL -> RON)
+Venezuala (VEB->VEF)
+
+The OAGi implementation of this codelist is deprecating the old values in facor of the new values indicated here. As such the old values will remain until the next maor version of OAGIS.</xsd:documentation>
+      </xsd:annotation>
+      <xsd:simpleType name="CurrencyCodeContentType">
+        <xsd:restriction base="xsd:normalizedString">
+          <xsd:enumeration value="AED">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Dirham</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="AFN">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Afghani</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="ALL">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Lek</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="AMD">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Dram</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="ANG">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Netherlands Antillian Guilder</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="AOA">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Kwanza</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="ARS">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Argentine Peso</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="AUD">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Australian Dollar</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="AWG">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Aruban Guilder</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="AZM">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Azerbaijanian Manat</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="BAM">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Convertible Mark</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="BBD">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Barbados Dollar</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="BDT">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Taka</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="BGN">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Bulgarian Lev</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="BHD">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Bahraini Dinar</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="BIF">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Burundi Franc</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="BMD">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Bermudian Dollar (customarily: Bermuda Dollar)</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="BND">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Brunei Dollar</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="BOB">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Boliviano</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="BRL">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Brazilian Real</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="BSD">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Bahamian Dollar</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="BTN">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Ngultrum</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="BWP">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Pula</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="BYR">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Belarussian Ruble</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="BZD">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Belize Dollar</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="CAD">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Canadian Dollar</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="CDF">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Franc Congolais</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="CHF">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Swiss Franc</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="CLP">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Chilean Peso</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="CNY">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Yuan Renminbi</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="COP">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Colombian Peso</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="CRC">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Costa Rican Colon</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="CUP">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Cuban Peso</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="CVE">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Cape Verde Escudo</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="CYP">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Cyprus Pound</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="CZK">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Czech Koruna</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="DJF">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Djibouti Franc</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="DKK">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Danish Krone</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="DOP">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Dominican Peso</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="DZD">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Algerian Dinar</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="EEK">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Kroon</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="EGP">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Egyptian Pound</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="ERN">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Nakfa</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="ETB">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Ethopian Birr</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="EUR">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Euro</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="FJD">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Fiji Dollar</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="FKP">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Falkland Islands Pound</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="GBP">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Pound Sterling</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="GEL">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Lari</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="GHC">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Cedi</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="GIP">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Gibraltar Pound</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="GMD">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Dalasi</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="GNF">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Guinea Franc</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="GTQ">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Quetzal</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="GYD">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Guyana Dollar</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="HKD">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Honk Kong Dollar</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="HNL">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Lempira</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="HRK">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Kuna</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="HTG">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Gourde</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="HUF">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Forint</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="IDR">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Rupiah</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="ILS">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>New Israeli Sheqel</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="INR">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Indian Rupee</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="IQD">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Iraqi Dinar</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="IRR">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Iranian Rial</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="ISK">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Iceland Krona</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="JMD">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Jamaican Dollar</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="JOD">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Jordanian Dinar</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="JPY">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Yen</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="KES">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Kenyan Shilling</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="KGS">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Som</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="KHR">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Riel</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="KMF">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Comoro Franc</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="KPW">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>North Korean Won</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="KRW">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Won</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="KWD">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Kuwaiti Dinar</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="KYD">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Cayman Islands Dollar</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="KZT">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Tenge</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="LAK">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Kip</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="LBP">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Lebanese Pound</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="LKR">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Sri Lanka Rupee</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="LRD">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Liberian Dollar</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="LSL">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Loti</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="LTL">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Lithuanian Litas</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="LVL">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Latvian Lats</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="LYD">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Libyan Dinar</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="MAD">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Morrocan Dirham</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="MDL">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Moldovan Leu</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="MGF">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Malagasy Franc</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="MKD">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Denar</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="MMK">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Kyat</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="MNT">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Tugrik</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="MOP">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Pataca</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="MRO">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Ouguiya</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="MTL">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Maltese Lira</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="MUR">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Mauritius Rupee</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="MVR">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Rufiyaa</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="MWK">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Kwacha</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="MXN">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Mexican Peso</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="MYR">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Malaysian Ringgit</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="MZM">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Metical</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="NAD">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Namibia Dollar</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="NGN">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Naira</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="NIO">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Cordoba Oro</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="NOK">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Norwegian Krone</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="NPR">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Nepalese Rupee</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="NZD">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>New Zealand Dollar</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="OMR">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Rial Omani</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="PAB">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Balboa</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="PEN">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Nuevo Sol</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="PGK">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Kina</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="PHP">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Philippine Peso</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="PKR">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Pakistan Rupee</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="PLN">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Zloty</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="PYG">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Guarani</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="QAR">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Qatari Rial</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="ROL">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Leu</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="RON">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>New Leu</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="RUB">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Russian Ruble</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="RWF">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Rwanda Franc</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="SAR">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Saudi Riyal</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="SBD">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Solomon Islands Dollar</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="SCR">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Seychelles Rupee</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="SDD">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Sudanese Dinar</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="SEK">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Swedish Krona</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="SGD">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Singapore Dollar</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="SHP">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>St. Helena Pound</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="SIT">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Tolar</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="SKK">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Slovak Koruna</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="SLL">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Leone</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="SOS">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Somali Shilling</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="SRG">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Suriname Guilder</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="STD">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Dobra</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="SVC">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>El Salvador Colon</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="SYP">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Syrian Pound</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="SZL">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Lilangeni</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="THB">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Baht</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="TJS">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Somoni</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="TMM">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Manat</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="TND">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Tunisian Dinar</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="TOP">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Pa'anga</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="TRL">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Turkish Lira</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="TRY">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Turkish Lira</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="TTD">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Trinidad and Tobago Dollar</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="TWD">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>New Taiwan Dollar</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="TZS">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Tanzanian Shilling</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="UAH">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Hryvnia</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="UGX">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Uganda Shilling</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="USD">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>US Dollar</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="UYU">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Peso Uruguayo</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="UZS">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Uzbekistan Sum</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="VEB">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Bolivar</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="VEF">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Bolivar Fuerte</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="VND">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Dong</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="VUV">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Vatu</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="WST">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Tala</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="XAF">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>CFA Franc</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="XAG">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Silver</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="XAU">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Gold</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="XCD">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>East Carribean Dollar</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="XDR">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>SDR</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="XOF">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>CFA Franc</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="XPD">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Palladium</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="XPF">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>CFP Franc</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="XPT">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Platinum</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="YER">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Yemeni Rial</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="YUM">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>New Dinar</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="ZAR">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Rand</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="ZMK">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Kwacha</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="ZWD">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">
+                <CodeName>Zimbabwe Dollar</CodeName>
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+        </xsd:restriction>
+      </xsd:simpleType>
+    </xsd:schema>
+    <xsd:schema attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://www.openapplications.org/oagis/9/qualifieddatatypes/1.1" xmlns:ccts="urn:un:unece:uncefact:documentation:1.1" xmlns:oacl="http://www.openapplications.org/oagis/9/codelists" xmlns:qdt="http://www.openapplications.org/oagis/9/qualifieddatatypes/1.1" xmlns:udt="http://www.openapplications.org/oagis/9/unqualifieddatatypes/1.1" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+      <xsd:simpleType name="DurationMeasureType">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            <ccts:UniqueID>QDT000011</ccts:UniqueID>
+            <ccts:CategoryCode>QDT</ccts:CategoryCode>
+            <ccts:DictionaryEntryName>Duration_ Measure. Type</ccts:DictionaryEntryName>
+            <ccts:VersionID>1.0</ccts:VersionID>
+            <ccts:DefinitionText>duration represents a duration of time. The ?value space? of duration is a six-dimensional space where the coordinates designate the Gregorian year, month, day, hour, minute, and second components defined in ? 5.5.3.2 of [ISO 8601], respectively. These components are ordered in their significance by their order of appearance i.e. as year, month, day, hour, minute, and second.</ccts:DefinitionText>
+            <ccts:RepresentationTermName>Measure</ccts:RepresentationTermName>
+            <ccts:QualifierTerm>Duration</ccts:QualifierTerm>
+            <ccts:PrimitiveType/>
+          </xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:duration"/>
+      </xsd:simpleType>
+      <xsd:simpleType name="NormalizedStringType">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            <ccts:UniqueID>QDT000013</ccts:UniqueID>
+            <ccts:CategoryCode>QDT</ccts:CategoryCode>
+            <ccts:DictionaryEntryName>Normalized String_ Text. Type</ccts:DictionaryEntryName>
+            <ccts:VersionID>1.0</ccts:VersionID>
+            <ccts:DefinitionText>normalizedString represents white space normalized strings. The ?value space? of normalizedString is the set of strings that do not contain the carriage return (#xD), line feed (#xA) nor tab (#x9) characters. The ?lexical space? of normalizedString is the set of strings that do not contain the carriage return (#xD) nor tab (#x9) characters. The ?base type? of normalizedString is string.</ccts:DefinitionText>
+            <ccts:RepresentationTermName>Text</ccts:RepresentationTermName>
+            <ccts:QualifierTerm>Normalized String</ccts:QualifierTerm>
+            <ccts:PrimitiveType>string</ccts:PrimitiveType>
+          </xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:normalizedString"/>
+      </xsd:simpleType>
+      <xsd:simpleType name="PositiveIntegerNumericType">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            <ccts:UniqueID>QDT000007</ccts:UniqueID>
+            <ccts:CategoryCode>QDT</ccts:CategoryCode>
+            <ccts:DictionaryEntryName>Positive Integer_ Numeric. Type</ccts:DictionaryEntryName>
+            <ccts:VersionID>1.0</ccts:VersionID>
+            <ccts:DefinitionText>positiveInteger is ?derived? from nonNegativeInteger by setting the value of ?minInclusive? to be 1.  This results in the standard mathematical concept of the positive integer numbers. The ?value space? of positiveInteger is the infinite set {1,2,...}. The ?base type? of positiveInteger is nonNegativeInteger.</ccts:DefinitionText>
+            <ccts:RepresentationTermName>Numeric</ccts:RepresentationTermName>
+            <ccts:QualifierTerm>Positive Integer</ccts:QualifierTerm>
+            <ccts:PrimitiveType>decimal</ccts:PrimitiveType>
+          </xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:positiveInteger"/>
+      </xsd:simpleType>
+      <xsd:simpleType name="StringType">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            <ccts:UniqueID>QDT000012</ccts:UniqueID>
+            <ccts:CategoryCode>QDT</ccts:CategoryCode>
+            <ccts:DictionaryEntryName>String_ Text. Type</ccts:DictionaryEntryName>
+            <ccts:VersionID>1.0</ccts:VersionID>
+            <ccts:DefinitionText>The string datatype represents character strings in XML. The ?value space? of string is the set of finite-length sequences of characters (as defined in [XML 1.0 (Second Edition)]) that ?match? the Char production from [XML 1.0 (Second Edition)]. A character is an atomic unit of communication; it is not further specified except to note that every character has a corresponding Universal Character Set code point, which is an integer.</ccts:DefinitionText>
+            <ccts:RepresentationTermName>Text</ccts:RepresentationTermName>
+            <ccts:QualifierTerm>String</ccts:QualifierTerm>
+            <ccts:PrimitiveType>string</ccts:PrimitiveType>
+          </xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:string"/>
+      </xsd:simpleType>
+      <xsd:simpleType name="TokenType">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            <ccts:UniqueID>QDT000014</ccts:UniqueID>
+            <ccts:CategoryCode>QDT</ccts:CategoryCode>
+            <ccts:DictionaryEntryName>Token_ Text. Type</ccts:DictionaryEntryName>
+            <ccts:VersionID>1.0</ccts:VersionID>
+            <ccts:DefinitionText>token represents tokenized strings. The ?value space? of token is the set of strings that do not contain the line feed (#xA) nor tab (#x9) characters, that have no leading or trailing spaces (#x20) and that have no internal sequences of two or more spaces. The ?lexical space? of token is the set of strings that do not contain the line feed (#xA) nor tab (#x9) characters, that have no leading or trailing spaces (#x20) and that have no internal sequences of two or more spaces. The ?base type? of token is normalizedString.</ccts:DefinitionText>
+            <ccts:RepresentationTermName>Text</ccts:RepresentationTermName>
+            <ccts:QualifierTerm>Token</ccts:QualifierTerm>
+            <ccts:PrimitiveType>string</ccts:PrimitiveType>
+          </xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:token"/>
+      </xsd:simpleType>
+    </xsd:schema>
+    <xsd:schema attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="urn:cisco:b2bngc:services:1.0" xmlns="urn:cisco:b2bngc:services:1.0" xmlns:ccts="urn:un:unece:uncefact:documentation:1.1" xmlns:oa="http://www.openapplications.org/oagis/9" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+      <xsd:import namespace="http://www.openapplications.org/oagis/9"/>
+      <xsd:import namespace="http://www.openapplications.org/oagis/9/unqualifieddatatypes/1.1"/>
+      <xsd:import namespace="http://www.openapplications.org/oagis/9/codelists"/>
+      <xsd:import namespace="http://www.openapplications.org/oagis/9/currencycode/54217:2001"/>
+      <xsd:import namespace="http://www.openapplications.org/oagis/9/languagecode/5639:1988"/>
+      <xsd:import namespace="http://www.openapplications.org/oagis/9/IANAMIMEMediaTypes:2003"/>
+      <xsd:import namespace="http://www.openapplications.org/oagis/9/unitcode/66411:2001"/>
+      <xsd:import namespace="http://www.openapplications.org/oagis/9/qualifieddatatypes/1.1"/>
+      <xsd:element name="CiscoExtensions" type="CiscoExtensionsType"/>
+      <xsd:element name="CiscoHeader" type="CiscoHeaderType"/>
+      <xsd:element name="CiscoLine" type="CiscoLineType"/>
+      <xsd:element name="ConfigurationMessages" type="ConfigurationMessagesType"/>
+      <xsd:element name="ConfigurationReference" type="ConfigurationReferenceType"/>
+      <xsd:element name="ConfiguratorInformation" type="ConfiguratorInformationType"/>
+      <xsd:element name="PriceList" type="PriceListType"/>
+      <xsd:complexType name="CiscoExtensionsType">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" ref="CiscoHeader"/>
+          <xsd:element minOccurs="0" ref="CiscoLine"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="CiscoHeaderType">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" name="IntendedUseCode" type="oa:CodeType" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" name="PriceList" type="PriceListType" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" ref="ConfigurationReference"/>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" ref="ConfiguratorInformation"/>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" ref="ConfigurationMessages"/>
+          <xsd:element minOccurs="0" name="HoldingSmartAccountDomainID" type="oa:StringType"/>
+          <xsd:element minOccurs="0" name="HoldingVirtualAccountName" type="oa:StringType"/>
+          <xsd:element minOccurs="0" name="CustomerSmartAccountDomainID" type="oa:StringType"/>
+          <xsd:element minOccurs="0" name="CustomerVirtualAccountName" type="oa:StringType"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="CiscoLineType">
+        <xsd:sequence>
+          <xsd:element name="CBNConfirmedIndicator" type="oa:StringType" minOccurs="0"/>
+          <xsd:element minOccurs="0" name="BuyMethod" type="oa:StringType" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" ref="oa:Party"/>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" ref="ConfigurationReference"/>
+          <xsd:element minOccurs="0" ref="ConfiguratorInformation"/>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" ref="ConfigurationMessages"/>
+          <xsd:element minOccurs="0" name="CustomerSmartAccountDomainID" type="oa:StringType"/>
+          <xsd:element minOccurs="0" name="CustomerVirtualAccountName" type="oa:StringType"/>
+          <xsd:element minOccurs="0" name="MagicKey" type="oa:StringType"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="ConfigurationMessagesType">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" ref="oa:Type"/>
+          <xsd:element minOccurs="0" ref="oa:ID"/>
+          <xsd:element minOccurs="0" ref="oa:Description"/>
+          <xsd:element minOccurs="0" ref="oa:Reason"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="ConfigurationReferenceType">
+        <xsd:complexContent>
+          <xsd:extension base="oa:DocumentReferenceBaseType">
+            <xsd:sequence>
+              <xsd:element minOccurs="0" name="VerifiedConfigurationIndicator" type="oa:TextType" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="ConfiguratorInformationType">
+        <xsd:sequence>
+          <xsd:element name="ConfigurationPath" type="oa:TextType" minOccurs="0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+          <xsd:element name="ProductConfigurationReference" type="oa:TextType" minOccurs="0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+          <xsd:element name="ConfigurationSequence" type="oa:NumericType" minOccurs="0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+          <xsd:element name="ConfigurationSelectCode" type="oa:CodeType" minOccurs="0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="PriceListType">
+        <xsd:sequence>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" name="ID" type="oa:IdentifierType" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+          <xsd:element minOccurs="0" name="ShortName" type="oa:NameType" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" ref="oa:Description"/>
+        </xsd:sequence>
+        <xsd:attribute name="type"/>
+      </xsd:complexType>
+    </xsd:schema>
+    <xsd:schema attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://www.openapplications.org/oagis/9" xmlns="http://www.openapplications.org/oagis/9" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ccts="urn:un:unece:uncefact:documentation:1.1" xmlns:ns1="urn:cisco:b2bngc:services:1.0" xmlns:oacl="http://www.openapplications.org/oagis/9/codelists" xmlns:qdt="http://www.openapplications.org/oagis/9/qualifieddatatypes/1.1" xmlns:udt="http://www.openapplications.org/oagis/9/unqualifieddatatypes/1.1" xmlns:cisco="urn:cisco:b2bngc:services:1.0">
+      <xsd:import namespace="http://www.openapplications.org/oagis/9/unqualifieddatatypes/1.1"/>
+      <xsd:import namespace="http://www.openapplications.org/oagis/9/currencycode/54217:2001"/>
+      <xsd:import namespace="http://www.openapplications.org/oagis/9/languagecode/5639:1988"/>
+      <xsd:import namespace="http://www.openapplications.org/oagis/9/IANAMIMEMediaTypes:2003"/>
+      <xsd:import namespace="http://www.openapplications.org/oagis/9/unitcode/66411:2001"/>
+      <xsd:import namespace="http://www.openapplications.org/oagis/9/qualifieddatatypes/1.1"/>
+      <xsd:import namespace="urn:cisco:b2b:bod:services:1.0"/>
+      <xsd:import namespace="urn:cisco:b2bngc:services:1.0"/>
+      <xsd:import namespace="http://www.openapplications.org/oagis/9/codelists"/>
+      <xsd:element name="ShowQuote" type="ShowQuoteType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/oagis/9">The purpose of the ShowQuote is to communicate to a business application module or system the sending systems representation of Quote information.  This request may be used as a response to a GetQuote request.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:complexType name="ShowQuoteDataAreaType">
+        <xsd:sequence>
+          <xsd:element ref="Show"/>
+          <xsd:element maxOccurs="unbounded" ref="Quote"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="ShowQuoteType">
+        <xsd:complexContent>
+          <xsd:extension base="BusinessObjectDocumentType">
+            <xsd:sequence>
+              <xsd:element name="DataArea" type="ShowQuoteDataAreaType" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                <xsd:annotation>
+                  <xsd:documentation source="http://www.openapplications.org/oagis/9">Is where the information that the BOD message carries is provided, in this case ShowQuote. The information consists of a Verb and one or more Nouns. The verb (Show) indicates the action to be performed on the Noun (Quote).</xsd:documentation>
+                </xsd:annotation>
+              </xsd:element>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="GetQuote" type="GetQuoteType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/oagis/9">The purpose of the GetQuote is to enable a business applications module to request this Quote information from another business application. The response to this BOD is ShowQuote.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:complexType name="GetQuoteDataAreaType">
+        <xsd:sequence>
+          <xsd:element ref="Get"/>
+          <xsd:element maxOccurs="unbounded" ref="Quote"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="GetQuoteType">
+        <xsd:complexContent>
+          <xsd:extension base="BusinessObjectDocumentType">
+            <xsd:sequence>
+              <xsd:element name="DataArea" type="GetQuoteDataAreaType" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                <xsd:annotation>
+                  <xsd:documentation source="http://www.openapplications.org/oagis/9">Is where the information that the BOD message carries is provided, in this case GetQuote. The information consists of a Verb and one or more Nouns. The verb (Get) indicates the action to be performed on the Noun (Quote).</xsd:documentation>
+                </xsd:annotation>
+              </xsd:element>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="Quote" type="QuoteType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/oagis/9">Is a document describing the prices of goods or services provided by a vendor.  The Quote includes the terms of the purchase, delivery proposals, identification of goods or services ordered, as well as their quantities.The Quote noun is used in conjunction with the RFQ noun to form a Business-to-Business negotiation dialogue concerning the goods or services specified.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="QuoteHeader" type="QuoteHeaderType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/oagis/9">- Information that applies to the entire quote.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="QuoteLine" type="QuoteLineType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/oagis/9">The item or product quoted along with quantity, price and other descriptive information.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:complexType name="QuoteHeaderType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/oagis/9">Defines the Quote Header structure.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexContent>
+          <xsd:extension base="ProcurementHeaderType">
+            <xsd:sequence>
+              <xsd:element minOccurs="0" ref="Type">
+                <xsd:annotation>
+                  <xsd:documentation source="http://www.openapplications.org/oagis/9">Code type specifing the type of Quote.</xsd:documentation>
+                </xsd:annotation>
+              </xsd:element>
+              <xsd:element minOccurs="0" ref="EffectiveTimePeriod"/>
+              <xsd:element maxOccurs="unbounded" minOccurs="0" ref="QualificationTerm"/>
+              <xsd:element minOccurs="0" ref="UserArea"/>
+              <xsd:element minOccurs="0" ref="Extension"/>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="QuoteLineType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/oagis/9">Defines the Quote Line structure.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexContent>
+          <xsd:extension base="ProcurementLineType">
+            <xsd:sequence>
+              <xsd:element minOccurs="0" ref="EffectiveTimePeriod"/>
+              <xsd:element minOccurs="0" ref="UserArea"/>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="QuoteType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/oagis/9">Defines the Quote structure.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+          <xsd:element minOccurs="0" ref="QuoteHeader"/>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" ref="QuoteLine"/>
+        </xsd:sequence>
+        <xsd:attribute name="type" type="NormalizedStringType"/>
+      </xsd:complexType>
+      <xsd:element name="QualificationTerm" type="QualificationTermType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">This is used to describe preferences that will be used to evaluate responses to an RFQ. For example, to identify a preference for sharing CAD data in VRML format the ID = VRML, Type = CAD and Value = 1 or Yes</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:complexType name="ProcurementHeaderType">
+        <xsd:complexContent>
+          <xsd:extension base="RequestHeaderType">
+            <xsd:sequence>
+              <xsd:element minOccurs="0" ref="BillToParty"/>
+              <xsd:element maxOccurs="unbounded" minOccurs="0" ref="PaymentTerm"/>
+              <xsd:element maxOccurs="unbounded" minOccurs="0" ref="Allowance"/>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="ProcurementLineType">
+        <xsd:complexContent>
+          <xsd:extension base="RequestLineType">
+            <xsd:sequence>
+              <xsd:element maxOccurs="unbounded" minOccurs="0" ref="PaymentTerm"/>
+              <xsd:element maxOccurs="unbounded" minOccurs="0" ref="Allowance"/>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="QualificationTermType">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" ref="ID"/>
+          <xsd:element minOccurs="0" ref="Type">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">Code type specifing the type of qualification term.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:group minOccurs="0" ref="FreeFormTextGroup"/>
+          <xsd:element minOccurs="0" ref="UserArea"/>
+        </xsd:sequence>
+        <xsd:attribute name="typeAttribute" type="NormalizedStringType"/>
+      </xsd:complexType>
+      <xsd:complexType abstract="true" name="RequestHeaderType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">The abstract basis for the Header of all the Procurement Documents.
+
+For a Procurement Document the CustomerParty is the party in which the items have been or will be SoldTo (i.e. the SoldToParty).</xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexContent>
+          <xsd:extension base="StatusEnabledHeaderType">
+            <xsd:sequence>
+              <xsd:element maxOccurs="unbounded" minOccurs="0" ref="Party"/>
+              <xsd:element minOccurs="0" ref="ExtendedAmount"/>
+              <xsd:element minOccurs="0" ref="TotalAmount"/>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="RequestLineType">
+        <xsd:complexContent>
+          <xsd:extension base="StatusEnabledLineType">
+            <xsd:sequence>
+              <xsd:group minOccurs="0" ref="ItemInstanceGroup"/>
+              <xsd:element minOccurs="0" ref="UnitPrice"/>
+              <xsd:element minOccurs="0" ref="ExtendedAmount"/>
+              <xsd:element minOccurs="0" ref="TotalAmount"/>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="Address" type="AddressType"/>
+      <xsd:element name="Allowance" type="AllowanceType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">Identifies the discount or allowance that the Customer is to receive off of the TotalAmount owed as a result of the associated document or sub-portion of a document.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="BillToParty" type="CustomerPartyType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">Identifies the party that the bill or invoice is to be sent. In most cases this is the same as the CustomerParty however there are many cases where the CustomerParty and the BillToParty will be different.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="Classification" type="ClassificationType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">This identifies the classification of an entity. An entity may be classified into mulitple groups for different reasons. Examples of Classification include Commodity Codes, Freight Classifications, Product Line classifications and so on. Suggested Values are COMMODITY, FREIGHT, PRODUCTLINE</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="Contact" type="ContactType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">Contacts are the point of communication with the given party. In the case of an organization it may be the requestioner, the buyer, customer service, etc.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="Discount" type="TermType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">Identifies the Discount the time and number of payments and the amount or percentage of the discount from the payment.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="DocumentID" type="DocumentIDType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">Is the primary document id for the document associated.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="EMailAddressCommunication" type="EMailAddressCommunicationType"/>
+      <xsd:element name="EffectiveTimePeriod" type="TimePeriodType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">Indicates the time period in which the associated component is effective.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="Effectivity" type="EffectivityType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/oagis/9">Specifies effectivity of an associated object. Effectivity is expressed may be expressed as: multiple ranges, values, time period or as associated to a specific Item.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="FormattedNumber" type="TextType"/>
+      <xsd:element name="Item" type="ItemType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">Identifies the Item associated with the Line or Detail of a transaction. The item provides the details of the generic Item component information.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="ItemID" type="ItemIDType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">Is the primary item Identifier associated with the given item within the scope of the given integration as provided by the Party or entity that has created this document instance.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="Location" type="LocationType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">The location of a thing, as captured by an address (or addresses), GPS Coordinates, and/or in relation to other locations.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="Party" type="PartyType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">A generic Party  for non-validated or application-validated parties. A work-around for situations where Schema-validation of Parties is not feasible or not desired.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="PartyIDs" type="PartyIDsType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">Contains the set of possible identifiers for an associated Party.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="PaymentTerm" type="PaymentTermType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">Identifies the payment term for an Order or Invoice. Supports the abiility to specify an absolute due date, a number of days from a start daye, a percent discount or an absolute discount. A common term like "Net30Days" is explicitly code as either a calculated DueDateTime or a PaymentTermsDateTime and NumberOfDays.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="Property" type="PropertyType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">Represents the Properties or Features of the associated entity</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="Specification" type="SpecificationType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">Identifies the specification of an entity.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="Status" type="StatusType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">Indicates the status of the associated object by providing the Status Code along with a description and when the status is effective.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="TelephoneCommunication" type="TelephoneCommunicationType"/>
+      <xsd:element name="UnitPrice" type="PriceABIEType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">Unit price of the item for the number of items in the unitCode specified in the PerQuantity elements.
+
+In most cases the unitCode of the PerQuantity is the same as the unitCode of the Quantity element above.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:complexType abstract="true" name="AddressBaseType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">Address BaseType provides the information about the address or semantic address of an associated entity.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" ref="ID"/>
+          <xsd:element minOccurs="0" ref="Type"/>
+          <xsd:choice>
+            <xsd:element ref="AddressLine" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:sequence>
+              <xsd:element minOccurs="0" ref="LineOne"/>
+              <xsd:element minOccurs="0" ref="LineTwo"/>
+              <xsd:element minOccurs="0" ref="LineThree"/>
+            </xsd:sequence>
+            <xsd:sequence/>
+          </xsd:choice>
+          <xsd:element minOccurs="0" ref="CityName"/>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" ref="CountrySubDivisionCode"/>
+          <xsd:element minOccurs="0" ref="CountryCode"/>
+          <xsd:element minOccurs="0" ref="PostalCode"/>
+          <xsd:element minOccurs="0" ref="Status"/>
+        </xsd:sequence>
+        <xsd:attribute name="typeAttribute" type="NormalizedStringType"/>
+      </xsd:complexType>
+      <xsd:complexType name="AddressType">
+        <xsd:complexContent>
+          <xsd:extension base="AddressBaseType">
+            <xsd:sequence>
+              <xsd:element minOccurs="0" ref="UserArea"/>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType abstract="true" name="AllowanceChargeABIEType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">AllowanceChargeABIEType is based on the UN/CEFACT TBG17 AllowanceChargeType that can be found the Reusable Aggregate Business Information Entity (RUABIE) XML Schema files.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" ref="ID"/>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" ref="Type">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">Identifies the type of charge that the given instance of Charge/Allowance.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" ref="Description"/>
+          <xsd:element minOccurs="0" ref="Amount"/>
+        </xsd:sequence>
+        <xsd:attribute name="typeAttribute" type="ChargeCodeContentType"/>
+      </xsd:complexType>
+      <xsd:complexType name="AllowanceType">
+        <xsd:complexContent>
+          <xsd:extension base="AllowanceChargeABIEType">
+            <xsd:sequence>
+              <xsd:element minOccurs="0" ref="UserArea"/>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="AmountPerQuantityType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">Indicates the cost or price of something represented as a value per a number of units. The price of eggs for example would be 1.29 per 1 dozen.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+          <xsd:element minOccurs="0" ref="Amount"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType abstract="true" name="ClassificationBaseType">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" name="Codes" type="SequencedCodesType" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">The ClassificationCodes that identify a single or hierarchical association of classifications. For example, Pump, Centrifugal would be represented by two Codes, the first one as Pump, the second as Centrifugal.
+
+The Sequence attribute of the Code identifies the hierarchical position of the identifier in the case of multi-level codes.
+
+The name attribute identifies the name of the corresponding classification level. Possible examples are ROOT, BRANCH, LEAF</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element minOccurs="0" ref="Type"/>
+          <xsd:group minOccurs="0" ref="FreeFormTextGroup"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="ClassificationType">
+        <xsd:complexContent>
+          <xsd:extension base="ClassificationBaseType">
+            <xsd:sequence>
+              <xsd:element minOccurs="0" ref="UserArea"/>
+            </xsd:sequence>
+            <xsd:attribute name="typeAttribute" type="NormalizedStringType"/>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType abstract="true" name="ContactABIEType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">ContactABIEType is logically derived from UN/CEFACT TBG17 ABIE ContactType as defined in the Reusable Aggregate Business Information Entity (RUABIE) XML Schema file.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" ref="ID"/>
+          <xsd:element minOccurs="0" ref="Type"/>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" ref="Name"/>
+          <xsd:element minOccurs="0" ref="JobTitle"/>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" ref="TelephoneCommunication"/>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" ref="EMailAddressCommunication"/>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" ref="Address"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="ContactType">
+        <xsd:complexContent>
+          <xsd:extension base="SemanticContactType">
+            <xsd:attribute name="typeAttribute" type="NormalizedStringType">
+              <xsd:annotation>
+                <xsd:documentation source="http://www.openapplications.org/platform/1">** deprecated **
+OAGi deprecated all type attributes effective in OAGIS 9.5 release. All complexTypes that have the type attribute has a Type element that is to be used instead.</xsd:documentation>
+              </xsd:annotation>
+            </xsd:attribute>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="CustomerPartyType">
+        <xsd:complexContent>
+          <xsd:extension base="PayerPartyBaseType">
+            <xsd:sequence>
+              <xsd:element minOccurs="0" ref="UserArea"/>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="DocumentIDType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">This is the ID assigned to the document by the creator of the document.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+          <xsd:element minOccurs="0" ref="ID"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType abstract="true" name="DocumentReferenceBaseType">
+        <xsd:sequence>
+          <xsd:annotation>
+            <xsd:documentation source="http://www.openapplications.org/platform/1">StatusCode is being deprecated in favor of the Status as of 9.1.</xsd:documentation>
+          </xsd:annotation>
+          <xsd:group minOccurs="0" ref="DocumentIDsGroup"/>
+          <xsd:element minOccurs="0" ref="DocumentDateTime"/>
+          <xsd:group minOccurs="0" ref="FreeFormTextGroup"/>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" ref="Status"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="EMailAddressCommunicationType">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" ref="EMailAddressID"/>
+          <xsd:element minOccurs="0" ref="UserArea"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="EffectivityType">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" ref="Type"/>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" ref="Name"/>
+          <xsd:choice>
+            <xsd:element maxOccurs="unbounded" minOccurs="0" ref="EffectiveTimePeriod">
+              <xsd:annotation>
+                <xsd:documentation source="http://www.openapplications.org/platform/1">Expresses effectivity as a range of time. Multiple ranges are possible, they may be contiguous or disjoint.</xsd:documentation>
+              </xsd:annotation>
+            </xsd:element>
+          </xsd:choice>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType abstract="true" name="HeaderType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">The abstract Header type that is the basis for all non-statusable OAGIS Document Headers</xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+          <xsd:group minOccurs="0" ref="DocumentIDsGroup"/>
+          <xsd:element minOccurs="0" ref="LastModificationDateTime"/>
+          <xsd:element minOccurs="0" ref="DocumentDateTime"/>
+          <xsd:group minOccurs="0" ref="FreeFormTextGroup"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType abstract="true" name="ItemBaseType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">Is the basis for Items.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+          <xsd:group minOccurs="0" ref="ItemIDsGroup"/>
+          <xsd:group minOccurs="0" ref="FreeFormTextGroup"/>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" ref="Classification"/>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" ref="Specification"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="ItemIDType">
+        <xsd:complexContent>
+          <xsd:extension base="DocumentIDType"/>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="ItemType">
+        <xsd:complexContent>
+          <xsd:extension base="ItemBaseType">
+            <xsd:sequence>
+              <xsd:element minOccurs="0" ref="UserArea"/>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="LineType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">The abstract Line type that is the basis for all non-statusable OAGIS Document Lines</xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+          <xsd:element minOccurs="0" ref="LineNumber"/>
+          <xsd:group minOccurs="0" ref="FreeFormTextGroup"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="LocationABIEType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">LocationABIEType is logically derived from UN/CEFACT TBG17 ABIE LocationType as defined in the Reusable Aggregate Business Information Entity (RUABIE) XML Schema file.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" ref="ID"/>
+          <xsd:element minOccurs="0" ref="Type"/>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" ref="Name"/>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" ref="Address"/>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" ref="Contact"/>
+        </xsd:sequence>
+        <xsd:attribute name="typeAttribute" type="NormalizedStringType"/>
+      </xsd:complexType>
+      <xsd:complexType name="LocationType">
+        <xsd:complexContent>
+          <xsd:extension base="LocationABIEType">
+            <xsd:sequence>
+              <xsd:group minOccurs="0" ref="FreeFormTextGroup"/>
+              <xsd:element minOccurs="0" ref="UserArea"/>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="NamedIDType">
+        <xsd:simpleContent>
+          <xsd:extension base="IdentifierType">
+            <xsd:attribute name="name" type="NormalizedStringType"/>
+          </xsd:extension>
+        </xsd:simpleContent>
+      </xsd:complexType>
+      <xsd:complexType name="OpenPartyType">
+        <xsd:complexContent>
+          <xsd:extension base="PartyBaseType">
+            <xsd:attribute name="role" type="PartyRoleCodeContentType"/>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType abstract="true" name="PartyBaseType">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" ref="PartyIDs"/>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" ref="Name"/>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" ref="Location"/>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" ref="Contact"/>
+        </xsd:sequence>
+        <xsd:attribute name="category" type="PartyCategoryCodeContentType"/>
+      </xsd:complexType>
+      <xsd:complexType name="PartyIDsType">
+        <xsd:group minOccurs="0" ref="PartyIDsGroup"/>
+      </xsd:complexType>
+      <xsd:complexType name="PartyType">
+        <xsd:complexContent>
+          <xsd:extension base="OpenPartyType">
+            <xsd:sequence>
+              <xsd:element minOccurs="0" ref="UserArea"/>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="PayerPartyBaseType">
+        <xsd:complexContent>
+          <xsd:extension base="PartyBaseType">
+            <xsd:sequence/>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="PaymentTermType">
+        <xsd:sequence>
+          <xsd:group minOccurs="0" ref="FreeFormTextGroup"/>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" ref="Discount"/>
+          <xsd:element minOccurs="0" ref="UserArea"/>
+        </xsd:sequence>
+        <xsd:attribute name="type" type="PaymentTermCodeContentType"/>
+      </xsd:complexType>
+      <xsd:complexType name="PriceABIEType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">PriceABIEType is logically derived from UN/CEFACT TBG17 ABIE PriceType as defined in the Reusable Aggregate Business Information Entity (RUABIE) XML Schema file.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexContent>
+          <xsd:extension base="AmountPerQuantityType">
+            <xsd:sequence>
+              <xsd:element maxOccurs="unbounded" minOccurs="0" ref="Code"/>
+              <xsd:group ref="FreeFormTextGroup"/>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="PropertyType">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" ref="ID"/>
+          <xsd:element minOccurs="0" ref="ParentID"/>
+          <xsd:element minOccurs="0" ref="NameValue"/>
+          <xsd:group minOccurs="0" ref="FreeFormTextGroup"/>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" ref="Effectivity"/>
+          <xsd:element minOccurs="0" ref="EffectiveTimePeriod">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">**Deprecated** OAGi has deprecated the use of EffectiveTimePeriod in this use case in favor of Effectivity. All new implementations should use Effectivity in this use case. EffectiveTimePeriod will continue to be provided here until the next major version of OAGIS is released.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element minOccurs="0" ref="UserArea"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="SemanticContactType">
+        <xsd:complexContent>
+          <xsd:extension base="ContactABIEType">
+            <xsd:sequence>
+              <xsd:element minOccurs="0" ref="UserArea"/>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="SeparatedDateTimeType">
+        <xsd:sequence/>
+      </xsd:complexType>
+      <xsd:complexType name="SequencedCodesType">
+        <xsd:sequence>
+          <xsd:element maxOccurs="unbounded" name="Code" type="SequencedCodeType" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="SpecificationType">
+        <xsd:sequence>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" ref="ID"/>
+          <xsd:element minOccurs="0" ref="Type">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">Code type indicating the specification.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" ref="Property"/>
+          <xsd:element minOccurs="0" ref="UserArea"/>
+        </xsd:sequence>
+        <xsd:attribute name="typeAttribute" type="NormalizedStringType"/>
+      </xsd:complexType>
+      <xsd:complexType name="StatusABIEType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">StatusABIEType is logically derived from UN/CEFACT TBG17 ABIE StatusType as defined in the Reusable Aggregate Business Information Entity (RUABIE) XML Schema file.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexContent>
+          <xsd:extension base="StatusBasisType">
+            <xsd:sequence>
+              <xsd:element minOccurs="0" ref="Type"/>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="StatusEnabledHeaderType">
+        <xsd:complexContent>
+          <xsd:extension base="HeaderType">
+            <xsd:sequence>
+              <xsd:element maxOccurs="unbounded" minOccurs="0" ref="Status"/>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="StatusEnabledLineType">
+        <xsd:complexContent>
+          <xsd:extension base="LineType">
+            <xsd:sequence>
+              <xsd:element maxOccurs="unbounded" minOccurs="0" ref="Status"/>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="StatusType">
+        <xsd:complexContent>
+          <xsd:extension base="StatusABIEType">
+            <xsd:sequence>
+              <xsd:element minOccurs="0" ref="UserArea"/>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="TelephoneCommunicationType">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" ref="FormattedNumber"/>
+          <xsd:element minOccurs="0" ref="UserArea"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="TermABIEType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">TermsABIEType is logically derived from UN/CEFACT TBG17 ABIE PaymentTermsType as defined in the Reusable Aggregate Business Information Entity (RUABIE) XML Schema file.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" ref="ID"/>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" ref="Type">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">A code specifing the terms.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" ref="Description"/>
+          <xsd:choice>
+            <xsd:sequence>
+              <xsd:element minOccurs="0" ref="Duration"/>
+            </xsd:sequence>
+          </xsd:choice>
+          <xsd:choice minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">Amount is the fixed discount anount applied if payed by the DueDateTime for example, $20 off if paid by due date.
+
+Percent is the discount applied if payed by DueDateTime.</xsd:documentation>
+            </xsd:annotation>
+            <xsd:element minOccurs="0" ref="DiscountPercent"/>
+            <xsd:element minOccurs="0" ref="Amount"/>
+          </xsd:choice>
+        </xsd:sequence>
+        <xsd:attribute name="typeAttribute" type="NormalizedStringType"/>
+      </xsd:complexType>
+      <xsd:complexType name="TermType">
+        <xsd:complexContent>
+          <xsd:extension base="TermABIEType">
+            <xsd:sequence>
+              <xsd:annotation>
+                <xsd:documentation source="http://www.openapplications.org/platform/1">If Billing Date is March 15, and the payment is due by April 21. The ProxMonth would be 1 and the ProxDayOfMonth would be 21.</xsd:documentation>
+              </xsd:annotation>
+              <xsd:element minOccurs="0" ref="UserArea"/>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="TimePeriodABIEType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">TimePeriodABIEType is logically derived from UN/CEFACT TBG17 ABIE PeriodType as defined in the Reusable Aggregate Business Information Entity (RUABIE) XML Schema file.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+          <xsd:choice>
+            <xsd:element minOccurs="0" ref="Duration"/>
+            <xsd:element minOccurs="0" ref="EndDateTime"/>
+          </xsd:choice>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="TimePeriodType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">Provides the structure to indicate a Date/Time period where the Time is provided with in the Start and Duration or EndDateTime.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexContent>
+          <xsd:extension base="TimePeriodABIEType"/>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:group name="DocumentIDsGroup">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">Provides the Identifier(s) of the document being communicated.
+
+Uniquily identifies a Document within an organization. Typically there is only an ID for a document within one system. However, with the use of different business applications there maybe different ids assigned to the same document within an organization from the different systems and in the case of B2B transactions different businesses may have different Identifiers for the same document. 
+
+This construct is designed to allow for these different identifications.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+          <xsd:element minOccurs="0" ref="DocumentID"/>
+        </xsd:sequence>
+      </xsd:group>
+      <xsd:group name="EmployeeGroup">
+        <xsd:sequence>
+          <xsd:annotation>
+            <xsd:documentation source="http://www.openapplications.org/platform/1">CategoryCodes are deprecated as of OAGIS 9.5.1 in favor of CategoryClassification.</xsd:documentation>
+          </xsd:annotation>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" ref="JobTitle"/>
+        </xsd:sequence>
+      </xsd:group>
+      <xsd:group name="EntityIDsGroup">
+        <xsd:sequence>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" ref="ID"/>
+        </xsd:sequence>
+      </xsd:group>
+      <xsd:group name="FinancialAccountIDsGroup">
+        <xsd:sequence>
+          <xsd:choice>
+            <xsd:element maxOccurs="unbounded" minOccurs="0" ref="ID"/>
+          </xsd:choice>
+        </xsd:sequence>
+      </xsd:group>
+      <xsd:group name="IDsGroup">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">A group that contains the identifier for the associated component or noun.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" ref="ID"/>
+        </xsd:sequence>
+      </xsd:group>
+      <xsd:group name="InventoryTransactionGroup">
+        <xsd:sequence>
+          <xsd:group minOccurs="0" ref="ItemInstanceGroup"/>
+          <xsd:element minOccurs="0" ref="Status">
+            <xsd:annotation>
+              <xsd:documentation source="http://www.openapplications.org/platform/1">This determines the receipt routing of an item or part.
+
+Examples of values include:
+Customer consignment, Inspection, Vendor consignment, Blocked
+Bonded, User defined
+
+Possible synonyms are 
+Receipt Routing, Material Status, Material Condition Code</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+        </xsd:sequence>
+      </xsd:group>
+      <xsd:group name="ItemIDsGroup">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">Contains the Item IDs for an associated item.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" ref="ItemID"/>
+        </xsd:sequence>
+      </xsd:group>
+      <xsd:group name="ItemInstanceGroup">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" ref="Item"/>
+          <xsd:element minOccurs="0" ref="Quantity"/>
+        </xsd:sequence>
+      </xsd:group>
+      <xsd:group name="NamedIDsGroup">
+        <xsd:sequence>
+          <xsd:element maxOccurs="unbounded" name="ID" type="NamedIDType" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+        </xsd:sequence>
+      </xsd:group>
+      <xsd:group name="PartyIDsGroup">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">Contain the ids for a given party. These ids may be assigned by multiple organizations.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" ref="ID"/>
+        </xsd:sequence>
+      </xsd:group>
+      <xsd:group name="PersonNameGroup">
+        <xsd:choice>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" ref="Name"/>
+          <xsd:sequence/>
+        </xsd:choice>
+      </xsd:group>
+      <xsd:group name="SequencedIDsGroup">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">Indicates the ID of the associated component or noun.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" name="ID" type="SequencedIDType" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+        </xsd:sequence>
+      </xsd:group>
+      <xsd:element name="ApplicationArea" type="ApplicationAreaType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">Provides the information that an application may need to know in order to communicate in an integration of two or more business applications. The ApplicationArea is used at the applications layer of communication. While the integration frameworks web services and middleware provide the communication layer that OAGIS operates on top of.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="BODID" type="IdentifierType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">The BODId provides a place to carry a Globally Unique Identifier (GUID) that will make each Business Object Document instance uniquely identifiable.
+
+This is a critical success factor to enable software developers to use the Globally Unique Identifier (GUID) to build the following services or capabilities:
+1. Legally binding transactions,
+2. Transaction logging,
+3. Exception handling,
+4. Re-sending,
+5. Reporting,
+6. Confirmations,
+7. Security.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="ChangeStatus" type="ChangeStatusType"/>
+      <xsd:element name="ComponentID" type="IdentifierType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">Provides a finer level of control than Logical Identifier and represents the business application that issued the Business Object Document.  Its use is optional.
+
+The Open Applications Group has not constructed the list of valid Component names.  A suggestion for naming is to use the application component names used in the scenario diagrams in section two of OAGIS. Example Components may be Inventory, or Payroll.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="CreationDateTime" type="DateTimeType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">is the date time stamp that the given instance of the Business Object Document was created.  This date must not be modified during the life of the Business Object Document.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="Expression" type="ExpressionType"/>
+      <xsd:element name="Get" type="GetType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/oagis/9.0">The Get verb is to communicate to a business software component a request for an existing piece or pieces of information to be returned.  The Get may be paired with most of the nouns defined in the OAGIS specification.The response to this request is the Show verb.  The behavior of a BOD with a Get verb is quite predictable across the nouns it is paired with.The Get is designed to retrieval  of information by using that information's primary retrieval field, or key field.  The Get verb may also be used to request several documents at once.  Selection Criteria:There are two types of selection capabilities for most BOD's that use the Get verb.1)  The first selection capability is called Field-Based Selection.  Within a Get-based Business Object Document, the first Data Type that occurs in a specific BOD structure is commonly used to provide the Field-Based Selection criteria.  This is always defined within the specific BOD and is commonly the required fields for that specific Data type.The Field-Based Selection enables the requester to provide a value or values (in the case of multiple required Field Identifiers), in the required fields.  Then the responding component uses those values to find and return the requested information to the originating business software component.2)  The second type of selection capability for Get-based BODs is called Data Type Selection.  Data Type selection enables the requester to identify which Data Types within the noun are requested to be returned in the response.  The use of this capability is described for each corresponding Data Type for all BODs that use the Get verb.  The Data Types are identified for retrieval within the Get instance of a BOD by including the name of the Data Type in the meta data but without any Field Identifiers or Segments identified within the Data Type. This will signify to the responding application that all of the data that corresponds to that Data Type is to be included in the response.If the Data Type is not requested, the Data Type identifier is not included in the Get request and this will signify to the responding component that the Data Type is not to be returned.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="LogicalID" type="IdentifierType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">Provides the logical location of the server and applications from which the Business Object Document originated. It can be used to establish a logical to physical mapping, however its use is optional.
+
+Each system or combination of systems should maintain an external central reference table containing the logical names or logical addresses of the application systems in the integration configuration.  This enables the logical names to be mapped to the physical network addresses of the resources needed on the network.  
+
+Note:  The technical implementation of this Domain Naming Service is not dictated by this specification. 
+
+This logical to physical mapping may be done at execution time by the application itself or by a middleware transport mechanism, depending on the integration architecture used.
+
+This provides for a simple but effective directory access capability while maintaining application independence from the physical location of those resources on the network</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="Receiver" type="ReceiverType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">Identifies the intended receiver of the given BOD instance.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="ReferenceID" type="IdentifierType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">Enables the sending application to indicate the instance identifier of the event or task that caused the BOD to be created. This allows drill back from the BOD message into the sending application. The may be required in environments where an audit trail must be maintained for all transactions.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="ResponseCriteria" type="ResponseActionCriteriaType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">ResponseCriteria identifies the content that is to be returned, given query success. In essence, the expression here has the effect of filtering the part(s) of the found element(s) that are to be returned.
+
+ReturnCriteria plays no role in the query itself. That is handled as a match against the request BOD's noun exemplar. 
+
+ReturnCriteria allows the sender of the BOD to indicate which information (down to the field level) is requested to be returned, given that the query has been successful in matching the exemplar to existing nouns. 
+
+That is, in a GetListPurchaseOrder, if one or more PurchaseOrders with a TotalPrice = $1M were found, ReturnCriteria tells the BOD recipient which parts of the PurchaseOrder should be populated with content when the response (ShowPurchaseOrder) is formulated.
+
+The expressionLanguage indicates the expression language being used. In order for the ReturnCriteria expression to be evaluable by the BOD recipient, the recipient must be capable of processing and interpreting the specified expression language. XPath is the default, due to its ubiquity among XML processing technologies.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="Sender" type="SenderType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">Identifies characteristics and control identifiers that relate to the application that created the Business Object Document.  The sender area can indicate the logical location of the application and/or database server, the application, and the task that was processing to create the BOD.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="Show" type="ShowType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/oagis/9.0">The Show verb is used when sending the information about a specific instance of a business document or entity.  The Show verb may be used to respond to a Get request or it can be used in a publish scenario, where it pushes information to other applications based on a business event.Although BODs based on this verb do not commonly cause updates to occur, there may be times when the component receiving the Show decides to use the information it receives to update.  This is entirely the decision of the receiving software component and is not forbidden.The behavior of the Show verb is quite straight forward with one exception.  The Show response to any Get request needs to read the request carefully to ensure the response is returning the requested Data Types.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:complexType name="ApplicationAreaType">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" ref="Sender"/>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" ref="Receiver"/>
+          <xsd:element ref="CreationDateTime"/>
+          <xsd:element minOccurs="0" ref="BODID"/>
+          <xsd:element minOccurs="0" ref="UserArea"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="BusinessObjectDocumentType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">Is the schema based inheritance for all BODs. The logical model would also include the DataArea.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+          <xsd:element ref="ApplicationArea"/>
+        </xsd:sequence>
+        <xsd:attribute name="releaseID" type="NormalizedStringType">
+          <xsd:annotation>
+            <xsd:documentation source="http://www.openapplications.org/platform/1">OAGIS Release this BOD Instances belongs or the OAGIS release that the derivative work is based on.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="versionID" type="NormalizedStringType">
+          <xsd:annotation>
+            <xsd:documentation source="http://www.openapplications.org/platform/1">Indicates the version of the given BOD definition.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+      </xsd:complexType>
+      <xsd:complexType name="ChangeStatusType">
+        <xsd:complexContent>
+          <xsd:extension base="StatusBasisType">
+            <xsd:sequence>
+              <xsd:element minOccurs="0" ref="UserArea"/>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="ExpressionType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">ReturnCriteria identifies the content that is to be returned, given query success. In essence, the expression here has the effect of filtering the part(s) of the found element(s) that are to be returned.
+
+ReturnCriteria plays no role in the query itself. That is handled as a match against the request BOD's noun exemplar. 
+
+ReturnCriteria allows the sender of the BOD to indicate which information (down to the field level) is requested to be returned, given that the query has been successful in matching the exemplar to existing nouns. 
+
+That is, in a GetListPurchaseOrder, if one or more PurchaseOrders with a TotalPrice = $1M were found, ReturnCriteria tells the BOD recipient which parts of the PurchaseOrder should be populated with content when the response (ShowPurchaseOrder) is formulated.
+
+The expressionLanguage indicates the expression language being used. In order for the ReturnCriteria expression to be evaluable by the BOD recipient, the recipient must be capable of processing and interpreting the specified expression language. XPath is the default, due to its ubiquity among XML processing technologies.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:simpleContent>
+          <xsd:extension base="TokenType">
+            <xsd:attribute name="expressionLanguage" type="TokenType"/>
+          </xsd:extension>
+        </xsd:simpleContent>
+      </xsd:complexType>
+      <xsd:complexType name="GetType">
+        <xsd:complexContent>
+          <xsd:extension base="RequestVerbType">
+            <xsd:attribute name="maxItems" type="PositiveIntegerNumericType"/>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="ReceiverType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">Identifies the intended receiver of the given BOD instance.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+          <xsd:element minOccurs="0" ref="LogicalID"/>
+          <xsd:element minOccurs="0" ref="ComponentID"/>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" ref="ID"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType abstract="true" name="RequestVerbType">
+        <xsd:complexContent>
+          <xsd:extension base="VerbType">
+            <xsd:sequence>
+              <xsd:element maxOccurs="unbounded" ref="Expression"/>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="ResponseActionCriteriaType">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" ref="ChangeStatus"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType abstract="true" name="ResponseVerbType">
+        <xsd:complexContent>
+          <xsd:extension base="VerbType">
+            <xsd:sequence>
+              <xsd:element maxOccurs="unbounded" minOccurs="0" ref="ResponseCriteria">
+                <xsd:annotation>
+                  <xsd:documentation source="http://www.openapplications.org/platform/1">ResponseCriteria identifies the content that is returned, given a Get query success or the response from the Process. In essence, the expression here has the effect of filtering the part(s) of the found element(s) that are to be returned.
+
+ReturnCriteria plays no role in the query itself or the process. That is handled as a match against the request BOD's noun exemplar. 
+
+ReturnCriteria allows the sender of the BOD to indicate which information (down to the field level) is requested to be returned, given that the query has been successful in matching the exemplar to existing nouns. 
+
+That is, in a GetListPurchaseOrder, if one or more PurchaseOrders with a TotalPrice = $1M were found, ReturnCriteria tells the BOD recipient which parts of the PurchaseOrder should be populated with content when the response (ShowPurchaseOrder) is formulated.
+
+The expressionLanguage indicates the expression language being used. In order for the ReturnCriteria expression to be evaluable by the BOD recipient, the recipient must be capable of processing and interpreting the specified expression language. XPath is the default, due to its ubiquity among XML processing technologies.</xsd:documentation>
+                </xsd:annotation>
+              </xsd:element>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="SenderType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">Identifies the sender of the given BOD instance</xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+          <xsd:element minOccurs="0" ref="LogicalID"/>
+          <xsd:element minOccurs="0" ref="ComponentID"/>
+          <xsd:element minOccurs="0" ref="ReferenceID"/>
+          <xsd:element minOccurs="0" ref="AuthorizationID"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="ShowType">
+        <xsd:complexContent>
+          <xsd:extension base="ResponseVerbType"/>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="StatusBasisType">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" ref="Code"/>
+          <xsd:element minOccurs="0" ref="Description"/>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" ref="Reason"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType abstract="true" name="VerbType"/>
+      <xsd:group name="FreeFormTextGroup">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">Common Free Form Text elements that occur together.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" ref="Description"/>
+        </xsd:sequence>
+      </xsd:group>
+      <xsd:element name="Amount" type="AmountType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">The monetary value of the object in which the amount is associated</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="Text" type="TextType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">The monetary value of the object in which the text is associated</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="AuthorizationID" type="IdentifierType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">Identifyies the authorization level of the user or application that is sending the Business Object Document Message. This authorization level being recognized be the receiving system indicates what can be done on the receiving system(s).</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="CityName" type="NameType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">Identifies the town or the city</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="Code" type="CodeType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">Element for the communication of all codes.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="CountryCode" type="CountryCodeType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">Country in which the Address is in. A possible list of values is as specified in ISO 3166-2.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="CountrySubDivisionCode" type="CountrySubDivisionCodeType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">Qualifies the further division of the Country. These may be Districts, Regions, States, Provinces etc. A possible list of values is as specified in ISO 3166-2. The name attribute identifies the name of this e.g. District, Region etc, and there is a pre-defined list of types supported, with the ability to add new ones as necessary</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="Description" type="DescriptionType"/>
+      <xsd:element name="DiscountPercent" type="PercentType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">Indicates a percentage of discount that is available against a price</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="DocumentDateTime" type="DateTimeType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">The date that document was created within the system of record.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="Duration" type="DurationMeasureType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">Indicates the duration of time as represented by ISO 8601. Where the value space is a six dimensional space where the coordinates designate the Gregorian year, month, day, hour, minute, and second. The number of seconds can include decimal digits to arbitary pecision.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="EMailAddressID" type="IdentifierType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">An identifier that identifies an electronic mail address.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="EndDateTime" type="DateTimeType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">Is the ending timestamp of the event.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="ExtendedAmount" type="AmountType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">Is an amount not including taxes or charges. In the case of orders, this is typically the Unit Price times the Order Quantity.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="ID" type="IdentifierType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">Is the Identifiers of the given instance of an entity within the scope of the integration. The schemeAgencyID attribute identifies the party that provided or knows this party by the given identifier.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="JobTitle" type="TextType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">Is the position or designation of the pesron with whom associated within the given organization. Examples are Director, Software Engineer, Purchasing Manager etc</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="LastModificationDateTime" type="DateTimeType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">The datetime on which the object was last modified</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="LineNumber" type="IdentifierType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">Is the Line Number of the given Line Coponent within the document. LineNumbers are assigned by the sending system.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="AddressLine" type="SequencedTextType"/>
+      <xsd:element name="LineOne" type="TextType"/>
+      <xsd:element name="LineThree" type="TextType"/>
+      <xsd:element name="LineTwo" type="TextType"/>
+      <xsd:element name="Name" type="NameType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">Identifies the Name of the object in which associated.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="NameValue" type="NameValuePairType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">Is the tag and information of the new information to be passed.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="ParentID" type="IdentifierType"/>
+      <xsd:element name="PostalCode" type="CodeType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">Postal Code of the Address.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="Quantity" type="QuantityType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">Identifies the quantity of the associated service or item that is addresses by the component in which the quantity is associated.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="Reason" type="SequencedTextType"/>
+      <xsd:element name="TotalAmount" type="AmountType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">Indicates the total amount of the object associated. This includes the Price and the total of all the charges, allowances and taxes.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="Type" type="CodeType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">Indicates the type of the object in which assoicated.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:simpleType name="ChargeCodeContentType">
+        <xsd:restriction base="oacl:ChargeCodeContentType"/>
+      </xsd:simpleType>
+      <xsd:simpleType name="CodeContentType">
+        <xsd:restriction base="NormalizedStringType"/>
+      </xsd:simpleType>
+      <xsd:simpleType name="CountryCodeContentType">
+        <xsd:restriction base="oacl:CountryCodeContentType"/>
+      </xsd:simpleType>
+      <xsd:simpleType name="CountrySubdivisionCodeContentType">
+        <xsd:restriction base="oacl:CountrySubdivisionCodeContentType"/>
+      </xsd:simpleType>
+      <xsd:simpleType name="CurrencyCodeContentType">
+        <xsd:restriction base="oacl:CurrencyCodeContentType"/>
+      </xsd:simpleType>
+      <xsd:simpleType name="DateTimeType">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            <ccts:UniqueID>QDT000000</ccts:UniqueID>
+            <ccts:CategoryCode>QDT</ccts:CategoryCode>
+            <ccts:DictionaryEntryName>Month_ Date. Type</ccts:DictionaryEntryName>
+            <ccts:VersionID>1.0</ccts:VersionID>
+            <ccts:DefinitionText>A particular point in the progression of time together with the relevant supplementary information.  Provides the XML Schema simpleType that allows either just the Date or the Date and Time to be provided in the elements that are based on this type and/or types that use this as their base.</ccts:DefinitionText>
+            <ccts:RepresentationTermName>Date</ccts:RepresentationTermName>
+            <ccts:QualifierTerm>Month</ccts:QualifierTerm>
+          </xsd:documentation>
+        </xsd:annotation>
+        <xsd:union memberTypes="udt:DateType udt:TimeType udt:DateTimeType"/>
+      </xsd:simpleType>
+      <xsd:simpleType name="DateType">
+        <xsd:restriction base="udt:DateType"/>
+      </xsd:simpleType>
+      <xsd:simpleType name="DurationMeasureType">
+        <xsd:restriction base="qdt:DurationMeasureType"/>
+      </xsd:simpleType>
+      <xsd:simpleType name="LicenseTypeCodeContentType">
+        <xsd:restriction base="oacl:LicenseTypeCodeContentType"/>
+      </xsd:simpleType>
+      <xsd:simpleType name="NormalizedStringType">
+        <xsd:restriction base="qdt:NormalizedStringType"/>
+      </xsd:simpleType>
+      <xsd:simpleType name="NumericType">
+        <xsd:restriction base="udt:NumericType"/>
+      </xsd:simpleType>
+      <xsd:simpleType name="PartyCategoryCodeContentType">
+        <xsd:restriction base="oacl:PartyCategoryCodeContentType"/>
+      </xsd:simpleType>
+      <xsd:simpleType name="PartyRoleCodeContentType">
+        <xsd:restriction base="oacl:PartyRoleCodeContentType"/>
+      </xsd:simpleType>
+      <xsd:simpleType name="PaymentTermCodeContentType">
+        <xsd:restriction base="oacl:PaymentTermCodeContentType"/>
+      </xsd:simpleType>
+      <xsd:simpleType name="PercentType">
+        <xsd:restriction base="udt:PercentType"/>
+      </xsd:simpleType>
+      <xsd:simpleType name="PositiveIntegerNumericType">
+        <xsd:restriction base="qdt:PositiveIntegerNumericType"/>
+      </xsd:simpleType>
+      <xsd:simpleType name="IndicatorType">
+        <xsd:restriction base="udt:IndicatorType"/>
+      </xsd:simpleType>
+      <xsd:simpleType name="StringType">
+        <xsd:restriction base="qdt:StringType"/>
+      </xsd:simpleType>
+      <xsd:simpleType name="TaxCodeContentType">
+        <xsd:restriction base="oacl:TaxCodeContentType"/>
+      </xsd:simpleType>
+      <xsd:simpleType name="TimeType">
+        <xsd:restriction base="udt:TimeType"/>
+      </xsd:simpleType>
+      <xsd:simpleType name="TokenType">
+        <xsd:restriction base="qdt:TokenType"/>
+      </xsd:simpleType>
+      <xsd:complexType name="AmountType">
+        <xsd:simpleContent>
+          <xsd:extension base="udt:AmountType">
+            <xsd:attribute name="typeCode" type="StringType" use="optional"/>
+          </xsd:extension>
+        </xsd:simpleContent>
+      </xsd:complexType>
+      <xsd:complexType name="CodeType">
+        <xsd:simpleContent>
+          <xsd:extension base="udt:CodeType"/>
+        </xsd:simpleContent>
+      </xsd:complexType>
+      <xsd:complexType name="CountryCodeType">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            <ccts:UniqueID>QDT000000</ccts:UniqueID>
+            <ccts:CategoryCode>QDT</ccts:CategoryCode>
+            <ccts:DictionaryEntryName>Country_ Code. Type</ccts:DictionaryEntryName>
+            <ccts:VersionID>1.0</ccts:VersionID>
+            <ccts:DefinitionText/>
+            <ccts:RepresentationTermName>Code</ccts:RepresentationTermName>
+            <ccts:QualifierTerm>Country</ccts:QualifierTerm>
+          </xsd:documentation>
+        </xsd:annotation>
+        <xsd:simpleContent>
+          <xsd:extension base="CountryCodeContentType">
+            <xsd:attributeGroup ref="CodeListAttributeGroup"/>
+          </xsd:extension>
+        </xsd:simpleContent>
+      </xsd:complexType>
+      <xsd:complexType name="CountrySubDivisionCodeType">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            <ccts:UniqueID>QDT000000</ccts:UniqueID>
+            <ccts:CategoryCode>QDT</ccts:CategoryCode>
+            <ccts:DictionaryEntryName>Country Subdivision_ Code. Type</ccts:DictionaryEntryName>
+            <ccts:VersionID>1.0</ccts:VersionID>
+            <ccts:DefinitionText>A character string (letters, figures, or symbols) that for brevity and/or languange 
+independence may be used to represent or replace a definitive value or text of an attribute together with relevant 
+supplementary information.</ccts:DefinitionText>
+            <ccts:RepresentationTermName>Code</ccts:RepresentationTermName>
+            <ccts:QualifierTerm>Country Subdivision</ccts:QualifierTerm>
+          </xsd:documentation>
+        </xsd:annotation>
+        <xsd:simpleContent>
+          <xsd:extension base="CountrySubdivisionCodeContentType">
+            <xsd:attributeGroup ref="CodeListAttributeGroup"/>
+          </xsd:extension>
+        </xsd:simpleContent>
+      </xsd:complexType>
+      <xsd:complexType name="DescriptionType">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            <ccts:UniqueID>QDT000000</ccts:UniqueID>
+            <ccts:CategoryCode>QDT</ccts:CategoryCode>
+            <ccts:DictionaryEntryName>Description_ Text. Type</ccts:DictionaryEntryName>
+            <ccts:VersionID>1.0</ccts:VersionID>
+            <ccts:DefinitionText/>
+            <ccts:RepresentationTermName>Text</ccts:RepresentationTermName>
+            <ccts:QualifierTerm>Description</ccts:QualifierTerm>
+          </xsd:documentation>
+        </xsd:annotation>
+        <xsd:simpleContent>
+          <xsd:extension base="udt:TextType">
+            <xsd:attribute name="type" type="NormalizedStringType"/>
+          </xsd:extension>
+        </xsd:simpleContent>
+      </xsd:complexType>
+      <xsd:complexType name="IdentifierType">
+        <xsd:simpleContent>
+          <xsd:extension base="udt:IdentifierType"/>
+        </xsd:simpleContent>
+      </xsd:complexType>
+      <xsd:complexType name="NameType">
+        <xsd:simpleContent>
+          <xsd:extension base="udt:NameType">
+            <xsd:attribute name="sequenceName" type="StringType"/>
+          </xsd:extension>
+        </xsd:simpleContent>
+      </xsd:complexType>
+      <xsd:complexType name="NameValuePairType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">Is the tag and information of the new information to be passed.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:simpleContent>
+          <xsd:extension base="StringType">
+            <xsd:attribute name="name" type="NormalizedStringType">
+              <xsd:annotation>
+                <xsd:documentation source="http://www.openapplications.org/platform/1">Is the name of the tag for the information being passed.</xsd:documentation>
+              </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="type" type="NormalizedStringType">
+              <xsd:annotation>
+                <xsd:documentation source="http://www.openapplications.org/platform/1">Is the type of the information being passed in the NameValue.</xsd:documentation>
+              </xsd:annotation>
+            </xsd:attribute>
+          </xsd:extension>
+        </xsd:simpleContent>
+      </xsd:complexType>
+      <xsd:complexType name="QuantityType">
+        <xsd:simpleContent>
+          <xsd:extension base="udt:QuantityType">
+            <xsd:attribute name="type" type="NormalizedStringType"/>
+          </xsd:extension>
+        </xsd:simpleContent>
+      </xsd:complexType>
+      <xsd:complexType name="SequencedCodeType">
+        <xsd:simpleContent>
+          <xsd:extension base="CodeType">
+            <xsd:attribute name="sequenceName" type="NormalizedStringType"/>
+          </xsd:extension>
+        </xsd:simpleContent>
+      </xsd:complexType>
+      <xsd:complexType name="SequencedIDType">
+        <xsd:simpleContent>
+          <xsd:extension base="IdentifierType">
+            <xsd:attribute name="sequenceName" type="NormalizedStringType"/>
+          </xsd:extension>
+        </xsd:simpleContent>
+      </xsd:complexType>
+      <xsd:complexType name="SequencedTextType">
+        <xsd:simpleContent>
+          <xsd:extension base="TextType">
+            <xsd:attribute name="sequence" type="PositiveIntegerNumericType" use="optional"/>
+            <xsd:attribute name="sequenceName" type="NormalizedStringType" use="optional"/>
+            <xsd:attribute name="sequenceNumber" type="PositiveIntegerNumericType" use="optional"/>
+          </xsd:extension>
+        </xsd:simpleContent>
+      </xsd:complexType>
+      <xsd:complexType name="TextType">
+        <xsd:simpleContent>
+          <xsd:extension base="udt:TextType">
+            <xsd:attribute name="typeCode" type="StringType" use="optional"/>
+          </xsd:extension>
+        </xsd:simpleContent>
+      </xsd:complexType>
+      <xsd:attributeGroup name="CodeListAttributeGroup">
+        <xsd:attribute name="listAgencyName" type="StringType">
+          <xsd:annotation>
+            <xsd:documentation xml:lang="en">
+              <ccts:UniqueID>UNDT000007-SC4</ccts:UniqueID>
+              <ccts:CategoryCode>SC</ccts:CategoryCode>
+              <ccts:DictionaryEntryName>Code List. Agency Name. Text</ccts:DictionaryEntryName>
+              <ccts:Definition>The name of the agency that maintains the list of codes.</ccts:Definition>
+              <ccts:ObjectClass>Code List</ccts:ObjectClass>
+              <ccts:PropertyTermName>Agency Name</ccts:PropertyTermName>
+              <ccts:RepresentationTermName>Text</ccts:RepresentationTermName>
+              <ccts:PrimitiveType>string</ccts:PrimitiveType>
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="listName" type="StringType">
+          <xsd:annotation>
+            <xsd:documentation xml:lang="en">
+              <ccts:UniqueID>UNDT000007-SC5</ccts:UniqueID>
+              <ccts:CategoryCode>SC</ccts:CategoryCode>
+              <ccts:DictionaryEntryName>Code List. Name. Text</ccts:DictionaryEntryName>
+              <ccts:Definition>The name of a list of codes.</ccts:Definition>
+              <ccts:ObjectClass>Code List</ccts:ObjectClass>
+              <ccts:PropertyTermName>Name</ccts:PropertyTermName>
+              <ccts:RepresentationTermName>Text</ccts:RepresentationTermName>
+              <ccts:PrimitiveType>string</ccts:PrimitiveType>
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="name" type="StringType">
+          <xsd:annotation>
+            <xsd:documentation xml:lang="en">
+              <ccts:UniqueID>UNDT000007-SC7</ccts:UniqueID>
+              <ccts:CategoryCode>SC</ccts:CategoryCode>
+              <ccts:DictionaryEntryName>Code. Name. Text</ccts:DictionaryEntryName>
+              <ccts:Definition>The textual equivalent of the code content component.</ccts:Definition>
+              <ccts:ObjectClass>Code</ccts:ObjectClass>
+              <ccts:PropertyTermName>Name</ccts:PropertyTermName>
+              <ccts:RepresentationTermName>Text</ccts:RepresentationTermName>
+              <ccts:PrimitiveType>string</ccts:PrimitiveType>
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+      </xsd:attributeGroup>
+      <xsd:element name="Extension" type="ExtensionType"/>
+      <xsd:complexType name="ExtensionType">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" ref="Amount" maxOccurs="unbounded"/>
+          <xsd:element minOccurs="0" ref="Text" maxOccurs="unbounded"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:element name="UserArea" type="UserAreaType">
+        <xsd:annotation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">Allows the user of OAGIS to extend the specification in order to provide additional information that is not captured in OAGIS.</xsd:documentation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">This is done by defining the additional information in XML Schema and referencing the new schema in the xml instance document through the use of namespaces. Once this is done the additional information defined there can be carried in the BOD XML instance document.</xsd:documentation>
+          <xsd:documentation source="http://www.openapplications.org/platform/1">The Open Applications Group will make best efforts to quickly consider all proposed submissions.The USERAREA is always the last element in all components, except where the component has been extended inline.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:complexType name="UserAreaType">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" ref="cisco:CiscoExtensions"/>
+        </xsd:sequence>
+      </xsd:complexType>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="AS4UserMessageHeaders">
+    <wsdl:part element="ebms:Messaging" name="AS4UserPart"/>
+  </wsdl:message>
+  <wsdl:message name="AS4PullMessageHeaders">
+    <wsdl:part element="ebms:Messaging" name="AS4PullPart"/>
+  </wsdl:message>
+  <wsdl:message name="AS4Headers">
+    <wsdl:part element="ebms:Messaging" name="AS4Part"/>
+  </wsdl:message>
+  <wsdl:message name="b2bngcListQuote_b2b_config-wxys2_ListQuoteIn">
+    <wsdl:part element="tns:GetQuote" name="getQuoteInputType"/>
+  </wsdl:message>
+  <wsdl:message name="b2bngcListQuote_b2b_config-wxys2_ListQuoteOut">
+    <wsdl:part element="tns:ShowQuote" name="showQuoteOutputType"/>
+  </wsdl:message>
+  <wsdl:portType name="B2BService_b2b_ListQuotePortType">
+    <wsdl:operation name="Mesha_ListQuoteProxy_H">
+      <wsdl:input message="b2bngc:b2bngcListQuote_b2b_config-wxys2_ListQuoteIn"/>
+      <wsdl:output message="b2bngc:b2bngcListQuote_b2b_config-wxys2_ListQuoteOut"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="B2BNGCService_b2b_ListQuoteBinding" type="b2bngc:B2BService_b2b_ListQuotePortType">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="Mesha_ListQuoteProxy_H">
+      <soap:operation soapAction="urn:pushB2BAction" style="document"/>
+      <wsdl:input>
+        <soap:header message="b2bngc:AS4UserMessageHeaders" part="AS4UserPart" use="literal"/>
+        <soap:body parts="getQuoteInputType" use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:header message="b2bngc:AS4Headers" part="AS4Part" use="literal"/>
+        <soap:body parts="showQuoteOutputType" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:portType name="B2BService_b2b_AcquireQuotePortType">
+    <wsdl:operation name="Mesha_AcquireQuoteProxy_H">
+      <wsdl:input message="b2bngc:b2bngcListQuote_b2b_config-wxys2_ListQuoteIn"/>
+      <wsdl:output message="b2bngc:b2bngcListQuote_b2b_config-wxys2_ListQuoteOut"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="B2BNGCService_b2b_AcquireQuoteBinding" type="b2bngc:B2BService_b2b_AcquireQuotePortType">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="Mesha_AcquireQuoteProxy_H">
+      <soap:operation soapAction="urn:pushB2BAction" style="document"/>
+      <wsdl:input>
+        <soap:header message="b2bngc:AS4UserMessageHeaders" part="AS4UserPart" use="literal"/>
+        <soap:body parts="getQuoteInputType" use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:header message="b2bngc:AS4Headers" part="AS4Part" use="literal"/>
+        <soap:body parts="showQuoteOutputType" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="CiscoB2BService">
+    <wsdl:port binding="b2bngc:B2BNGCService_b2b_ListQuoteBinding" name="B2BNGCService_b2b_ListQuoteEndpoint">
+      <soap:address location="https://api-stage.cisco.com/commerce/QUOTING/v1/YS3-STG/ListQuoteService"/>
+    </wsdl:port>
+    <wsdl:port binding="b2bngc:B2BNGCService_b2b_AcquireQuoteBinding" name="B2BNGCService_b2b_AcquireQuoteEndpoint">
+      <soap:address location="https://api-stage.cisco.com/commerce/QUOTING/v1/YS3-STG/AcquireQuoteService"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

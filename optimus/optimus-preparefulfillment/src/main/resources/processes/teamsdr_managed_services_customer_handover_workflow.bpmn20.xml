@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <process id="teamsdr_managed_services_customer_handover_workflow" name="teamsdr_managed_services_customer_handover_workflow" isExecutable="true">
+    <documentation>teamsdr_managed_services_customer_handover_workflow</documentation>
+    <startEvent id="teamsdr_managed_services_customer_handover_acceptance_activity_start">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ activityStartListener }"></flowable:executionListener>
+      </extensionElements>
+    </startEvent>
+    <userTask id="teamsdr-managed-services-service-acceptance" name="Service Acceptance">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <endEvent id="teamsdr_managed_services_customer_handover_acceptance_activity_end">
+      <extensionElements>
+        <flowable:executionListener event="end" delegateExpression="${ activityEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </endEvent>
+    <exclusiveGateway id="sid-C4D9DEA0-90A5-4976-9905-91FE75F61F65" default="sid-A0C47CE5-A609-47AB-A4F9-1D97B8992377"></exclusiveGateway>
+    <userTask id="teamsdr-managed-services-billing-issue" name="Billing Issue">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <exclusiveGateway id="sid-DC8A1149-03FF-427E-B2A2-6A8163BF770F"></exclusiveGateway>
+    <sequenceFlow id="sid-2471410C-3986-468C-9D67-E7E214FC53B5" sourceRef="teamsdr_managed_services_customer_handover_acceptance_activity_start" targetRef="sid-DC8A1149-03FF-427E-B2A2-6A8163BF770F"></sequenceFlow>
+    <sequenceFlow id="sid-6D16B150-F13A-48A8-85E8-6A12CFC6A96C" sourceRef="teamsdr-managed-services-billing-issue" targetRef="sid-DC8A1149-03FF-427E-B2A2-6A8163BF770F"></sequenceFlow>
+    <sequenceFlow id="sid-DA9CCC4B-C0E6-4B27-BDE9-5936E948841F" sourceRef="teamsdr-managed-services-provide-handover-note" targetRef="teamsdr-managed-services-service-acceptance"></sequenceFlow>
+    <serviceTask id="teamsdr-managed-services-provide-handover-note" name="Handover Note" flowable:delegateExpression="${ teamsDRHandoverNoteDelegate }"></serviceTask>
+    <sequenceFlow id="sid-E164C558-D7FB-41FE-A75D-B041394E61A1" sourceRef="sid-DC8A1149-03FF-427E-B2A2-6A8163BF770F" targetRef="teamsdr-managed-services-provide-handover-note"></sequenceFlow>
+    <serviceTask id="customer-reminder-teamsdr-managed-services-service-acceptance" name="Reminder" flowable:async="true" flowable:delegateExpression="${ notificationDelegate  }"></serviceTask>
+    <boundaryEvent id="sid-A4C1D770-6D4A-48FE-9DF2-2A9B05F4DE60" attachedToRef="teamsdr-managed-services-service-acceptance" cancelActivity="false">
+      <timerEventDefinition>
+        <timeCycle>${ remainderCycle }</timeCycle>
+      </timerEventDefinition>
+    </boundaryEvent>
+    <sequenceFlow id="sid-FB820A89-E84E-4A8F-A547-A362FA6FDD5E" sourceRef="sid-A4C1D770-6D4A-48FE-9DF2-2A9B05F4DE60" targetRef="customer-reminder-teamsdr-managed-services-service-acceptance"></sequenceFlow>
+    <serviceTask id="reminder-teamsdr-managed-services-billing-issue" name="Reminder" flowable:async="true" flowable:delegateExpression="${ notificationDelegate  }"></serviceTask>
+    <boundaryEvent id="sid-A7C12DD5-EB11-464F-BBC9-679B79290CFB" attachedToRef="teamsdr-managed-services-billing-issue" cancelActivity="false">
+      <timerEventDefinition>
+        <timeCycle>${ remainderCycle }</timeCycle>
+      </timerEventDefinition>
+    </boundaryEvent>
+    <sequenceFlow id="sid-97BA0170-0754-4AFD-87A0-E05606DC22CD" sourceRef="sid-A7C12DD5-EB11-464F-BBC9-679B79290CFB" targetRef="reminder-teamsdr-managed-services-billing-issue"></sequenceFlow>
+    <sequenceFlow id="sid-A0C47CE5-A609-47AB-A4F9-1D97B8992377" name="Accepted" sourceRef="sid-C4D9DEA0-90A5-4976-9905-91FE75F61F65" targetRef="teamsdr_managed_services_customer_handover_acceptance_activity_end"></sequenceFlow>
+    <sequenceFlow id="sid-4F02E84C-4374-4C94-82C5-F003411568BE" sourceRef="teamsdr-managed-services-service-acceptance" targetRef="sid-C4D9DEA0-90A5-4976-9905-91FE75F61F65"></sequenceFlow>
+    <sequenceFlow id="sid-29E5D6AA-390A-42D6-8878-2601B5024174" sourceRef="sid-C4D9DEA0-90A5-4976-9905-91FE75F61F65" targetRef="teamsdr-managed-services-billing-issue">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ var:get(serviceAccepted) == false && var:get(serviceAcceptanceIssueType)=="Raise Billing Issue"}]]></conditionExpression>
+    </sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_teamsdr_managed_services_customer_handover_workflow">
+    <bpmndi:BPMNPlane bpmnElement="teamsdr_managed_services_customer_handover_workflow" id="BPMNPlane_teamsdr_managed_services_customer_handover_workflow">
+      <bpmndi:BPMNShape bpmnElement="teamsdr_managed_services_customer_handover_acceptance_activity_start" id="BPMNShape_teamsdr_managed_services_customer_handover_acceptance_activity_start">
+        <omgdc:Bounds height="30.0" width="30.0" x="45.0" y="193.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="teamsdr-managed-services-service-acceptance" id="BPMNShape_teamsdr-managed-services-service-acceptance">
+        <omgdc:Bounds height="66.0" width="100.0" x="330.0" y="175.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="teamsdr_managed_services_customer_handover_acceptance_activity_end" id="BPMNShape_teamsdr_managed_services_customer_handover_acceptance_activity_end">
+        <omgdc:Bounds height="28.0" width="28.0" x="735.0" y="194.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-C4D9DEA0-90A5-4976-9905-91FE75F61F65" id="BPMNShape_sid-C4D9DEA0-90A5-4976-9905-91FE75F61F65">
+        <omgdc:Bounds height="40.0" width="40.0" x="501.5" y="188.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="teamsdr-managed-services-billing-issue" id="BPMNShape_teamsdr-managed-services-billing-issue">
+        <omgdc:Bounds height="80.0" width="100.0" x="471.5" y="48.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-DC8A1149-03FF-427E-B2A2-6A8163BF770F" id="BPMNShape_sid-DC8A1149-03FF-427E-B2A2-6A8163BF770F">
+        <omgdc:Bounds height="40.0" width="40.0" x="120.0" y="188.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="teamsdr-managed-services-provide-handover-note" id="BPMNShape_teamsdr-managed-services-provide-handover-note">
+        <omgdc:Bounds height="61.0" width="100.0" x="194.0" y="177.5"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="customer-reminder-teamsdr-managed-services-service-acceptance" id="BPMNShape_customer-reminder-teamsdr-managed-services-service-acceptance">
+        <omgdc:Bounds height="46.0" width="84.0" x="285.0" y="280.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-A4C1D770-6D4A-48FE-9DF2-2A9B05F4DE60" id="BPMNShape_sid-A4C1D770-6D4A-48FE-9DF2-2A9B05F4DE60">
+        <omgdc:Bounds height="31.0" width="31.0" x="309.42160341345533" y="210.58166983100756"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="reminder-teamsdr-managed-services-billing-issue" id="BPMNShape_reminder-teamsdr-managed-services-billing-issue">
+        <omgdc:Bounds height="46.0" width="84.0" x="315.0" y="80.25322150903949"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-A7C12DD5-EB11-464F-BBC9-679B79290CFB" id="BPMNShape_sid-A7C12DD5-EB11-464F-BBC9-679B79290CFB">
+        <omgdc:Bounds height="31.0" width="31.0" x="439.68332417830266" y="40.29314767505842"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-97BA0170-0754-4AFD-87A0-E05606DC22CD" id="BPMNEdge_sid-97BA0170-0754-4AFD-87A0-E05606DC22CD">
+        <omgdi:waypoint x="441.224989571934" y="62.51859333727994"></omgdi:waypoint>
+        <omgdi:waypoint x="398.95000000000005" y="82.95116800138585"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-6D16B150-F13A-48A8-85E8-6A12CFC6A96C" id="BPMNEdge_sid-6D16B150-F13A-48A8-85E8-6A12CFC6A96C">
+        <omgdi:waypoint x="521.5" y="48.0"></omgdi:waypoint>
+        <omgdi:waypoint x="521.5" y="19.0"></omgdi:waypoint>
+        <omgdi:waypoint x="140.0" y="19.0"></omgdi:waypoint>
+        <omgdi:waypoint x="140.0" y="188.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-4F02E84C-4374-4C94-82C5-F003411568BE" id="BPMNEdge_sid-4F02E84C-4374-4C94-82C5-F003411568BE">
+        <omgdi:waypoint x="429.94999999994326" y="208.0"></omgdi:waypoint>
+        <omgdi:waypoint x="501.5" y="208.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-DA9CCC4B-C0E6-4B27-BDE9-5936E948841F" id="BPMNEdge_sid-DA9CCC4B-C0E6-4B27-BDE9-5936E948841F">
+        <omgdi:waypoint x="293.9499999999953" y="208.0"></omgdi:waypoint>
+        <omgdi:waypoint x="330.0" y="208.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-29E5D6AA-390A-42D6-8878-2601B5024174" id="BPMNEdge_sid-29E5D6AA-390A-42D6-8878-2601B5024174">
+        <omgdi:waypoint x="521.5" y="188.0"></omgdi:waypoint>
+        <omgdi:waypoint x="521.5" y="127.95"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-2471410C-3986-468C-9D67-E7E214FC53B5" id="BPMNEdge_sid-2471410C-3986-468C-9D67-E7E214FC53B5">
+        <omgdi:waypoint x="74.94999714606841" y="208.0"></omgdi:waypoint>
+        <omgdi:waypoint x="120.0" y="208.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-E164C558-D7FB-41FE-A75D-B041394E61A1" id="BPMNEdge_sid-E164C558-D7FB-41FE-A75D-B041394E61A1">
+        <omgdi:waypoint x="159.94041786743512" y="208.0"></omgdi:waypoint>
+        <omgdi:waypoint x="193.99999999998315" y="208.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-FB820A89-E84E-4A8F-A547-A362FA6FDD5E" id="BPMNEdge_sid-FB820A89-E84E-4A8F-A547-A362FA6FDD5E">
+        <omgdi:waypoint x="325.3389257512931" y="241.52588107917614"></omgdi:waypoint>
+        <omgdi:waypoint x="326.37852107052373" y="280.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-A0C47CE5-A609-47AB-A4F9-1D97B8992377" id="BPMNEdge_sid-A0C47CE5-A609-47AB-A4F9-1D97B8992377">
+        <omgdi:waypoint x="541.4456173110187" y="208.0"></omgdi:waypoint>
+        <omgdi:waypoint x="735.0" y="208.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

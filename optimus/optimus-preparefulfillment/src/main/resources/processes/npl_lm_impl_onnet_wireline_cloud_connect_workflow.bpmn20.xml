@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <process id="npl_lm_impl_onnet_wireline_cloud_connect_workflow" name="npl_lm_impl_onnet_wireline_cloud_connect_workflow" isExecutable="true">
+    <documentation>npl_lm_impl_onnet_wireline_cloud_connect_workflow</documentation>
+    <startEvent id="lm_impl_process_start">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ processStartListener }"></flowable:executionListener>
+      </extensionElements>
+    </startEvent>
+    <endEvent id="lm_impl_process_end">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ processEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </endEvent>
+    <userTask id="select-cloud-name" name="Select Cloud">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <userTask id="provide-ior-detail" name="Provide IOR Detail">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="sid-D5B782F8-91EF-4EC3-8D55-008856C9F8BD" sourceRef="provide-ior-detail" targetRef="select-cloud-name"></sequenceFlow>
+    <exclusiveGateway id="sid-0E8510E4-8AC6-4D4B-B886-9CB8D7C13D52" default="select_mux_activity_end"></exclusiveGateway>
+    <sequenceFlow id="sid-B525C3FD-8776-49DE-9B71-A013F73461A6" sourceRef="select-cloud-name" targetRef="sid-0E8510E4-8AC6-4D4B-B886-9CB8D7C13D52"></sequenceFlow>
+    <sequenceFlow id="sid-C2AE3269-3E07-4820-8B0D-2A40A8AAE01A" sourceRef="sid-0E8510E4-8AC6-4D4B-B886-9CB8D7C13D52" targetRef="provide-ior-detail">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${var:get(action) == "CIM"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="select_mux_activity_start" sourceRef="lm_impl_process_start" targetRef="select-cloud-name">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ activityStartListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="select_mux_activity_end" sourceRef="sid-0E8510E4-8AC6-4D4B-B886-9CB8D7C13D52" targetRef="lm_impl_process_end">
+      <extensionElements>
+        <flowable:executionListener event="end" delegateExpression="${ activityEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_npl_lm_impl_onnet_wireline_cloud_connect_workflow">
+    <bpmndi:BPMNPlane bpmnElement="npl_lm_impl_onnet_wireline_cloud_connect_workflow" id="BPMNPlane_npl_lm_impl_onnet_wireline_cloud_connect_workflow">
+      <bpmndi:BPMNShape bpmnElement="lm_impl_process_start" id="BPMNShape_lm_impl_process_start">
+        <omgdc:Bounds height="30.0" width="30.0" x="75.0" y="286.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="lm_impl_process_end" id="BPMNShape_lm_impl_process_end">
+        <omgdc:Bounds height="28.0" width="28.0" x="540.0" y="287.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="select-cloud-name" id="BPMNShape_select-cloud-name">
+        <omgdc:Bounds height="62.0" width="100.0" x="225.0" y="270.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="provide-ior-detail" id="BPMNShape_provide-ior-detail">
+        <omgdc:Bounds height="66.0" width="100.0" x="225.0" y="375.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-0E8510E4-8AC6-4D4B-B886-9CB8D7C13D52" id="BPMNShape_sid-0E8510E4-8AC6-4D4B-B886-9CB8D7C13D52">
+        <omgdc:Bounds height="40.0" width="40.0" x="370.0" y="281.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="select_mux_activity_start" id="BPMNEdge_select_mux_activity_start">
+        <omgdi:waypoint x="104.94999946593475" y="301.0"></omgdi:waypoint>
+        <omgdi:waypoint x="224.9999999999298" y="301.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-C2AE3269-3E07-4820-8B0D-2A40A8AAE01A" id="BPMNEdge_sid-C2AE3269-3E07-4820-8B0D-2A40A8AAE01A">
+        <omgdi:waypoint x="390.5" y="320.44111163227007"></omgdi:waypoint>
+        <omgdi:waypoint x="390.5" y="408.0"></omgdi:waypoint>
+        <omgdi:waypoint x="324.9499999999258" y="408.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="select_mux_activity_end" id="BPMNEdge_select_mux_activity_end">
+        <omgdi:waypoint x="409.50228387492336" y="301.441717791411"></omgdi:waypoint>
+        <omgdi:waypoint x="540.0000626357853" y="301.0426605073493"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-D5B782F8-91EF-4EC3-8D55-008856C9F8BD" id="BPMNEdge_sid-D5B782F8-91EF-4EC3-8D55-008856C9F8BD">
+        <omgdi:waypoint x="275.0" y="375.0"></omgdi:waypoint>
+        <omgdi:waypoint x="275.0" y="331.95"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-B525C3FD-8776-49DE-9B71-A013F73461A6" id="BPMNEdge_sid-B525C3FD-8776-49DE-9B71-A013F73461A6">
+        <omgdi:waypoint x="324.94999999999806" y="301.2162337662338"></omgdi:waypoint>
+        <omgdi:waypoint x="370.4130434782609" y="301.4130434782609"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

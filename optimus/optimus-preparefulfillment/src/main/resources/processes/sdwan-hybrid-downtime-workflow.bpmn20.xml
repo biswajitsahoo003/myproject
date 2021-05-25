@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <process id="sdwan-hybrid-downtime-workflow" name="sdwan-hybrid-downtime-workflow" isExecutable="true">
+    <documentation>sdwan-hybrid-downtime-workflow</documentation>
+    <startEvent id="sid-00664B08-29B0-465E-A656-CE5DDAA68519"></startEvent>
+    <endEvent id="sid-B34E159C-979C-45DA-B3FF-EEAF20DC8A55"></endEvent>
+    <callActivity id="cpe-downtime" name="Get Down Time" calledElement="get_downtime_jul25workflow" flowable:calledElementType="key" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false">
+      <extensionElements>
+        <flowable:in source="cpe-config" target="downtimeSource"></flowable:in>
+        <flowable:out source="downtimeWindow" target="downtimeWindow"></flowable:out>
+        <flowable:executionListener event="start" delegateExpression="${ downtimeEventEndListener}"></flowable:executionListener>
+      </extensionElements>
+    </callActivity>
+    <parallelGateway id="sid-0D1EA951-C8BB-4F86-9E11-474315899484"></parallelGateway>
+    <intermediateCatchEvent id="overlay-downtime-trigger">
+      <extensionElements>
+        <flowable:executionListener event="take" delegateExpression="${ timeEventEndListener }"></flowable:executionListener>
+        <flowable:executionListener event="start" delegateExpression="${ serviceTaskStartListener }"></flowable:executionListener>
+        <flowable:executionListener event="end" delegateExpression="${ serviceTaskEndListener }"></flowable:executionListener>
+      </extensionElements>
+      <timerEventDefinition>
+        <timeDate>${ downtimeWindow }</timeDate>
+      </timerEventDefinition>
+    </intermediateCatchEvent>
+    <parallelGateway id="sid-EC93362D-4685-43AC-9602-BAA8C7929AA6"></parallelGateway>
+    <sequenceFlow id="service_configuration_activity_start" sourceRef="sid-0D1EA951-C8BB-4F86-9E11-474315899484" targetRef="overlay-downtime-trigger">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ activityStartListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="service_configuration_activity_end" sourceRef="overlay-downtime-trigger" targetRef="sid-EC93362D-4685-43AC-9602-BAA8C7929AA6">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ activityEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="service_configuration_process_end" sourceRef="sid-EC93362D-4685-43AC-9602-BAA8C7929AA6" targetRef="sid-B34E159C-979C-45DA-B3FF-EEAF20DC8A55">
+      <extensionElements>
+        <flowable:executionListener event="end" delegateExpression="${ processEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="sid-964A7FFB-2BE0-4427-BB5E-702777CC7DBB" sourceRef="sid-00664B08-29B0-465E-A656-CE5DDAA68519" targetRef="cpe-downtime"></sequenceFlow>
+    <sequenceFlow id="service_configuration_process_start" sourceRef="cpe-downtime" targetRef="sid-0D1EA951-C8BB-4F86-9E11-474315899484">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ processStartListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_sdwan-hybrid-downtime-workflow">
+    <bpmndi:BPMNPlane bpmnElement="sdwan-hybrid-downtime-workflow" id="BPMNPlane_sdwan-hybrid-downtime-workflow">
+      <bpmndi:BPMNShape bpmnElement="sid-00664B08-29B0-465E-A656-CE5DDAA68519" id="BPMNShape_sid-00664B08-29B0-465E-A656-CE5DDAA68519">
+        <omgdc:Bounds height="30.0" width="30.0" x="170.0" y="107.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-B34E159C-979C-45DA-B3FF-EEAF20DC8A55" id="BPMNShape_sid-B34E159C-979C-45DA-B3FF-EEAF20DC8A55">
+        <omgdc:Bounds height="28.0" width="28.0" x="735.0" y="108.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="cpe-downtime" id="BPMNShape_cpe-downtime">
+        <omgdc:Bounds height="80.0" width="100.0" x="285.0" y="82.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-0D1EA951-C8BB-4F86-9E11-474315899484" id="BPMNShape_sid-0D1EA951-C8BB-4F86-9E11-474315899484">
+        <omgdc:Bounds height="40.0" width="40.0" x="435.0" y="102.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="overlay-downtime-trigger" id="BPMNShape_overlay-downtime-trigger">
+        <omgdc:Bounds height="31.0" width="31.0" x="525.0" y="106.5"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-EC93362D-4685-43AC-9602-BAA8C7929AA6" id="BPMNShape_sid-EC93362D-4685-43AC-9602-BAA8C7929AA6">
+        <omgdc:Bounds height="40.0" width="40.0" x="615.0" y="102.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="service_configuration_activity_start" id="BPMNEdge_service_configuration_activity_start">
+        <omgdi:waypoint x="474.5507978723404" y="122.38757396449705"></omgdi:waypoint>
+        <omgdi:waypoint x="525.0002602948892" y="122.09088087858169"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="service_configuration_process_end" id="BPMNEdge_service_configuration_process_end">
+        <omgdi:waypoint x="654.525397877984" y="122.41592920353983"></omgdi:waypoint>
+        <omgdi:waypoint x="735.0001302857451" y="122.06145328221331"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-964A7FFB-2BE0-4427-BB5E-702777CC7DBB" id="BPMNEdge_sid-964A7FFB-2BE0-4427-BB5E-702777CC7DBB">
+        <omgdi:waypoint x="199.94999918773195" y="122.0"></omgdi:waypoint>
+        <omgdi:waypoint x="285.0" y="122.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="service_configuration_process_start" id="BPMNEdge_service_configuration_process_start">
+        <omgdi:waypoint x="384.95000000000005" y="122.0"></omgdi:waypoint>
+        <omgdi:waypoint x="435.0" y="122.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="service_configuration_activity_end" id="BPMNEdge_service_configuration_activity_end">
+        <omgdi:waypoint x="556.9497790618434" y="122.41489479590736"></omgdi:waypoint>
+        <omgdi:waypoint x="615.1058201058202" y="122.10555555555557"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

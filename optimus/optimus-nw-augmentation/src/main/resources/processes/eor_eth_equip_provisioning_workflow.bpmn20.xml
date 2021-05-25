@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <process id="eor_eth_equip_provisioning_workflow" name="eor_eth_equip_provisioning_workflow" isExecutable="true">
+    <documentation>eor_eth_equip_provisioning_workflow</documentation>
+    <startEvent id="startEvent1" flowable:formFieldValidation="true"></startEvent>
+    <callActivity id="raise_card_eor" name="Raise EOR and Create Device in Cramer and IP allocation" calledElement="initiate_eor_eth_provisioning_workflow" flowable:calledElementType="key" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false"></callActivity>
+    <callActivity id="eor_eth_install" name="Install" calledElement="install_task_workflow" flowable:calledElementType="key" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false"></callActivity>
+    <callActivity id="eor_eth_physical_AT" name="Physical AT" calledElement="physical_AT_workflow" flowable:calledElementType="key" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false"></callActivity>
+    <callActivity id="eor_eth_cramer_status_installed" name="Cramer Status Installed" calledElement="cramer_status_installed_workflow" flowable:calledElementType="key" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false"></callActivity>
+    <callActivity id="eor_eth_config_and_upload" name="Configure and Upload in NMS_U2000 and Node Addition in NetP" calledElement="configure_and_upload_in_NMS_U2000_and_node_addition_in_NetP_workflow" flowable:calledElementType="key" flowable:fallbackToDefaultTenant="false"></callActivity>
+    <callActivity id="eor_eth_vc" name="Verify Completion" calledElement="verify_completion_workflow" flowable:calledElementType="key" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false"></callActivity>
+    <callActivity id="eor_eth_cramer_status" name="Cramer Status &quot;Ready In Service&quot;" calledElement="cramer_status_workflow" flowable:calledElementType="key" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false"></callActivity>
+    <callActivity id="eor_eth_notify_originator" name="Notify Originator" calledElement="notify_originator_workflow" flowable:calledElementType="key" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false"></callActivity>
+    <endEvent id="sid-19F23DF8-4569-449D-BADB-10E09EFCF184"></endEvent>
+    <inclusiveGateway id="sid-36F5209E-B077-43AA-8323-0A843622C2E0"></inclusiveGateway>
+    <exclusiveGateway id="sid-B9468C30-B1BB-4250-8668-89112CF7A6CB"></exclusiveGateway>
+    <sequenceFlow id="sid-7A4330FE-5775-41C0-AB86-E6724BA431E1" sourceRef="eor_eth_physical_AT" targetRef="eor_eth_cramer_status_installed"></sequenceFlow>
+    <sequenceFlow id="sid-EBE29347-6D27-43D4-BD0A-D0DA0999C832" sourceRef="eor_eth_cramer_status_installed" targetRef="sid-36F5209E-B077-43AA-8323-0A843622C2E0"></sequenceFlow>
+    <sequenceFlow id="sid-1A4EE608-F2F3-4F32-AA0D-28239503079E" sourceRef="sid-36F5209E-B077-43AA-8323-0A843622C2E0" targetRef="eor_eth_config_and_upload"></sequenceFlow>
+    <sequenceFlow id="sid-7A14FBF1-3737-455E-815D-0D50C2B270DD" sourceRef="sid-36F5209E-B077-43AA-8323-0A843622C2E0" targetRef="sid-B9468C30-B1BB-4250-8668-89112CF7A6CB"></sequenceFlow>
+    <sequenceFlow id="sid-355CD6C7-B20A-4649-903A-7560B59A6E08" sourceRef="eor_eth_config_and_upload" targetRef="sid-B9468C30-B1BB-4250-8668-89112CF7A6CB"></sequenceFlow>
+    <sequenceFlow id="sid-0821D55E-B382-48EB-89C1-CD675641FF03" sourceRef="sid-B9468C30-B1BB-4250-8668-89112CF7A6CB" targetRef="eor_eth_vc"></sequenceFlow>
+    <sequenceFlow id="sid-D0AE89E9-3BB1-46C9-8223-C0819ACA380D" sourceRef="eor_eth_vc" targetRef="eor_eth_cramer_status"></sequenceFlow>
+    <sequenceFlow id="sid-A696B461-EC5E-40F7-843A-A9B38A5BC669" sourceRef="eor_eth_cramer_status" targetRef="eor_eth_notify_originator"></sequenceFlow>
+    <sequenceFlow id="sid-BF8FB5F9-3CB5-470D-8ED0-CC0FF6B63254" sourceRef="eor_eth_install" targetRef="eor_eth_physical_AT"></sequenceFlow>
+    <sequenceFlow id="sid-A6E6BFD3-351C-490B-BD3B-A8087DE57F16" sourceRef="raise_card_eor" targetRef="eor_eth_install"></sequenceFlow>
+    <sequenceFlow id="eor-ethequip_start" sourceRef="startEvent1" targetRef="raise_card_eor">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${processStartListener}"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="eor-ethequip_end" sourceRef="eor_eth_notify_originator" targetRef="sid-19F23DF8-4569-449D-BADB-10E09EFCF184">
+      <extensionElements>
+        <flowable:executionListener event="end" delegateExpression="${processEndListener}"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_eor_eth_equip_provisioning_workflow">
+    <bpmndi:BPMNPlane bpmnElement="eor_eth_equip_provisioning_workflow" id="BPMNPlane_eor_eth_equip_provisioning_workflow">
+      <bpmndi:BPMNShape bpmnElement="startEvent1" id="BPMNShape_startEvent1">
+        <omgdc:Bounds height="30.0" width="30.0" x="90.0" y="55.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="raise_card_eor" id="BPMNShape_raise_card_eor">
+        <omgdc:Bounds height="80.0" width="100.0" x="204.5" y="26.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="eor_eth_install" id="BPMNShape_eor_eth_install">
+        <omgdc:Bounds height="80.0" width="100.0" x="433.5" y="29.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="eor_eth_physical_AT" id="BPMNShape_eor_eth_physical_AT">
+        <omgdc:Bounds height="80.0" width="100.0" x="630.0" y="30.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="eor_eth_cramer_status_installed" id="BPMNShape_eor_eth_cramer_status_installed">
+        <omgdc:Bounds height="80.0" width="100.0" x="795.0" y="30.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="eor_eth_config_and_upload" id="BPMNShape_eor_eth_config_and_upload">
+        <omgdc:Bounds height="80.0" width="100.0" x="1050.0" y="30.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="eor_eth_vc" id="BPMNShape_eor_eth_vc">
+        <omgdc:Bounds height="80.0" width="100.0" x="988.5" y="285.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="eor_eth_cramer_status" id="BPMNShape_eor_eth_cramer_status">
+        <omgdc:Bounds height="80.0" width="100.0" x="990.0" y="420.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="eor_eth_notify_originator" id="BPMNShape_eor_eth_notify_originator">
+        <omgdc:Bounds height="80.0" width="100.0" x="988.5" y="570.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-19F23DF8-4569-449D-BADB-10E09EFCF184" id="BPMNShape_sid-19F23DF8-4569-449D-BADB-10E09EFCF184">
+        <omgdc:Bounds height="28.0" width="28.0" x="1026.0" y="720.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-36F5209E-B077-43AA-8323-0A843622C2E0" id="BPMNShape_sid-36F5209E-B077-43AA-8323-0A843622C2E0">
+        <omgdc:Bounds height="40.0" width="40.0" x="960.0" y="46.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-B9468C30-B1BB-4250-8668-89112CF7A6CB" id="BPMNShape_sid-B9468C30-B1BB-4250-8668-89112CF7A6CB">
+        <omgdc:Bounds height="40.0" width="40.0" x="1012.5" y="179.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-A6E6BFD3-351C-490B-BD3B-A8087DE57F16" id="BPMNEdge_sid-A6E6BFD3-351C-490B-BD3B-A8087DE57F16">
+        <omgdi:waypoint x="304.4499999999995" y="66.65436681222707"></omgdi:waypoint>
+        <omgdi:waypoint x="433.5" y="68.34497816593887"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-355CD6C7-B20A-4649-903A-7560B59A6E08" id="BPMNEdge_sid-355CD6C7-B20A-4649-903A-7560B59A6E08">
+        <omgdi:waypoint x="1079.0697674418604" y="109.95"></omgdi:waypoint>
+        <omgdi:waypoint x="1039.3530534351146" y="185.87022900763358"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-7A14FBF1-3737-455E-815D-0D50C2B270DD" id="BPMNEdge_sid-7A14FBF1-3737-455E-815D-0D50C2B270DD">
+        <omgdi:waypoint x="985.840921409214" y="80.10683911159265"></omgdi:waypoint>
+        <omgdi:waypoint x="1026.8631436314363" y="184.6174160346696"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-EBE29347-6D27-43D4-BD0A-D0DA0999C832" id="BPMNEdge_sid-EBE29347-6D27-43D4-BD0A-D0DA0999C832">
+        <omgdi:waypoint x="894.9499999999999" y="68.51851851851852"></omgdi:waypoint>
+        <omgdi:waypoint x="960.5755395683453" y="66.57410071942446"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-BF8FB5F9-3CB5-470D-8ED0-CC0FF6B63254" id="BPMNEdge_sid-BF8FB5F9-3CB5-470D-8ED0-CC0FF6B63254">
+        <omgdi:waypoint x="533.45" y="69.25419847328244"></omgdi:waypoint>
+        <omgdi:waypoint x="629.9999999999989" y="69.74554707379134"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="eor-ethequip_start" id="BPMNEdge_eor-ethequip_start">
+        <omgdi:waypoint x="119.94475622899728" y="69.59880297815822"></omgdi:waypoint>
+        <omgdi:waypoint x="204.49999999999952" y="67.33645484949832"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-1A4EE608-F2F3-4F32-AA0D-28239503079E" id="BPMNEdge_sid-1A4EE608-F2F3-4F32-AA0D-28239503079E">
+        <omgdi:waypoint x="998.9035134037366" y="67.03922764227643"></omgdi:waypoint>
+        <omgdi:waypoint x="1049.9999999999998" y="68.53556485355648"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-7A4330FE-5775-41C0-AB86-E6724BA431E1" id="BPMNEdge_sid-7A4330FE-5775-41C0-AB86-E6724BA431E1">
+        <omgdi:waypoint x="729.9499999999978" y="70.0"></omgdi:waypoint>
+        <omgdi:waypoint x="795.0" y="70.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-0821D55E-B382-48EB-89C1-CD675641FF03" id="BPMNEdge_sid-0821D55E-B382-48EB-89C1-CD675641FF03">
+        <omgdi:waypoint x="1033.7956106870229" y="217.64776887871858"></omgdi:waypoint>
+        <omgdi:waypoint x="1036.7470119521913" y="285.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-A696B461-EC5E-40F7-843A-A9B38A5BC669" id="BPMNEdge_sid-A696B461-EC5E-40F7-843A-A9B38A5BC669">
+        <omgdi:waypoint x="1039.6" y="499.95000000000005"></omgdi:waypoint>
+        <omgdi:waypoint x="1038.8995" y="570.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-D0AE89E9-3BB1-46C9-8223-C0819ACA380D" id="BPMNEdge_sid-D0AE89E9-3BB1-46C9-8223-C0819ACA380D">
+        <omgdi:waypoint x="1038.943888888889" y="364.95000000000005"></omgdi:waypoint>
+        <omgdi:waypoint x="1039.5555555555557" y="420.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="eor-ethequip_end" id="BPMNEdge_eor-ethequip_end">
+        <omgdi:waypoint x="1038.9832661290322" y="649.9499999999999"></omgdi:waypoint>
+        <omgdi:waypoint x="1039.8305566332388" y="720.0005525809485"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

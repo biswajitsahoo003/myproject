@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <process id="sdwan-lld-workflow" name="sdwan-lld-workflow" isExecutable="true">
+    <documentation>sdwan-lld-workflow</documentation>
+    <startEvent id="startEvent1"></startEvent>
+    <endEvent id="sid-31C03C5C-D8A5-4815-ACAF-0B22BED0A675"></endEvent>
+    <callActivity id="lld_provision_process" name="LLD Provision Process" calledElement="sdwan-lld-provisioning-workflow" flowable:calledElementType="key" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ processStartListener }"></flowable:executionListener>
+        <flowable:executionListener event="end" delegateExpression="${ processEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </callActivity>
+    <callActivity id="prepare_project_plan_process" name="Prepare Project Plan Process" calledElement="plan-sdwan-lld-workflow" flowable:calledElementType="key" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ processStartListener }"></flowable:executionListener>
+        <flowable:executionListener event="end" delegateExpression="${ processEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </callActivity>
+    <sequenceFlow id="order_enrichment_stage_start" sourceRef="startEvent1" targetRef="prepare_project_plan_process">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ stageStartListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="sid-2C0AEE12-43AD-4318-951F-1D1C53B52C5B" sourceRef="prepare_project_plan_process" targetRef="basic_enrichment_process"></sequenceFlow>
+    <sequenceFlow id="order_enrichment_stage_end" sourceRef="lld_provision_process" targetRef="sid-31C03C5C-D8A5-4815-ACAF-0B22BED0A675">
+      <extensionElements>
+        <flowable:executionListener event="end" delegateExpression="${ stageEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <callActivity id="basic_enrichment_process" name="Basic Enrichment Process" calledElement="basic_enrichment_workflow" flowable:calledElementType="key" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ processStartListener }"></flowable:executionListener>
+        <flowable:executionListener event="end" delegateExpression="${ processEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </callActivity>
+    <sequenceFlow id="sid-C0F70FAF-863A-4A85-B1A2-0FF8371852E4" sourceRef="basic_enrichment_process" targetRef="lld_provision_process"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_sdwan-lld-workflow">
+    <bpmndi:BPMNPlane bpmnElement="sdwan-lld-workflow" id="BPMNPlane_sdwan-lld-workflow">
+      <bpmndi:BPMNShape bpmnElement="startEvent1" id="BPMNShape_startEvent1">
+        <omgdc:Bounds height="30.0" width="30.0" x="65.56527102333968" y="458.95689716337773"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-31C03C5C-D8A5-4815-ACAF-0B22BED0A675" id="BPMNShape_sid-31C03C5C-D8A5-4815-ACAF-0B22BED0A675">
+        <omgdc:Bounds height="28.0" width="28.0" x="720.0" y="459.95689716337773"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="lld_provision_process" id="BPMNShape_lld_provision_process">
+        <omgdc:Bounds height="80.00000000000011" width="100.0" x="540.0" y="433.9568971633777"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="prepare_project_plan_process" id="BPMNShape_prepare_project_plan_process">
+        <omgdc:Bounds height="80.00000000000006" width="100.0" x="180.0" y="433.95689716337773"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="basic_enrichment_process" id="BPMNShape_basic_enrichment_process">
+        <omgdc:Bounds height="80.0" width="100.0" x="360.0" y="433.9568971633778"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-2C0AEE12-43AD-4318-951F-1D1C53B52C5B" id="BPMNEdge_sid-2C0AEE12-43AD-4318-951F-1D1C53B52C5B">
+        <omgdi:waypoint x="279.9499999998863" y="473.95689716337773"></omgdi:waypoint>
+        <omgdi:waypoint x="230.0" y="473.95689716337773"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-C0F70FAF-863A-4A85-B1A2-0FF8371852E4" id="BPMNEdge_sid-C0F70FAF-863A-4A85-B1A2-0FF8371852E4">
+        <omgdi:waypoint x="410.0" y="473.95689716337773"></omgdi:waypoint>
+        <omgdi:waypoint x="540.0" y="473.95689716337773"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="order_enrichment_stage_start" id="BPMNEdge_order_enrichment_stage_start">
+        <omgdi:waypoint x="95.5152696755203" y="473.95689716337773"></omgdi:waypoint>
+        <omgdi:waypoint x="179.9999999998618" y="473.95689716337773"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="order_enrichment_stage_end" id="BPMNEdge_order_enrichment_stage_end">
+        <omgdi:waypoint x="639.9499999999588" y="473.95689716337773"></omgdi:waypoint>
+        <omgdi:waypoint x="720.0" y="473.95689716337773"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

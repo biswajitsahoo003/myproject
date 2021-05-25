@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <process id="teamsdr-managed-service-training-workflow" name="teamsdr-managed-service-training-workflow" isExecutable="true">
+    <documentation>teamsdr-managed-service-training-workflow</documentation>
+    <startEvent id="service_implementation_stage_start">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ stageStartListener }"></flowable:executionListener>
+      </extensionElements>
+    </startEvent>
+    <endEvent id="sid-31C03C5C-D8A5-4815-ACAF-0B22BED0A675"></endEvent>
+    <inclusiveGateway id="sid-D2A59560-E253-4EA2-8B3C-6A022FA3B46A"></inclusiveGateway>
+    <callActivity id="teamsdr_managed_services_end_user_training_process" name="TeamsDR End User Training" calledElement="teamsdr_end_user_training_workflow" flowable:calledElementType="key" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ processStartListener }"></flowable:executionListener>
+        <flowable:executionListener event="end" delegateExpression="${ processEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </callActivity>
+    <callActivity id="teamsdr_managed_services_advance_level_training_process" name="TeamsDR Advanced Level Training" calledElement="teamsdr_advance_level_training_workflow" flowable:calledElementType="key" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ processStartListener }"></flowable:executionListener>
+        <flowable:executionListener event="end" delegateExpression="${ processEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </callActivity>
+    <inclusiveGateway id="sid-F041293C-F6FA-43CC-9715-1E44F0347797"></inclusiveGateway>
+    <serviceTask id="check-training-open" name="Check If Training Open" flowable:delegateExpression="${ CheckTrainingOpenDelegate }"></serviceTask>
+    <exclusiveGateway id="sid-195AE971-02D9-4ADF-8909-D9A72DB2FD35" default="sid-6AE6D204-6C00-4594-AD8C-EB66A8CDED71"></exclusiveGateway>
+    <exclusiveGateway id="sid-ED97FEFB-7130-4150-A22E-EFC4F13A8F5B"></exclusiveGateway>
+    <sequenceFlow id="sid-454EA0BF-84B4-4768-B955-91EBE643FF20" sourceRef="teamsdr_managed_services_advance_level_training_process" targetRef="sid-F041293C-F6FA-43CC-9715-1E44F0347797"></sequenceFlow>
+    <sequenceFlow id="sid-64439DAA-D040-4523-9023-6BAB0EB8BF1F" sourceRef="teamsdr_managed_services_end_user_training_process" targetRef="sid-F041293C-F6FA-43CC-9715-1E44F0347797"></sequenceFlow>
+    <sequenceFlow id="sid-E778C61C-1D34-4040-9D6E-72DF27872B1B" sourceRef="sid-D2A59560-E253-4EA2-8B3C-6A022FA3B46A" targetRef="teamsdr_managed_services_advance_level_training_process">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${isAdvancedLevelTraining == "yes"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-F430A024-04CC-4553-A1C2-049E7F48D13B" sourceRef="sid-D2A59560-E253-4EA2-8B3C-6A022FA3B46A" targetRef="teamsdr_managed_services_end_user_training_process">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${isEndUserTraining == "yes"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-7B082C43-290C-422B-92CB-ED534BAB3FBB" sourceRef="sid-195AE971-02D9-4ADF-8909-D9A72DB2FD35" targetRef="sid-D2A59560-E253-4EA2-8B3C-6A022FA3B46A">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${isTrainingOpen == "no"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="teamsdr_managed_services_training_activity_end" sourceRef="check-training-open" targetRef="sid-195AE971-02D9-4ADF-8909-D9A72DB2FD35">
+      <extensionElements>
+        <flowable:executionListener event="end" delegateExpression="${ activityEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="teamsdr_managed_services_training_activity_start" sourceRef="service_implementation_stage_start" targetRef="check-training-open">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ activityStartListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="sid-6AE6D204-6C00-4594-AD8C-EB66A8CDED71" sourceRef="sid-195AE971-02D9-4ADF-8909-D9A72DB2FD35" targetRef="sid-ED97FEFB-7130-4150-A22E-EFC4F13A8F5B"></sequenceFlow>
+    <sequenceFlow id="sid-23693289-E336-4584-A4C0-E585F5955805" sourceRef="sid-F041293C-F6FA-43CC-9715-1E44F0347797" targetRef="sid-ED97FEFB-7130-4150-A22E-EFC4F13A8F5B"></sequenceFlow>
+    <sequenceFlow id="service_implementation_stage_end" sourceRef="sid-ED97FEFB-7130-4150-A22E-EFC4F13A8F5B" targetRef="sid-31C03C5C-D8A5-4815-ACAF-0B22BED0A675">
+      <extensionElements>
+        <flowable:executionListener event="end" delegateExpression="${ stageEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_teamsdr-managed-service-training-workflow">
+    <bpmndi:BPMNPlane bpmnElement="teamsdr-managed-service-training-workflow" id="BPMNPlane_teamsdr-managed-service-training-workflow">
+      <bpmndi:BPMNShape bpmnElement="service_implementation_stage_start" id="BPMNShape_service_implementation_stage_start">
+        <omgdc:Bounds height="29.999999999999943" width="30.0" x="115.0" y="500.00000000000006"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-31C03C5C-D8A5-4815-ACAF-0B22BED0A675" id="BPMNShape_sid-31C03C5C-D8A5-4815-ACAF-0B22BED0A675">
+        <omgdc:Bounds height="28.0" width="28.0" x="1015.0" y="501.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-D2A59560-E253-4EA2-8B3C-6A022FA3B46A" id="BPMNShape_sid-D2A59560-E253-4EA2-8B3C-6A022FA3B46A">
+        <omgdc:Bounds height="40.0" width="40.0" x="415.0" y="495.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="teamsdr_managed_services_end_user_training_process" id="BPMNShape_teamsdr_managed_services_end_user_training_process">
+        <omgdc:Bounds height="80.0" width="99.99999999999989" x="580.0" y="400.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="teamsdr_managed_services_advance_level_training_process" id="BPMNShape_teamsdr_managed_services_advance_level_training_process">
+        <omgdc:Bounds height="80.0" width="99.99999999999989" x="580.0000000000001" y="550.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-F041293C-F6FA-43CC-9715-1E44F0347797" id="BPMNShape_sid-F041293C-F6FA-43CC-9715-1E44F0347797">
+        <omgdc:Bounds height="40.0" width="40.0" x="805.0" y="495.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="check-training-open" id="BPMNShape_check-training-open">
+        <omgdc:Bounds height="60.0" width="80.0" x="190.0" y="485.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-195AE971-02D9-4ADF-8909-D9A72DB2FD35" id="BPMNShape_sid-195AE971-02D9-4ADF-8909-D9A72DB2FD35">
+        <omgdc:Bounds height="40.0" width="40.0" x="325.0" y="495.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-ED97FEFB-7130-4150-A22E-EFC4F13A8F5B" id="BPMNShape_sid-ED97FEFB-7130-4150-A22E-EFC4F13A8F5B">
+        <omgdc:Bounds height="40.0" width="40.0" x="908.0" y="495.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-454EA0BF-84B4-4768-B955-91EBE643FF20" id="BPMNEdge_sid-454EA0BF-84B4-4768-B955-91EBE643FF20">
+        <omgdi:waypoint x="679.9499999998152" y="590.0"></omgdi:waypoint>
+        <omgdi:waypoint x="825.0" y="590.0"></omgdi:waypoint>
+        <omgdi:waypoint x="825.3716216216217" y="534.5402909336943"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-6AE6D204-6C00-4594-AD8C-EB66A8CDED71" id="BPMNEdge_sid-6AE6D204-6C00-4594-AD8C-EB66A8CDED71">
+        <omgdi:waypoint x="345.5" y="534.4437909567497"></omgdi:waypoint>
+        <omgdi:waypoint x="345.5" y="668.0"></omgdi:waypoint>
+        <omgdi:waypoint x="928.5" y="668.0"></omgdi:waypoint>
+        <omgdi:waypoint x="928.5" y="534.4061843832022"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-64439DAA-D040-4523-9023-6BAB0EB8BF1F" id="BPMNEdge_sid-64439DAA-D040-4523-9023-6BAB0EB8BF1F">
+        <omgdi:waypoint x="679.9499999999998" y="440.0"></omgdi:waypoint>
+        <omgdi:waypoint x="825.0" y="440.0"></omgdi:waypoint>
+        <omgdi:waypoint x="825.3666666666666" y="495.3666666666666"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-F430A024-04CC-4553-A1C2-049E7F48D13B" id="BPMNEdge_sid-F430A024-04CC-4553-A1C2-049E7F48D13B">
+        <omgdi:waypoint x="435.0" y="495.0"></omgdi:waypoint>
+        <omgdi:waypoint x="435.0" y="440.0"></omgdi:waypoint>
+        <omgdi:waypoint x="580.0" y="440.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-23693289-E336-4584-A4C0-E585F5955805" id="BPMNEdge_sid-23693289-E336-4584-A4C0-E585F5955805">
+        <omgdi:waypoint x="844.5335210577814" y="515.406862745098"></omgdi:waypoint>
+        <omgdi:waypoint x="908.0970873786315" y="515.0968446601942"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="service_implementation_stage_end" id="BPMNEdge_service_implementation_stage_end">
+        <omgdi:waypoint x="947.5351898101898" y="515.405"></omgdi:waypoint>
+        <omgdi:waypoint x="1015.000166983684" y="515.0694023295948"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-E778C61C-1D34-4040-9D6E-72DF27872B1B" id="BPMNEdge_sid-E778C61C-1D34-4040-9D6E-72DF27872B1B">
+        <omgdi:waypoint x="435.0" y="534.9367177097205"></omgdi:waypoint>
+        <omgdi:waypoint x="435.0" y="590.0"></omgdi:waypoint>
+        <omgdi:waypoint x="579.9999999999902" y="590.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-7B082C43-290C-422B-92CB-ED534BAB3FBB" id="BPMNEdge_sid-7B082C43-290C-422B-92CB-ED534BAB3FBB">
+        <omgdi:waypoint x="364.54570707069536" y="515.3932584269663"></omgdi:waypoint>
+        <omgdi:waypoint x="415.1111111110953" y="515.1108333333334"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="teamsdr_managed_services_training_activity_start" id="BPMNEdge_teamsdr_managed_services_training_activity_start">
+        <omgdi:waypoint x="144.94999817301806" y="515.0"></omgdi:waypoint>
+        <omgdi:waypoint x="190.0" y="515.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="teamsdr_managed_services_training_activity_end" id="BPMNEdge_teamsdr_managed_services_training_activity_end">
+        <omgdi:waypoint x="269.95000000000005" y="515.0"></omgdi:waypoint>
+        <omgdi:waypoint x="325.0" y="515.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

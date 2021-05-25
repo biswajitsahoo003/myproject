@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <signal id="reopen-site-readiness-signal" name="reopen-site-readiness-signal" flowable:scope="global"></signal>
+  <process id="plan_lm_impl_p2p_bso_rf_workflow_sprint2" name="plan_lm_impl_p2p_bso_rf_workflow_sprint2" isExecutable="true">
+    <documentation>plan_lm_impl_p2p_bso_rf_workflow_sprint2</documentation>
+    <startEvent id="sid-917E4ADC-169E-49C9-819C-FA28A0551BE4"></startEvent>
+    <endEvent id="sid-BC763C88-5856-4C78-ABC6-BBFD7745ABE4"></endEvent>
+    <parallelGateway id="sid-99C930D1-BE9F-4A0B-AD6B-11BAC86BA5A7"></parallelGateway>
+    <sequenceFlow id="sid-9037D294-B238-4040-A6C9-2A86EC89A4F0" sourceRef="install-rf-equipment-p2p_plan" targetRef="sid-82BBFCB5-9160-4A8A-9B85-52FB22242ACE"></sequenceFlow>
+    <exclusiveGateway id="sid-DFBA4D5F-3C0D-4477-913D-6B6E5076B85B"></exclusiveGateway>
+    <sequenceFlow id="sid-40BE004C-0C51-459B-9A39-9974CFE726AF" sourceRef="sid-99C930D1-BE9F-4A0B-AD6B-11BAC86BA5A7" targetRef="sid-DFBA4D5F-3C0D-4477-913D-6B6E5076B85B"></sequenceFlow>
+    <sequenceFlow id="sid-AF6DC5F7-DFDE-4BEE-9E09-BDD281ACDD61" sourceRef="sid-DFBA4D5F-3C0D-4477-913D-6B6E5076B85B" targetRef="install-rf-equipment-p2p_plan"></sequenceFlow>
+    <exclusiveGateway id="sid-82BBFCB5-9160-4A8A-9B85-52FB22242ACE" default="sid-5322F79F-FAE7-4C2C-BC58-A4CF92AAA92F"></exclusiveGateway>
+    <sequenceFlow id="sid-8870BBE2-12FD-4389-BF4B-2FB4A35EC3B1" sourceRef="customer-appointment-rf-installation_appchange_plan" targetRef="sid-DFBA4D5F-3C0D-4477-913D-6B6E5076B85B"></sequenceFlow>
+    <sequenceFlow id="sid-269FB6AE-E8E9-4C10-9307-40F3CC230DD4" sourceRef="arrange-field-engineer-rf-ss_plan" targetRef="sid-99C930D1-BE9F-4A0B-AD6B-11BAC86BA5A7"></sequenceFlow>
+    <sequenceFlow id="sid-D13955F8-0A01-44AB-9F39-B61E743F3E5C" sourceRef="customer-appointment-rf-installation_plan" targetRef="arrange-field-engineer-rf-ss_plan"></sequenceFlow>
+    <sequenceFlow id="sid-5322F79F-FAE7-4C2C-BC58-A4CF92AAA92F" sourceRef="sid-82BBFCB5-9160-4A8A-9B85-52FB22242ACE" targetRef="rf-config-p2p_plan"></sequenceFlow>
+    <sequenceFlow id="sid-2406D441-AC30-4B29-8021-4B6C5FF6823C" sourceRef="rf-config-p2p_plan" targetRef="sid-BC763C88-5856-4C78-ABC6-BBFD7745ABE4"></sequenceFlow>
+    <serviceTask id="customer-appointment-rf-installation_plan" name="Provide  Appointment for  RF Installation" flowable:delegateExpression="${ taskPlanDelegate }">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[assign-dummy-config-process_end_plan,check-p2p-config-required_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="arrange-field-engineer-rf-ss_plan" name="Arrange Field Engineer for Site Survey" flowable:delegateExpression="${ taskPlanDelegate }">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[customer-appointment-rf-installation_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="install-rf-equipment-p2p_plan" name="Install RF Equipment" flowable:delegateExpression="${ taskPlanDelegate }">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[arrange-field-engineer-rf-ss_plan,install-rf-equipment-p2p_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="customer-appointment-rf-installation_appchange_plan" name="Provide  Appointment for  RF Installation " flowable:delegateExpression="${ taskPlanDelegate }">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[install-rf-equipment-p2p_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="rf-config-p2p_plan" name="RF Config P2P" flowable:delegateExpression="${ taskPlanDelegate }">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[install-rf-equipment-p2p_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="sid-D888FBF3-F763-4123-80F9-B83325D730B1" sourceRef="sid-82BBFCB5-9160-4A8A-9B85-52FB22242ACE" targetRef="customer-appointment-rf-installation_appchange_plan">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ var:get("appointmentAction")  == "reschedule"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-0540B160-6400-4AEF-890B-1A6150619DE3" sourceRef="sid-917E4ADC-169E-49C9-819C-FA28A0551BE4" targetRef="customer-appointment-rf-installation_plan"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_plan_lm_impl_p2p_bso_rf_workflow_sprint2">
+    <bpmndi:BPMNPlane bpmnElement="plan_lm_impl_p2p_bso_rf_workflow_sprint2" id="BPMNPlane_plan_lm_impl_p2p_bso_rf_workflow_sprint2">
+      <bpmndi:BPMNShape bpmnElement="sid-917E4ADC-169E-49C9-819C-FA28A0551BE4" id="BPMNShape_sid-917E4ADC-169E-49C9-819C-FA28A0551BE4">
+        <omgdc:Bounds height="30.0" width="30.0" x="30.0" y="120.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-BC763C88-5856-4C78-ABC6-BBFD7745ABE4" id="BPMNShape_sid-BC763C88-5856-4C78-ABC6-BBFD7745ABE4">
+        <omgdc:Bounds height="28.0" width="28.0" x="960.0000000000001" y="116.00000000000003"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-99C930D1-BE9F-4A0B-AD6B-11BAC86BA5A7" id="BPMNShape_sid-99C930D1-BE9F-4A0B-AD6B-11BAC86BA5A7">
+        <omgdc:Bounds height="40.0" width="40.0" x="428.0" y="110.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-DFBA4D5F-3C0D-4477-913D-6B6E5076B85B" id="BPMNShape_sid-DFBA4D5F-3C0D-4477-913D-6B6E5076B85B">
+        <omgdc:Bounds height="40.0" width="40.0" x="510.0" y="110.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-82BBFCB5-9160-4A8A-9B85-52FB22242ACE" id="BPMNShape_sid-82BBFCB5-9160-4A8A-9B85-52FB22242ACE">
+        <omgdc:Bounds height="40.0" width="40.0" x="749.5" y="110.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="customer-appointment-rf-installation_plan" id="BPMNShape_customer-appointment-rf-installation_plan">
+        <omgdc:Bounds height="67.0" width="118.0" x="120.0" y="99.5"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="arrange-field-engineer-rf-ss_plan" id="BPMNShape_arrange-field-engineer-rf-ss_plan">
+        <omgdc:Bounds height="67.0" width="118.0" x="270.0" y="96.5"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="install-rf-equipment-p2p_plan" id="BPMNShape_install-rf-equipment-p2p_plan">
+        <omgdc:Bounds height="80.0" width="95.0" x="600.0" y="90.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="customer-appointment-rf-installation_appchange_plan" id="BPMNShape_customer-appointment-rf-installation_appchange_plan">
+        <omgdc:Bounds height="61.0" width="117.0" x="600.0" y="203.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="rf-config-p2p_plan" id="BPMNShape_rf-config-p2p_plan">
+        <omgdc:Bounds height="79.99999999999999" width="95.0" x="825.0000000000001" y="90.00000000000001"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-D13955F8-0A01-44AB-9F39-B61E743F3E5C" id="BPMNEdge_sid-D13955F8-0A01-44AB-9F39-B61E743F3E5C">
+        <omgdi:waypoint x="237.95" y="131.82000000000002"></omgdi:waypoint>
+        <omgdi:waypoint x="269.99999999999824" y="131.179"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-0540B160-6400-4AEF-890B-1A6150619DE3" id="BPMNEdge_sid-0540B160-6400-4AEF-890B-1A6150619DE3">
+        <omgdi:waypoint x="59.94836901298811" y="134.7761438274896"></omgdi:waypoint>
+        <omgdi:waypoint x="119.99999999999653" y="133.87985074626866"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-5322F79F-FAE7-4C2C-BC58-A4CF92AAA92F" id="BPMNEdge_sid-5322F79F-FAE7-4C2C-BC58-A4CF92AAA92F">
+        <omgdi:waypoint x="789.4403249272298" y="130.0"></omgdi:waypoint>
+        <omgdi:waypoint x="824.9999999999745" y="130.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-AF6DC5F7-DFDE-4BEE-9E09-BDD281ACDD61" id="BPMNEdge_sid-AF6DC5F7-DFDE-4BEE-9E09-BDD281ACDD61">
+        <omgdi:waypoint x="549.9415178571154" y="130.0"></omgdi:waypoint>
+        <omgdi:waypoint x="600.0" y="130.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-40BE004C-0C51-459B-9A39-9974CFE726AF" id="BPMNEdge_sid-40BE004C-0C51-459B-9A39-9974CFE726AF">
+        <omgdi:waypoint x="467.9378501826946" y="130.0"></omgdi:waypoint>
+        <omgdi:waypoint x="510.0" y="130.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-269FB6AE-E8E9-4C10-9307-40F3CC230DD4" id="BPMNEdge_sid-269FB6AE-E8E9-4C10-9307-40F3CC230DD4">
+        <omgdi:waypoint x="387.95000000000005" y="130.0"></omgdi:waypoint>
+        <omgdi:waypoint x="428.0" y="130.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-9037D294-B238-4040-A6C9-2A86EC89A4F0" id="BPMNEdge_sid-9037D294-B238-4040-A6C9-2A86EC89A4F0">
+        <omgdi:waypoint x="694.9499999999999" y="130.0"></omgdi:waypoint>
+        <omgdi:waypoint x="749.5" y="130.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-2406D441-AC30-4B29-8021-4B6C5FF6823C" id="BPMNEdge_sid-2406D441-AC30-4B29-8021-4B6C5FF6823C">
+        <omgdi:waypoint x="919.95" y="130.0"></omgdi:waypoint>
+        <omgdi:waypoint x="960.0000000000001" y="130.00000000000003"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-8870BBE2-12FD-4389-BF4B-2FB4A35EC3B1" id="BPMNEdge_sid-8870BBE2-12FD-4389-BF4B-2FB4A35EC3B1">
+        <omgdi:waypoint x="600.0" y="233.27237354085605"></omgdi:waypoint>
+        <omgdi:waypoint x="530.0" y="233.0"></omgdi:waypoint>
+        <omgdi:waypoint x="530.0" y="149.90964528668613"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-D888FBF3-F763-4123-80F9-B83325D730B1" id="BPMNEdge_sid-D888FBF3-F763-4123-80F9-B83325D730B1">
+        <omgdi:waypoint x="769.5963768115942" y="149.84408783783783"></omgdi:waypoint>
+        <omgdi:waypoint x="770.0" y="233.0"></omgdi:waypoint>
+        <omgdi:waypoint x="716.9499999999954" y="233.23766816143498"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

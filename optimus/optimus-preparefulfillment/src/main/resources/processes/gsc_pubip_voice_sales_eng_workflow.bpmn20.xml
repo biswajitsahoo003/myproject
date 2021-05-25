@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <process id="gsc_pubip_voice_sales_eng_workflow" name="gsc_pubip_voice_sales_eng_workflow" isExecutable="true">
+    <startEvent id="startEvent1"></startEvent>
+    <userTask id="gsc-voice-sales-engr" name="Voice Sales Engineering">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="sid-7A174EB0-A838-4558-9E3D-33B93307C780" sourceRef="startEvent1" targetRef="gsc-voice-sales-engr"></sequenceFlow>
+    <exclusiveGateway id="sid-1B4D22AF-D124-401A-B8C1-D5AFDA377B2E" default="sid-7B9BC11A-325A-43FE-AB9D-839B3D063BB8"></exclusiveGateway>
+    <sequenceFlow id="sid-B1C0FA5D-28A2-47DC-9FBF-90807541ADBE" sourceRef="gsc-voice-sales-engr" targetRef="sid-1B4D22AF-D124-401A-B8C1-D5AFDA377B2E"></sequenceFlow>
+    <endEvent id="sid-231509CF-E01B-4BEA-B360-14AA5B578BCD"></endEvent>
+    <callActivity id="gsc_validate_supporting_document_process" name="Validate document process" calledElement="gsc_validate_document_workflow" flowable:calledElementType="key" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false"></callActivity>
+    <sequenceFlow id="sid-2165AD92-D5BF-499E-A228-2343F7D01571" sourceRef="gsc_validate_supporting_document_process" targetRef="gsc-voice-sales-engr"></sequenceFlow>
+    <sequenceFlow id="sid-14900EF4-43CA-4E35-A516-4EC5C56C31AD" sourceRef="basic-enrichment" targetRef="gsc-voice-sales-engr"></sequenceFlow>
+    <callActivity id="basic-enrichment" name="Basic Enrichment" calledElement="gsc_basic_enrichment_workflow" flowable:calledElementType="key" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false"></callActivity>
+    <sequenceFlow id="sid-7B9BC11A-325A-43FE-AB9D-839B3D063BB8" sourceRef="sid-1B4D22AF-D124-401A-B8C1-D5AFDA377B2E" targetRef="sid-231509CF-E01B-4BEA-B360-14AA5B578BCD"></sequenceFlow>
+    <sequenceFlow id="sid-8C8017B1-EAF1-4255-B0BE-5BB37D4580DC" sourceRef="sid-1B4D22AF-D124-401A-B8C1-D5AFDA377B2E" targetRef="basic-enrichment">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ var:get(voicesalesRejTo) == "enrichment" }]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-256A55E9-6768-47AD-B3DA-B9576D00B7A2" sourceRef="sid-1B4D22AF-D124-401A-B8C1-D5AFDA377B2E" targetRef="gsc_validate_supporting_document_process">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ var:get(voicesalesRejTo) == "validatedoc" }]]></conditionExpression>
+    </sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_gsc_pubip_voice_sales_eng_workflow">
+    <bpmndi:BPMNPlane bpmnElement="gsc_pubip_voice_sales_eng_workflow" id="BPMNPlane_gsc_pubip_voice_sales_eng_workflow">
+      <bpmndi:BPMNShape bpmnElement="startEvent1" id="BPMNShape_startEvent1">
+        <omgdc:Bounds height="30.0" width="30.0" x="100.0" y="163.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="gsc-voice-sales-engr" id="BPMNShape_gsc-voice-sales-engr">
+        <omgdc:Bounds height="80.0" width="100.0" x="165.0" y="135.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-1B4D22AF-D124-401A-B8C1-D5AFDA377B2E" id="BPMNShape_sid-1B4D22AF-D124-401A-B8C1-D5AFDA377B2E">
+        <omgdc:Bounds height="40.0" width="40.0" x="360.0" y="155.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-231509CF-E01B-4BEA-B360-14AA5B578BCD" id="BPMNShape_sid-231509CF-E01B-4BEA-B360-14AA5B578BCD">
+        <omgdc:Bounds height="28.0" width="28.0" x="480.0" y="164.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="gsc_validate_supporting_document_process" id="BPMNShape_gsc_validate_supporting_document_process">
+        <omgdc:Bounds height="80.0" width="100.0" x="330.0" y="240.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="basic-enrichment" id="BPMNShape_basic-enrichment">
+        <omgdc:Bounds height="80.0" width="100.0" x="330.0" y="15.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-7A174EB0-A838-4558-9E3D-33B93307C780" id="BPMNEdge_sid-7A174EB0-A838-4558-9E3D-33B93307C780">
+        <omgdi:waypoint x="129.94340692927761" y="177.55019845363262"></omgdi:waypoint>
+        <omgdi:waypoint x="164.99999999999906" y="176.4985"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-8C8017B1-EAF1-4255-B0BE-5BB37D4580DC" id="BPMNEdge_sid-8C8017B1-EAF1-4255-B0BE-5BB37D4580DC">
+        <omgdi:waypoint x="380.37654320987656" y="155.37654320987656"></omgdi:waypoint>
+        <omgdi:waypoint x="380.0058282208589" y="94.95"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-B1C0FA5D-28A2-47DC-9FBF-90807541ADBE" id="BPMNEdge_sid-B1C0FA5D-28A2-47DC-9FBF-90807541ADBE">
+        <omgdi:waypoint x="264.94999999999345" y="175.15090634441086"></omgdi:waypoint>
+        <omgdi:waypoint x="360.43939393939337" y="175.43939393939394"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-14900EF4-43CA-4E35-A516-4EC5C56C31AD" id="BPMNEdge_sid-14900EF4-43CA-4E35-A516-4EC5C56C31AD">
+        <omgdi:waypoint x="330.0" y="55.0"></omgdi:waypoint>
+        <omgdi:waypoint x="215.0" y="55.0"></omgdi:waypoint>
+        <omgdi:waypoint x="215.0" y="135.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-7B9BC11A-325A-43FE-AB9D-839B3D063BB8" id="BPMNEdge_sid-7B9BC11A-325A-43FE-AB9D-839B3D063BB8">
+        <omgdi:waypoint x="399.0337855297158" y="175.90840517241375"></omgdi:waypoint>
+        <omgdi:waypoint x="480.0024665119451" y="177.69170324853144"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-256A55E9-6768-47AD-B3DA-B9576D00B7A2" id="BPMNEdge_sid-256A55E9-6768-47AD-B3DA-B9576D00B7A2">
+        <omgdi:waypoint x="380.3538461538461" y="194.58099078341016"></omgdi:waypoint>
+        <omgdi:waypoint x="380.00725190839694" y="240.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-2165AD92-D5BF-499E-A228-2343F7D01571" id="BPMNEdge_sid-2165AD92-D5BF-499E-A228-2343F7D01571">
+        <omgdi:waypoint x="330.0" y="280.0"></omgdi:waypoint>
+        <omgdi:waypoint x="215.0" y="280.0"></omgdi:waypoint>
+        <omgdi:waypoint x="215.0" y="214.95000000000002"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <process id="plan-check-colo-availability_workflow" name="plan-check-colo-availability_workflow" isExecutable="true">
+    <documentation>plan-check-colo-availability_workflow</documentation>
+    <startEvent id="sid-D174F2AD-026E-4377-8E88-DD42D88B103A"></startEvent>
+    <endEvent id="sid-5139A8D0-3A53-4569-99AA-AD62C5B60A91"></endEvent>
+    <sequenceFlow id="sid-295D0612-2F2A-4470-9C2D-AB3CB5CEC858" sourceRef="check-colo-availability_activity_end_plan" targetRef="sid-5139A8D0-3A53-4569-99AA-AD62C5B60A91"></sequenceFlow>
+    <sequenceFlow id="sid-290311DA-AC36-49B3-B0FD-609F6565DB75" sourceRef="check-colo-availability" targetRef="provide-po-colo"></sequenceFlow>
+    <sequenceFlow id="sid-E6DC8F46-61B1-47AB-9BB8-D6B604EAF6F4" sourceRef="sid-D174F2AD-026E-4377-8E88-DD42D88B103A" targetRef="availability_activity_start_plan"></sequenceFlow>
+    <serviceTask id="check-colo-availability" name="Check COLO resource Availability" flowable:delegateExpression="${taskPlanDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[availability_activity_start_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="provide-po-colo" name="Provide PO Colo" flowable:delegateExpression="${taskPlanDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[check-colo-availability]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="sid-5B115345-3DEB-476D-ADAC-9FDC77F37342" sourceRef="provide-po-colo" targetRef="check-colo-availability_activity_end_plan"></sequenceFlow>
+    <serviceTask id="check-colo-availability_activity_end_plan" name="check colo availability activity end plan" flowable:delegateExpression="${activityPlanEndDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[provide-po-colo]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="sid-286AB838-365B-4D94-B0E2-4499091B703D" sourceRef="availability_activity_start_plan" targetRef="check-colo-availability"></sequenceFlow>
+    <serviceTask id="availability_activity_start_plan" name="check colo availability activity start plan" flowable:delegateExpression="${activityPlanStartDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[check-colo-availability-process_start_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_plan-check-colo-availability_workflow">
+    <bpmndi:BPMNPlane bpmnElement="plan-check-colo-availability_workflow" id="BPMNPlane_plan-check-colo-availability_workflow">
+      <bpmndi:BPMNShape bpmnElement="sid-D174F2AD-026E-4377-8E88-DD42D88B103A" id="BPMNShape_sid-D174F2AD-026E-4377-8E88-DD42D88B103A">
+        <omgdc:Bounds height="30.0" width="30.0" x="90.00000000000001" y="105.00000000000003"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-5139A8D0-3A53-4569-99AA-AD62C5B60A91" id="BPMNShape_sid-5139A8D0-3A53-4569-99AA-AD62C5B60A91">
+        <omgdc:Bounds height="28.0" width="28.0" x="795.0000000000002" y="150.00000000000006"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="check-colo-availability" id="BPMNShape_check-colo-availability">
+        <omgdc:Bounds height="80.0" width="100.0" x="300.0" y="60.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="provide-po-colo" id="BPMNShape_provide-po-colo">
+        <omgdc:Bounds height="79.99999999999999" width="100.0" x="435.0000000000001" y="70.00000000000001"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="check-colo-availability_activity_end_plan" id="BPMNShape_check-colo-availability_activity_end_plan">
+        <omgdc:Bounds height="79.99999999999999" width="100.0" x="600.0000000000002" y="70.00000000000001"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="availability_activity_start_plan" id="BPMNShape_availability_activity_start_plan">
+        <omgdc:Bounds height="80.0" width="100.0" x="150.0" y="75.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-290311DA-AC36-49B3-B0FD-609F6565DB75" id="BPMNEdge_sid-290311DA-AC36-49B3-B0FD-609F6565DB75">
+        <omgdi:waypoint x="399.9499999999998" y="103.7"></omgdi:waypoint>
+        <omgdi:waypoint x="435.0000000000001" y="106.29629629629632"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-286AB838-365B-4D94-B0E2-4499091B703D" id="BPMNEdge_sid-286AB838-365B-4D94-B0E2-4499091B703D">
+        <omgdi:waypoint x="249.95000000000002" y="115.0"></omgdi:waypoint>
+        <omgdi:waypoint x="275.0" y="115.0"></omgdi:waypoint>
+        <omgdi:waypoint x="275.0" y="100.0"></omgdi:waypoint>
+        <omgdi:waypoint x="300.0" y="100.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-E6DC8F46-61B1-47AB-9BB8-D6B604EAF6F4" id="BPMNEdge_sid-E6DC8F46-61B1-47AB-9BB8-D6B604EAF6F4">
+        <omgdi:waypoint x="119.91518306064413" y="118.96816919837416"></omgdi:waypoint>
+        <omgdi:waypoint x="149.9999999999999" y="116.89383423369851"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-295D0612-2F2A-4470-9C2D-AB3CB5CEC858" id="BPMNEdge_sid-295D0612-2F2A-4470-9C2D-AB3CB5CEC858">
+        <omgdi:waypoint x="699.9500000000002" y="122.00000000000001"></omgdi:waypoint>
+        <omgdi:waypoint x="809.0000000000002" y="122.0"></omgdi:waypoint>
+        <omgdi:waypoint x="809.0000000000002" y="150.00000000000006"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-5B115345-3DEB-476D-ADAC-9FDC77F37342" id="BPMNEdge_sid-5B115345-3DEB-476D-ADAC-9FDC77F37342">
+        <omgdi:waypoint x="534.9500000000002" y="110.0"></omgdi:waypoint>
+        <omgdi:waypoint x="599.9999999999706" y="110.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

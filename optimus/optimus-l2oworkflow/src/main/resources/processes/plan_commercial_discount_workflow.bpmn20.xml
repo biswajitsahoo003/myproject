@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <process id="plan_commercial_discount_workflow" name="plan_commercial_discount_workflow" isExecutable="true">
+    <documentation>plan_commercial_discount_workflow</documentation>
+    <startEvent id="startEvent1"></startEvent>
+    <exclusiveGateway id="sid-ED11C296-D993-4567-8FC6-3E4F784E15AB" default="sid-CD67581E-3529-40C3-81A3-FEE569F36284"></exclusiveGateway>
+    <exclusiveGateway id="sid-04264718-666D-42BF-B361-FA425128BF54" default="sid-59FA9C5C-2851-43D2-BA61-C74C126D88FC"></exclusiveGateway>
+    <exclusiveGateway id="sid-03D496F2-4EE9-4AAE-9756-0238B52CB419"></exclusiveGateway>
+    <endEvent id="quote_stage_end"></endEvent>
+    <sequenceFlow id="sid-FD195FA2-9D0F-436A-87AF-64BA4759CA3C" sourceRef="commercial-discount-1_plan" targetRef="sid-ED11C296-D993-4567-8FC6-3E4F784E15AB"></sequenceFlow>
+    <serviceTask id="process-commercial-discount_plan" name="Process Commercial Discount" flowable:delegateExpression="${taskPlanDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[commercial-discount-3_plan,commercial-discount-1_plan,commercial-discount-2_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="sid-C1E8CD95-CF71-43DF-A3F0-E72C6F329FCB" name="Yes" sourceRef="sid-04264718-666D-42BF-B361-FA425128BF54" targetRef="commercial-discount-3_plan">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ discountApprovalLevel >= 3 }]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-4DEA2377-1231-4DB9-A6F0-37DE04AC8692" sourceRef="commercial-discount-2_plan" targetRef="sid-04264718-666D-42BF-B361-FA425128BF54"></sequenceFlow>
+    <sequenceFlow id="sid-CD67581E-3529-40C3-81A3-FEE569F36284" name="No" sourceRef="sid-ED11C296-D993-4567-8FC6-3E4F784E15AB" targetRef="sid-04264718-666D-42BF-B361-FA425128BF54"></sequenceFlow>
+    <sequenceFlow id="sid-59FA9C5C-2851-43D2-BA61-C74C126D88FC" name="No" sourceRef="sid-04264718-666D-42BF-B361-FA425128BF54" targetRef="sid-03D496F2-4EE9-4AAE-9756-0238B52CB419"></sequenceFlow>
+    <sequenceFlow id="sid-07627ED6-54D5-431B-B70D-16E621776FB0" sourceRef="sid-03D496F2-4EE9-4AAE-9756-0238B52CB419" targetRef="process-commercial-discount_plan"></sequenceFlow>
+    <serviceTask id="commercial-discount-1_plan" name="C1 Approval" flowable:delegateExpression="${taskPlanDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[commercial_discount_activity_start_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="commercial-discount-2_plan" name="C2 Approval" flowable:delegateExpression="${taskPlanDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[commercial-discount-1_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="commercial-discount-3_plan" name="C3 Approval" flowable:delegateExpression="${taskPlanDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[commercial-discount-2_plan,commercial-discount-1_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="quote_stage_start_plan" name="Quote Stage Start" flowable:delegateExpression="${stagePlanStartDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[root]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="quote_stage_end_plan" name="Quote Stage End" flowable:delegateExpression="${stagePlanEndDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[commercial_discount_process_end_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="commercial_discount_activity_end_plan" name="commercial discount activity end plan" flowable:delegateExpression="${activityPlanEndDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[process-commercial-discount_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="sid-13431647-D1BF-44EC-B4E2-3719ACE3B24B" sourceRef="commercial_discount_process_end_plan" targetRef="quote_stage_end_plan"></sequenceFlow>
+    <serviceTask id="commercial_discount_process_end_plan" name="commercial discount process end" flowable:delegateExpression="${processPlanEndDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[commercial_discount_activity_end_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="commercial_discount_process_start_plan" name="commercial discount process start plan" flowable:delegateExpression="${processPlanStartDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[quote_stage_start_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="commercial_discount_activity_start_plan" name="commercial discount activity start plan" flowable:delegateExpression="${activityPlanStartDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[commercial_discount_process_start_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="sid-F750C50E-09E4-4232-ABC5-E69D460CDE68" sourceRef="quote_stage_end_plan" targetRef="quote_stage_end"></sequenceFlow>
+    <sequenceFlow id="sid-A6ED3D9C-9A1F-4BB3-8B97-168DA5C59C6B" sourceRef="commercial_discount_process_start_plan" targetRef="commercial_discount_activity_start_plan"></sequenceFlow>
+    <sequenceFlow id="sid-A660FB73-BB63-4AF4-AB66-BD6D7BF3B1CB" sourceRef="commercial_discount_activity_start_plan" targetRef="commercial-discount-1_plan"></sequenceFlow>
+    <sequenceFlow id="sid-E4CB4527-F854-40C2-851B-DD703B61A9D7" name="Yes" sourceRef="sid-ED11C296-D993-4567-8FC6-3E4F784E15AB" targetRef="commercial-discount-2_plan">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ discountApprovalLevel >= 2 }]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-0B34AE2B-767C-4E84-8E06-DD312395CBFB" sourceRef="commercial-discount-3_plan" targetRef="sid-03D496F2-4EE9-4AAE-9756-0238B52CB419"></sequenceFlow>
+    <sequenceFlow id="commercial_discount_activity_end" sourceRef="process-commercial-discount_plan" targetRef="commercial_discount_activity_end_plan">
+      <extensionElements>
+        <flowable:executionListener event="end" delegateExpression="${ activityEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="sid-E2569008-F158-42CB-9D92-CD58B22E1F89" sourceRef="commercial_discount_activity_end_plan" targetRef="commercial_discount_process_end_plan"></sequenceFlow>
+    <sequenceFlow id="sid-4D6F6A2B-66A0-46A3-8BE1-52E249D2D0F4" sourceRef="quote_stage_start_plan" targetRef="commercial_discount_process_start_plan"></sequenceFlow>
+    <sequenceFlow id="sid-5955C0D5-9526-4067-B08C-C0491431EC7D" sourceRef="startEvent1" targetRef="quote_stage_start_plan"></sequenceFlow>
+    <textAnnotation id="sid-7D913A27-61F4-4CA3-9CA8-10557E7A6755">
+      <text>C2 Approval Required?</text>
+    </textAnnotation>
+    <association id="sid-A7CE2A28-5D04-4075-9B01-6B352D21D4C5" sourceRef="sid-ED11C296-D993-4567-8FC6-3E4F784E15AB" targetRef="sid-7D913A27-61F4-4CA3-9CA8-10557E7A6755" associationDirection="None"></association>
+    <textAnnotation id="sid-B7DBB8ED-5E95-4368-A036-78CF428E92E8">
+      <text>C3 Approval Required?</text>
+    </textAnnotation>
+    <association id="sid-58B74A73-7AA0-4017-A8A1-86F30E8B6AEB" sourceRef="sid-04264718-666D-42BF-B361-FA425128BF54" targetRef="sid-B7DBB8ED-5E95-4368-A036-78CF428E92E8" associationDirection="None"></association>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_plan_commercial_discount_workflow">
+    <bpmndi:BPMNPlane bpmnElement="plan_commercial_discount_workflow" id="BPMNPlane_plan_commercial_discount_workflow">
+      <bpmndi:BPMNShape bpmnElement="startEvent1" id="BPMNShape_startEvent1">
+        <omgdc:Bounds height="30.0" width="30.0" x="0.0" y="30.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-ED11C296-D993-4567-8FC6-3E4F784E15AB" id="BPMNShape_sid-ED11C296-D993-4567-8FC6-3E4F784E15AB">
+        <omgdc:Bounds height="40.0" width="40.0" x="370.0" y="126.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-7D913A27-61F4-4CA3-9CA8-10557E7A6755" id="BPMNShape_sid-7D913A27-61F4-4CA3-9CA8-10557E7A6755">
+        <omgdc:Bounds height="36.0" width="144.0" x="300.0" y="31.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-A7CE2A28-5D04-4075-9B01-6B352D21D4C5" id="BPMNShape_sid-A7CE2A28-5D04-4075-9B01-6B352D21D4C5">
+        <omgdc:Bounds height="68.34666862308832" width="61.97265635891108" x="318.11468744554446" y="66.66971256345583"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-04264718-666D-42BF-B361-FA425128BF54" id="BPMNShape_sid-04264718-666D-42BF-B361-FA425128BF54">
+        <omgdc:Bounds height="40.0" width="40.0" x="600.0" y="126.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-B7DBB8ED-5E95-4368-A036-78CF428E92E8" id="BPMNShape_sid-B7DBB8ED-5E95-4368-A036-78CF428E92E8">
+        <omgdc:Bounds height="38.0" width="158.0" x="600.0" y="30.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-58B74A73-7AA0-4017-A8A1-86F30E8B6AEB" id="BPMNShape_sid-58B74A73-7AA0-4017-A8A1-86F30E8B6AEB">
+        <omgdc:Bounds height="60.98388804748974" width="11.742470607149585" x="605.3165771964252" y="67.64571222625516"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-03D496F2-4EE9-4AAE-9756-0238B52CB419" id="BPMNShape_sid-03D496F2-4EE9-4AAE-9756-0238B52CB419">
+        <omgdc:Bounds height="40.0" width="40.0" x="825.0000000000001" y="126.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="quote_stage_end" id="BPMNShape_quote_stage_end">
+        <omgdc:Bounds height="28.0" width="28.0" x="1172.7272473090943" y="296.0000000000001"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="process-commercial-discount_plan" id="BPMNShape_process-commercial-discount_plan">
+        <omgdc:Bounds height="80.0" width="100.0" x="960.0000000000002" y="75.00000000000003"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="commercial-discount-1_plan" id="BPMNShape_commercial-discount-1_plan">
+        <omgdc:Bounds height="80.0" width="100.0" x="240.0" y="106.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="commercial-discount-2_plan" id="BPMNShape_commercial-discount-2_plan">
+        <omgdc:Bounds height="80.0" width="100.0" x="465.0" y="105.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="commercial-discount-3_plan" id="BPMNShape_commercial-discount-3_plan">
+        <omgdc:Bounds height="80.0" width="100.0" x="675.0" y="105.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="quote_stage_start_plan" id="BPMNShape_quote_stage_start_plan">
+        <omgdc:Bounds height="80.0" width="99.99999999999999" x="75.00000000000001" y="5.000000000000001"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="quote_stage_end_plan" id="BPMNShape_quote_stage_end_plan">
+        <omgdc:Bounds height="80.0" width="99.99999999999989" x="960.0000000000001" y="270.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="commercial_discount_activity_end_plan" id="BPMNShape_commercial_discount_activity_end_plan">
+        <omgdc:Bounds height="80.0" width="100.0" x="540.0" y="270.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="commercial_discount_process_end_plan" id="BPMNShape_commercial_discount_process_end_plan">
+        <omgdc:Bounds height="80.0" width="100.0" x="765.0" y="270.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="commercial_discount_process_start_plan" id="BPMNShape_commercial_discount_process_start_plan">
+        <omgdc:Bounds height="80.0" width="99.99999999999999" x="75.00000000000001" y="270.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="commercial_discount_activity_start_plan" id="BPMNShape_commercial_discount_activity_start_plan">
+        <omgdc:Bounds height="80.0" width="100.0" x="240.0" y="270.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-F750C50E-09E4-4232-ABC5-E69D460CDE68" id="BPMNEdge_sid-F750C50E-09E4-4232-ABC5-E69D460CDE68">
+        <omgdi:waypoint x="1059.95" y="310.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1172.7272473090943" y="310.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-FD195FA2-9D0F-436A-87AF-64BA4759CA3C" id="BPMNEdge_sid-FD195FA2-9D0F-436A-87AF-64BA4759CA3C">
+        <omgdi:waypoint x="339.95000000000005" y="146.24850746268658"></omgdi:waypoint>
+        <omgdi:waypoint x="370.4" y="146.4"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-C1E8CD95-CF71-43DF-A3F0-E72C6F329FCB" id="BPMNEdge_sid-C1E8CD95-CF71-43DF-A3F0-E72C6F329FCB">
+        <omgdi:waypoint x="639.7165130940833" y="146.2233009708738"></omgdi:waypoint>
+        <omgdi:waypoint x="674.999999999998" y="145.716985645933"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-CD67581E-3529-40C3-81A3-FEE569F36284" id="BPMNEdge_sid-CD67581E-3529-40C3-81A3-FEE569F36284">
+        <omgdi:waypoint x="396.5672680412371" y="132.5824742268041"></omgdi:waypoint>
+        <omgdi:waypoint x="420.0" y="79.0"></omgdi:waypoint>
+        <omgdi:waypoint x="578.0" y="79.0"></omgdi:waypoint>
+        <omgdi:waypoint x="612.3863636363636" y="133.6044504995459"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-07627ED6-54D5-431B-B70D-16E621776FB0" id="BPMNEdge_sid-07627ED6-54D5-431B-B70D-16E621776FB0">
+        <omgdi:waypoint x="864.4274940617578" y="146.5"></omgdi:waypoint>
+        <omgdi:waypoint x="887.5" y="146.5"></omgdi:waypoint>
+        <omgdi:waypoint x="887.5" y="115.00000000000003"></omgdi:waypoint>
+        <omgdi:waypoint x="959.999999999973" y="115.00000000000003"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-A660FB73-BB63-4AF4-AB66-BD6D7BF3B1CB" id="BPMNEdge_sid-A660FB73-BB63-4AF4-AB66-BD6D7BF3B1CB">
+        <omgdi:waypoint x="290.0" y="270.0"></omgdi:waypoint>
+        <omgdi:waypoint x="290.0" y="185.95"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-E4CB4527-F854-40C2-851B-DD703B61A9D7" id="BPMNEdge_sid-E4CB4527-F854-40C2-851B-DD703B61A9D7">
+        <omgdi:waypoint x="409.653188487584" y="146.28531073446328"></omgdi:waypoint>
+        <omgdi:waypoint x="465.0" y="145.66703910614527"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="commercial_discount_activity_end" id="BPMNEdge_commercial_discount_activity_end">
+        <omgdi:waypoint x="1010.0000000000002" y="154.95000000000005"></omgdi:waypoint>
+        <omgdi:waypoint x="1010.0000000000002" y="200.9122386569819"></omgdi:waypoint>
+        <omgdi:waypoint x="581.0" y="200.9122386569819"></omgdi:waypoint>
+        <omgdi:waypoint x="581.0" y="270.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-4D6F6A2B-66A0-46A3-8BE1-52E249D2D0F4" id="BPMNEdge_sid-4D6F6A2B-66A0-46A3-8BE1-52E249D2D0F4">
+        <omgdi:waypoint x="125.0" y="84.95"></omgdi:waypoint>
+        <omgdi:waypoint x="125.0" y="270.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-58B74A73-7AA0-4017-A8A1-86F30E8B6AEB" id="BPMNEdge_sid-58B74A73-7AA0-4017-A8A1-86F30E8B6AEB">
+        <omgdi:waypoint x="617.1093189964158" y="128.88460881448583"></omgdi:waypoint>
+        <omgdi:waypoint x="605.3751679218401" y="67.95"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-0B34AE2B-767C-4E84-8E06-DD312395CBFB" id="BPMNEdge_sid-0B34AE2B-767C-4E84-8E06-DD312395CBFB">
+        <omgdi:waypoint x="774.9499999999999" y="145.62178423236514"></omgdi:waypoint>
+        <omgdi:waypoint x="825.2478991596635" y="146.24789915966386"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-A7CE2A28-5D04-4075-9B01-6B352D21D4C5" id="BPMNEdge_sid-A7CE2A28-5D04-4075-9B01-6B352D21D4C5">
+        <omgdi:waypoint x="380.513562580094" y="135.48616305160806"></omgdi:waypoint>
+        <omgdi:waypoint x="318.36883526776626" y="66.95"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-E2569008-F158-42CB-9D92-CD58B22E1F89" id="BPMNEdge_sid-E2569008-F158-42CB-9D92-CD58B22E1F89">
+        <omgdi:waypoint x="639.9499999998361" y="310.0"></omgdi:waypoint>
+        <omgdi:waypoint x="764.9999999999743" y="310.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-4DEA2377-1231-4DB9-A6F0-37DE04AC8692" id="BPMNEdge_sid-4DEA2377-1231-4DB9-A6F0-37DE04AC8692">
+        <omgdi:waypoint x="564.9499999999988" y="145.32865853658535"></omgdi:waypoint>
+        <omgdi:waypoint x="600.2039711191333" y="145.7590361445783"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-5955C0D5-9526-4067-B08C-C0491431EC7D" id="BPMNEdge_sid-5955C0D5-9526-4067-B08C-C0491431EC7D">
+        <omgdi:waypoint x="29.9499978416589" y="45.0"></omgdi:waypoint>
+        <omgdi:waypoint x="75.00000000000001" y="45.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-13431647-D1BF-44EC-B4E2-3719ACE3B24B" id="BPMNEdge_sid-13431647-D1BF-44EC-B4E2-3719ACE3B24B">
+        <omgdi:waypoint x="864.9499999999999" y="310.0"></omgdi:waypoint>
+        <omgdi:waypoint x="960.0000000000001" y="310.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-A6ED3D9C-9A1F-4BB3-8B97-168DA5C59C6B" id="BPMNEdge_sid-A6ED3D9C-9A1F-4BB3-8B97-168DA5C59C6B">
+        <omgdi:waypoint x="174.9499999998897" y="310.0"></omgdi:waypoint>
+        <omgdi:waypoint x="239.99999999998465" y="310.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-59FA9C5C-2851-43D2-BA61-C74C126D88FC" id="BPMNEdge_sid-59FA9C5C-2851-43D2-BA61-C74C126D88FC">
+        <omgdi:waypoint x="626.9610795454545" y="132.97727272727272"></omgdi:waypoint>
+        <omgdi:waypoint x="649.0" y="87.0"></omgdi:waypoint>
+        <omgdi:waypoint x="791.0" y="87.0"></omgdi:waypoint>
+        <omgdi:waypoint x="835.4605263157896" y="135.53768624014026"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

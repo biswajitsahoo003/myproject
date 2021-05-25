@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <process id="tax_capture_workflow" name="tax_capture_workflow" isExecutable="true">
+    <documentation>tax_capture_workflow</documentation>
+    <userTask id="tax-capture-validate-supporting-document" name="Tax Capture Validate Document">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <startEvent id="tax_capture_activity_start">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ activityStartListener }"></flowable:executionListener>
+      </extensionElements>
+    </startEvent>
+    <endEvent id="tax_capture_activity_end">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ activityEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </endEvent>
+    <serviceTask id="reminder-tax-capture-validate-supporting-document" name="reminder" flowable:async="true" flowable:delegateExpression="${ notificationDelegate }"></serviceTask>
+    <sequenceFlow id="sid-6BE11E06-36F8-4E31-99FB-F7D4CC3A034C" sourceRef="sid-25AC4AAD-4361-4494-8BC7-0C43EF1630CE" targetRef="reminder-tax-capture-validate-supporting-document"></sequenceFlow>
+    <boundaryEvent id="sid-25AC4AAD-4361-4494-8BC7-0C43EF1630CE" attachedToRef="tax-capture-validate-supporting-document" cancelActivity="false">
+      <timerEventDefinition>
+        <timeCycle>${ remainderCycle }</timeCycle>
+      </timerEventDefinition>
+    </boundaryEvent>
+    <sequenceFlow id="sid-22C262ED-BBEF-4523-A57C-2C5F482B356A" sourceRef="tax_capture_activity_start" targetRef="tax-capture"></sequenceFlow>
+    <userTask id="tax-capture" name="Tax Capture">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="sid-7CC488E8-2332-40B5-8BB5-E9BB44FE0D1F" sourceRef="tax-capture" targetRef="sid-A17DC027-1619-4A48-91E2-04DFFAA60F76"></sequenceFlow>
+    <exclusiveGateway id="sid-A17DC027-1619-4A48-91E2-04DFFAA60F76" default="sid-8B9B8DAD-2E54-41EF-AB8B-AB484DB47704"></exclusiveGateway>
+    <sequenceFlow id="sid-4DB4678D-6513-48A0-828B-0EB0D022E92C" sourceRef="tax-capture-validate-supporting-document" targetRef="tax-capture"></sequenceFlow>
+    <sequenceFlow id="sid-8B9B8DAD-2E54-41EF-AB8B-AB484DB47704" name="No" sourceRef="sid-A17DC027-1619-4A48-91E2-04DFFAA60F76" targetRef="tax_capture_activity_end"></sequenceFlow>
+    <serviceTask id="reminder-tax-capture" name="reminder" flowable:async="true" flowable:delegateExpression="${ notificationDelegate }"></serviceTask>
+    <sequenceFlow id="sid-DAE249B1-3699-4A40-9648-77288C2A8155" sourceRef="sid-62B1621B-E069-4EA3-B704-9ABDD723D169" targetRef="reminder-tax-capture"></sequenceFlow>
+    <boundaryEvent id="sid-62B1621B-E069-4EA3-B704-9ABDD723D169" attachedToRef="tax-capture" cancelActivity="false">
+      <timerEventDefinition>
+        <timeCycle>${ remainderCycle }</timeCycle>
+      </timerEventDefinition>
+    </boundaryEvent>
+    <sequenceFlow id="sid-39746599-7D48-4051-9E21-71B6B4A298F1" name="Yes" sourceRef="sid-A17DC027-1619-4A48-91E2-04DFFAA60F76" targetRef="tax-capture-validate-supporting-document">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ var:get(action) == "SALES_ASSIST"}]]></conditionExpression>
+    </sequenceFlow>
+    <textAnnotation id="sid-675A22A6-E2BA-433A-A38A-F8590088FF54">
+      <text>Is Document clarification required?</text>
+    </textAnnotation>
+    <association id="sid-6A002AA1-121E-436E-BF0B-B36C542F3458" sourceRef="sid-A17DC027-1619-4A48-91E2-04DFFAA60F76" targetRef="sid-675A22A6-E2BA-433A-A38A-F8590088FF54" associationDirection="None"></association>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_tax_capture_workflow">
+    <bpmndi:BPMNPlane bpmnElement="tax_capture_workflow" id="BPMNPlane_tax_capture_workflow">
+      <bpmndi:BPMNShape bpmnElement="tax-capture-validate-supporting-document" id="BPMNShape_tax-capture-validate-supporting-document">
+        <omgdc:Bounds height="66.0" width="101.0" x="420.0" y="145.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="tax_capture_activity_start" id="BPMNShape_tax_capture_activity_start">
+        <omgdc:Bounds height="30.0" width="30.0" x="30.0" y="160.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="tax_capture_activity_end" id="BPMNShape_tax_capture_activity_end">
+        <omgdc:Bounds height="28.0" width="28.0" x="321.0" y="255.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="reminder-tax-capture-validate-supporting-document" id="BPMNShape_reminder-tax-capture-validate-supporting-document">
+        <omgdc:Bounds height="46.0" width="85.0" x="465.0" y="60.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-25AC4AAD-4361-4494-8BC7-0C43EF1630CE" id="BPMNShape_sid-25AC4AAD-4361-4494-8BC7-0C43EF1630CE">
+        <omgdc:Bounds height="31.0" width="31.0" x="477.82868969224717" y="129.18245288158525"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="tax-capture" id="BPMNShape_tax-capture">
+        <omgdc:Bounds height="50.0" width="109.0" x="135.0" y="150.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-A17DC027-1619-4A48-91E2-04DFFAA60F76" id="BPMNShape_sid-A17DC027-1619-4A48-91E2-04DFFAA60F76">
+        <omgdc:Bounds height="40.0" width="40.0" x="315.0" y="157.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-675A22A6-E2BA-433A-A38A-F8590088FF54" id="BPMNShape_sid-675A22A6-E2BA-433A-A38A-F8590088FF54">
+        <omgdc:Bounds height="50.0" width="100.0" x="420.5" y="225.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-6A002AA1-121E-436E-BF0B-B36C542F3458" id="BPMNShape_sid-6A002AA1-121E-436E-BF0B-B36C542F3458">
+        <omgdc:Bounds height="61.2838909882467" width="73.71209265719187" x="346.34707867140406" y="186.51821075587665"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="reminder-tax-capture" id="BPMNShape_reminder-tax-capture">
+        <omgdc:Bounds height="46.0" width="85.0" x="191.1963258828602" y="45.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-62B1621B-E069-4EA3-B704-9ABDD723D169" id="BPMNShape_sid-62B1621B-E069-4EA3-B704-9ABDD723D169">
+        <omgdc:Bounds height="31.0" width="31.0" x="218.19632588286018" y="134.0719768893133"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-22C262ED-BBEF-4523-A57C-2C5F482B356A" id="BPMNEdge_sid-22C262ED-BBEF-4523-A57C-2C5F482B356A">
+        <omgdi:waypoint x="59.949998984064806" y="175.0"></omgdi:waypoint>
+        <omgdi:waypoint x="134.99999999999824" y="175.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-7CC488E8-2332-40B5-8BB5-E9BB44FE0D1F" id="BPMNEdge_sid-7CC488E8-2332-40B5-8BB5-E9BB44FE0D1F">
+        <omgdi:waypoint x="243.9499999999992" y="175.93236301369865"></omgdi:waypoint>
+        <omgdi:waypoint x="315.15156794425087" y="177.15156794425087"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-4DB4678D-6513-48A0-828B-0EB0D022E92C" id="BPMNEdge_sid-4DB4678D-6513-48A0-828B-0EB0D022E92C">
+        <omgdi:waypoint x="470.5" y="210.95000000000002"></omgdi:waypoint>
+        <omgdi:waypoint x="470.5" y="308.0"></omgdi:waypoint>
+        <omgdi:waypoint x="180.84920634920636" y="308.0"></omgdi:waypoint>
+        <omgdi:waypoint x="180.84920634920636" y="199.95000000000002"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-DAE249B1-3699-4A40-9648-77288C2A8155" id="BPMNEdge_sid-DAE249B1-3699-4A40-9648-77288C2A8155">
+        <omgdi:waypoint x="234.0986277887483" y="134.0722140529739"></omgdi:waypoint>
+        <omgdi:waypoint x="233.83614218112575" y="90.94999999999999"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-8B9B8DAD-2E54-41EF-AB8B-AB484DB47704" id="BPMNEdge_sid-8B9B8DAD-2E54-41EF-AB8B-AB484DB47704">
+        <omgdi:waypoint x="335.3956043956044" y="196.54360592755214"></omgdi:waypoint>
+        <omgdi:waypoint x="335.0762283917796" y="255.00020506326243"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-6BE11E06-36F8-4E31-99FB-F7D4CC3A034C" id="BPMNEdge_sid-6BE11E06-36F8-4E31-99FB-F7D4CC3A034C">
+        <omgdi:waypoint x="497.2543498785891" y="129.55237128593984"></omgdi:waypoint>
+        <omgdi:waypoint x="502.4432657846884" y="105.94999999999999"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-39746599-7D48-4051-9E21-71B6B4A298F1" id="BPMNEdge_sid-39746599-7D48-4051-9E21-71B6B4A298F1">
+        <omgdi:waypoint x="354.3731379056047" y="177.569926199262"></omgdi:waypoint>
+        <omgdi:waypoint x="419.9999999999982" y="177.81296296296296"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-6A002AA1-121E-436E-BF0B-B36C542F3458" id="BPMNEdge_sid-6A002AA1-121E-436E-BF0B-B36C542F3458">
+        <omgdi:waypoint x="345.8467480964467" y="186.1026984126984"></omgdi:waypoint>
+        <omgdi:waypoint x="420.5" y="248.16860465116278"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

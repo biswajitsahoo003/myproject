@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <process id="plan_teamsdr_config_cpe_workflow" name="plan_teamsdr_config_cpe_workflow" isExecutable="true">
+    <documentation>plan_teamsdr_config_cpe_workflow</documentation>
+    <startEvent id="startEvent1"></startEvent>
+    <serviceTask id="configure_cpe_activity_start_plan" name="cpe configuration activity start" flowable:delegateExpression="${activityPlanStartDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:expression><![CDATA[cpe-config-process_start_plan]]></flowable:expression>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="teamsdr-configure-mg_plan" name="Teamsdr Config Endpoint" flowable:delegateExpression="${ taskPlanDelegate }">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:expression><![CDATA[configure_cpe_activity_start_plan]]></flowable:expression>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="teamsdr-open-firewall-mg_plan" name="Teamsdr Open Port/Firewall for MG" flowable:delegateExpression="${ taskPlanDelegate }">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:expression><![CDATA[configure_cpe_activity_start_plan]]></flowable:expression>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="configure_cpe_activity_end_plan" name="cpe configuration activity end" flowable:delegateExpression="${activityPlanEndDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:expression><![CDATA[teamsdr-configure-mg_plan,teamsdr-open-firewall-mg_plan]]></flowable:expression>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <parallelGateway id="sid-D97C1C67-F249-494C-AB0D-88CEBB7321E6"></parallelGateway>
+    <parallelGateway id="sid-A7CFE18D-1C0F-4ED0-8A23-617FA1003647"></parallelGateway>
+    <endEvent id="sid-83C17D06-5819-4B9C-B44A-98E9EF9E8FDC"></endEvent>
+    <sequenceFlow id="sid-66E285F1-BBFB-4FBB-BD7B-D737A45A3668" sourceRef="startEvent1" targetRef="configure_cpe_activity_start_plan"></sequenceFlow>
+    <sequenceFlow id="sid-ADE2518E-FC10-49D9-9FE2-8E70C06B29C1" sourceRef="configure_cpe_activity_start_plan" targetRef="sid-D97C1C67-F249-494C-AB0D-88CEBB7321E6"></sequenceFlow>
+    <sequenceFlow id="sid-F8A7C913-C183-4F73-9926-5B768413155D" sourceRef="sid-D97C1C67-F249-494C-AB0D-88CEBB7321E6" targetRef="teamsdr-configure-mg_plan"></sequenceFlow>
+    <sequenceFlow id="sid-F354B348-76F9-4C51-93B4-1F9354075331" sourceRef="teamsdr-configure-mg_plan" targetRef="sid-A7CFE18D-1C0F-4ED0-8A23-617FA1003647"></sequenceFlow>
+    <sequenceFlow id="sid-9B6F4DB3-67BB-45B0-8959-A2A9B574BA64" sourceRef="sid-D97C1C67-F249-494C-AB0D-88CEBB7321E6" targetRef="teamsdr-open-firewall-mg_plan"></sequenceFlow>
+    <sequenceFlow id="sid-8CE252D2-1514-4574-8B95-B00585F1B681" sourceRef="teamsdr-open-firewall-mg_plan" targetRef="sid-A7CFE18D-1C0F-4ED0-8A23-617FA1003647"></sequenceFlow>
+    <sequenceFlow id="sid-3D78BE1B-D15C-4375-A2DE-B6D7C44633B3" sourceRef="sid-A7CFE18D-1C0F-4ED0-8A23-617FA1003647" targetRef="configure_cpe_activity_end_plan"></sequenceFlow>
+    <sequenceFlow id="sid-BAF82DCA-45FE-449D-81CB-7B97A01BDF50" sourceRef="configure_cpe_activity_end_plan" targetRef="sid-83C17D06-5819-4B9C-B44A-98E9EF9E8FDC"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_plan_teamsdr_config_cpe_workflow">
+    <bpmndi:BPMNPlane bpmnElement="plan_teamsdr_config_cpe_workflow" id="BPMNPlane_plan_teamsdr_config_cpe_workflow">
+      <bpmndi:BPMNShape bpmnElement="startEvent1" id="BPMNShape_startEvent1">
+        <omgdc:Bounds height="30.0" width="30.0" x="100.0" y="163.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="configure_cpe_activity_start_plan" id="BPMNShape_configure_cpe_activity_start_plan">
+        <omgdc:Bounds height="80.0" width="100.0" x="195.0" y="138.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="teamsdr-configure-mg_plan" id="BPMNShape_teamsdr-configure-mg_plan">
+        <omgdc:Bounds height="80.0" width="100.0" x="495.0" y="33.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="teamsdr-open-firewall-mg_plan" id="BPMNShape_teamsdr-open-firewall-mg_plan">
+        <omgdc:Bounds height="80.0" width="100.0" x="495.0" y="243.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="configure_cpe_activity_end_plan" id="BPMNShape_configure_cpe_activity_end_plan">
+        <omgdc:Bounds height="80.0" width="100.0" x="825.0" y="138.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-D97C1C67-F249-494C-AB0D-88CEBB7321E6" id="BPMNShape_sid-D97C1C67-F249-494C-AB0D-88CEBB7321E6">
+        <omgdc:Bounds height="40.0" width="40.0" x="359.0" y="158.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-A7CFE18D-1C0F-4ED0-8A23-617FA1003647" id="BPMNShape_sid-A7CFE18D-1C0F-4ED0-8A23-617FA1003647">
+        <omgdc:Bounds height="40.0" width="40.0" x="720.0" y="158.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-83C17D06-5819-4B9C-B44A-98E9EF9E8FDC" id="BPMNShape_sid-83C17D06-5819-4B9C-B44A-98E9EF9E8FDC">
+        <omgdc:Bounds height="28.0" width="28.0" x="990.0" y="164.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-F8A7C913-C183-4F73-9926-5B768413155D" id="BPMNEdge_sid-F8A7C913-C183-4F73-9926-5B768413155D">
+        <omgdi:waypoint x="391.6834870848708" y="170.7140221402214"></omgdi:waypoint>
+        <omgdi:waypoint x="495.0" y="104.84123867069485"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-F354B348-76F9-4C51-93B4-1F9354075331" id="BPMNEdge_sid-F354B348-76F9-4C51-93B4-1F9354075331">
+        <omgdi:waypoint x="594.95" y="99.89615384615387"></omgdi:waypoint>
+        <omgdi:waypoint x="726.9860046651116" y="171.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-8CE252D2-1514-4574-8B95-B00585F1B681" id="BPMNEdge_sid-8CE252D2-1514-4574-8B95-B00585F1B681">
+        <omgdi:waypoint x="594.95" y="256.0769230769231"></omgdi:waypoint>
+        <omgdi:waypoint x="727.0" y="184.9825"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-ADE2518E-FC10-49D9-9FE2-8E70C06B29C1" id="BPMNEdge_sid-ADE2518E-FC10-49D9-9FE2-8E70C06B29C1">
+        <omgdi:waypoint x="294.94999999995196" y="178.0"></omgdi:waypoint>
+        <omgdi:waypoint x="359.0" y="178.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-66E285F1-BBFB-4FBB-BD7B-D737A45A3668" id="BPMNEdge_sid-66E285F1-BBFB-4FBB-BD7B-D737A45A3668">
+        <omgdi:waypoint x="129.94999891869114" y="178.0"></omgdi:waypoint>
+        <omgdi:waypoint x="194.99999999999022" y="178.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-3D78BE1B-D15C-4375-A2DE-B6D7C44633B3" id="BPMNEdge_sid-3D78BE1B-D15C-4375-A2DE-B6D7C44633B3">
+        <omgdi:waypoint x="759.5135906040178" y="178.42910447761193"></omgdi:waypoint>
+        <omgdi:waypoint x="824.9999999999889" y="178.185687732342"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-BAF82DCA-45FE-449D-81CB-7B97A01BDF50" id="BPMNEdge_sid-BAF82DCA-45FE-449D-81CB-7B97A01BDF50">
+        <omgdi:waypoint x="924.9499999999999" y="178.0"></omgdi:waypoint>
+        <omgdi:waypoint x="990.0" y="178.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-9B6F4DB3-67BB-45B0-8959-A2A9B574BA64" id="BPMNEdge_sid-9B6F4DB3-67BB-45B0-8959-A2A9B574BA64">
+        <omgdi:waypoint x="391.11485560903367" y="185.8343518518519"></omgdi:waypoint>
+        <omgdi:waypoint x="495.0" y="251.42900302114805"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

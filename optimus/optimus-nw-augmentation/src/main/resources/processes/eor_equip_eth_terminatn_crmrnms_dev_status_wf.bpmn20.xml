@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <process id="eor_equip_eth_terminatn_crmrnms_dev_status_wf" name="eor_equip_eth_terminatn_crmrnms_dev_status_wf" isExecutable="true">
+    <documentation>eor_equip_eth_terminatn_crmr_nms_dev_status_wf</documentation>
+    <startEvent id="startEvent1" flowable:formFieldValidation="true"></startEvent>
+    <userTask id="eor_equip_eth_terminatn_crmrnms_dev_status_retry_task" name="Cramer/NMS Device status check task" flowable:formFieldValidation="true">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${taskCreateListener}"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${taskCompleteListener}"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <endEvent id="eor_equip_eth_terminatn_crmrnms_dev_status_activity_end">
+      <extensionElements>
+        <flowable:executionListener event="end" delegateExpression="${activityEndListener}"></flowable:executionListener>
+      </extensionElements>
+    </endEvent>
+    <serviceTask id="eor_equip_eth_terminatn_crmrnms_dev_status_task" name="Cramer/NMS Device status check" flowable:delegateExpression="${createDeviceInCramerDelegate}"></serviceTask>
+    <exclusiveGateway id="sid-40B907F1-FA32-4E1A-9FB3-1C0FBB9B3281"></exclusiveGateway>
+    <sequenceFlow id="sid-02AC2A48-31B1-428C-95BC-80E9C4389DC5" sourceRef="eor_equip_eth_terminatn_crmrnms_dev_status_task" targetRef="sid-40B907F1-FA32-4E1A-9FB3-1C0FBB9B3281"></sequenceFlow>
+    <exclusiveGateway id="sid-3F7F84FE-74FD-497D-8E88-F9CDFB003BD1"></exclusiveGateway>
+    <sequenceFlow id="sid-4C302503-C411-44BC-AD00-B2CC3ADD03FF" sourceRef="eor_equip_eth_terminatn_crmrnms_dev_status_retry_task" targetRef="sid-3F7F84FE-74FD-497D-8E88-F9CDFB003BD1"></sequenceFlow>
+    <sequenceFlow id="eor_equip_eth_terminatn_crmrnms_dev_status_activity_start" sourceRef="startEvent1" targetRef="eor_equip_eth_terminatn_crmrnms_dev_status_task">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${activityStartListener}"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="sid-1E0C60A1-7AD1-4D22-850B-29AF79AD8774" sourceRef="sid-40B907F1-FA32-4E1A-9FB3-1C0FBB9B3281" targetRef="eor_equip_eth_terminatn_crmrnms_dev_status_activity_end">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${isError==false}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-16CFFAC0-AF3A-4FA8-B353-15F06EBFFD44" sourceRef="sid-40B907F1-FA32-4E1A-9FB3-1C0FBB9B3281" targetRef="eor_equip_eth_terminatn_crmrnms_dev_status_retry_task">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${isError==true}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-58A358A6-3248-49C7-AE50-4514D19D555D" sourceRef="sid-3F7F84FE-74FD-497D-8E88-F9CDFB003BD1" targetRef="eor_equip_eth_terminatn_crmrnms_dev_status_task">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${retry==true}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-BD5B4C2A-A7C0-4FC9-ABCF-A3248BA9FA7A" sourceRef="sid-3F7F84FE-74FD-497D-8E88-F9CDFB003BD1" targetRef="eor_equip_eth_terminatn_crmrnms_dev_status_activity_end">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${retry==false}]]></conditionExpression>
+    </sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_eor_equip_eth_terminatn_crmrnms_dev_status_wf">
+    <bpmndi:BPMNPlane bpmnElement="eor_equip_eth_terminatn_crmrnms_dev_status_wf" id="BPMNPlane_eor_equip_eth_terminatn_crmrnms_dev_status_wf">
+      <bpmndi:BPMNShape bpmnElement="startEvent1" id="BPMNShape_startEvent1">
+        <omgdc:Bounds height="30.0" width="30.0" x="100.0" y="163.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="eor_equip_eth_terminatn_crmrnms_dev_status_retry_task" id="BPMNShape_eor_equip_eth_terminatn_crmrnms_dev_status_retry_task">
+        <omgdc:Bounds height="79.99999999999994" width="100.0" x="340.00000000000017" y="270.00000000000006"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="eor_equip_eth_terminatn_crmrnms_dev_status_activity_end" id="BPMNShape_eor_equip_eth_terminatn_crmrnms_dev_status_activity_end">
+        <omgdc:Bounds height="28.0" width="27.999999999999943" x="510.00000000000006" y="164.00000000000003"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="eor_equip_eth_terminatn_crmrnms_dev_status_task" id="BPMNShape_eor_equip_eth_terminatn_crmrnms_dev_status_task">
+        <omgdc:Bounds height="80.0" width="99.99999999999997" x="195.00000000000003" y="138.00000000000003"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-40B907F1-FA32-4E1A-9FB3-1C0FBB9B3281" id="BPMNShape_sid-40B907F1-FA32-4E1A-9FB3-1C0FBB9B3281">
+        <omgdc:Bounds height="40.0" width="40.0" x="370.0000000000001" y="158.00000000000003"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-3F7F84FE-74FD-497D-8E88-F9CDFB003BD1" id="BPMNShape_sid-3F7F84FE-74FD-497D-8E88-F9CDFB003BD1">
+        <omgdc:Bounds height="40.0" width="40.00000000000003" x="221.55554417916264" y="290.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-02AC2A48-31B1-428C-95BC-80E9C4389DC5" id="BPMNEdge_sid-02AC2A48-31B1-428C-95BC-80E9C4389DC5">
+        <omgdi:waypoint x="294.95000000000005" y="178.17164948453612"></omgdi:waypoint>
+        <omgdi:waypoint x="370.4310344827587" y="178.43103448275866"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="eor_equip_eth_terminatn_crmrnms_dev_status_activity_start" id="BPMNEdge_eor_equip_eth_terminatn_crmrnms_dev_status_activity_start">
+        <omgdi:waypoint x="129.94999891869114" y="178.00000000000003"></omgdi:waypoint>
+        <omgdi:waypoint x="194.99999999994475" y="178.00000000000003"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-58A358A6-3248-49C7-AE50-4514D19D555D" id="BPMNEdge_sid-58A358A6-3248-49C7-AE50-4514D19D555D">
+        <omgdi:waypoint x="242.4892414705705" y="290.9347842520379"></omgdi:waypoint>
+        <omgdi:waypoint x="244.11110767672835" y="217.95000000000005"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-4C302503-C411-44BC-AD00-B2CC3ADD03FF" id="BPMNEdge_sid-4C302503-C411-44BC-AD00-B2CC3ADD03FF">
+        <omgdi:waypoint x="339.999999999986" y="310.16881335540046"></omgdi:waypoint>
+        <omgdi:waypoint x="261.0259065144283" y="310.43556895749583"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-BD5B4C2A-A7C0-4FC9-ABCF-A3248BA9FA7A" id="BPMNEdge_sid-BD5B4C2A-A7C0-4FC9-ABCF-A3248BA9FA7A">
+        <omgdi:waypoint x="242.05554417916267" y="329.43988913956434"></omgdi:waypoint>
+        <omgdi:waypoint x="242.05554417916267" y="404.1111145019532"></omgdi:waypoint>
+        <omgdi:waypoint x="524.0" y="404.1111145019532"></omgdi:waypoint>
+        <omgdi:waypoint x="524.0" y="191.94992274814004"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-16CFFAC0-AF3A-4FA8-B353-15F06EBFFD44" id="BPMNEdge_sid-16CFFAC0-AF3A-4FA8-B353-15F06EBFFD44">
+        <omgdi:waypoint x="390.4274809160307" y="197.5150457665904"></omgdi:waypoint>
+        <omgdi:waypoint x="390.1519011406846" y="270.00000000000006"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-1E0C60A1-7AD1-4D22-850B-29AF79AD8774" id="BPMNEdge_sid-1E0C60A1-7AD1-4D22-850B-29AF79AD8774">
+        <omgdi:waypoint x="409.51406836964134" y="178.42857142857144"></omgdi:waypoint>
+        <omgdi:waypoint x="510.00009334800075" y="178.05224693910782"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

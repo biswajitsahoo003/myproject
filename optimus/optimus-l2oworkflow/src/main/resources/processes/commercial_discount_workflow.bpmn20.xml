@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <process id="commercial_discount_workflow" name="commercial_discount_workflow" isExecutable="true">
+    <documentation>commercial_discount_workflow</documentation>
+    <startEvent id="startEvent1"></startEvent>
+    <userTask id="commercial-discount-1" name="C1 Approval">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <exclusiveGateway id="sid-ED11C296-D993-4567-8FC6-3E4F784E15AB" default="sid-CD67581E-3529-40C3-81A3-FEE569F36284"></exclusiveGateway>
+    <exclusiveGateway id="sid-04264718-666D-42BF-B361-FA425128BF54" default="sid-59FA9C5C-2851-43D2-BA61-C74C126D88FC"></exclusiveGateway>
+    <userTask id="commercial-discount-2" name="C2 Approval">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <userTask id="commercial-discount-3" name="C3 Approval">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <exclusiveGateway id="sid-03D496F2-4EE9-4AAE-9756-0238B52CB419"></exclusiveGateway>
+    <endEvent id="quote_stage_end">
+      <extensionElements>
+        <flowable:executionListener event="end" delegateExpression="${ stageEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </endEvent>
+    <sequenceFlow id="sid-6B53B45B-CE06-4F66-9B53-945FFA520313" sourceRef="sid-28388CA2-5FA6-4089-ACB5-F3CDC4BA3E07" targetRef="commercial-discount-1-assignee-notification"></sequenceFlow>
+    <serviceTask id="commercial-discount-1-assignee-notification" name="Assignee Notification" flowable:delegateExpression="${ notificationDelegate }"></serviceTask>
+    <serviceTask id="reminder-commercial-discount-2" name="C2 Reminder" flowable:delegateExpression="${ notificationDelegate }"></serviceTask>
+    <sequenceFlow id="sid-E6E12415-62E0-49D7-9110-5050CEC1C5E9" sourceRef="sid-23ABB70E-67D6-46EF-A56A-DACE9E16184E" targetRef="reminder-commercial-discount-2"></sequenceFlow>
+    <serviceTask id="reminder-commercial-discount-3" name="C3 Reminder" flowable:delegateExpression="${ notificationDelegate }"></serviceTask>
+    <sequenceFlow id="sid-4C22CFA6-BE93-43B4-9334-AE25C85B91CB" sourceRef="sid-14871232-9B06-45D2-8380-94B8926F6E1D" targetRef="reminder-commercial-discount-3"></sequenceFlow>
+    <boundaryEvent id="sid-14871232-9B06-45D2-8380-94B8926F6E1D" attachedToRef="commercial-discount-3" cancelActivity="false">
+      <timerEventDefinition>
+        <timeCycle>R10/PT24H</timeCycle>
+      </timerEventDefinition>
+    </boundaryEvent>
+    <sequenceFlow id="sid-E4CB4527-F854-40C2-851B-DD703B61A9D7" name="Yes" sourceRef="sid-ED11C296-D993-4567-8FC6-3E4F784E15AB" targetRef="C1-Timer-Delay">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ discountApprovalLevel >= 2 }]]></conditionExpression>
+    </sequenceFlow>
+    <parallelGateway id="sid-CF5759F7-33AF-4E5B-B895-2E46EE0AA6BC"></parallelGateway>
+    <parallelGateway id="sid-90CF979F-E873-4806-B4D3-CA3464B1DFBF"></parallelGateway>
+    <serviceTask id="process-commercial-discount" name="Process Commercial Discount" flowable:delegateExpression="${ processCommercialDiscount }"></serviceTask>
+    <sequenceFlow id="sid-CD67581E-3529-40C3-81A3-FEE569F36284" name="No" sourceRef="sid-ED11C296-D993-4567-8FC6-3E4F784E15AB" targetRef="sid-04264718-666D-42BF-B361-FA425128BF54"></sequenceFlow>
+    <sequenceFlow id="sid-59FA9C5C-2851-43D2-BA61-C74C126D88FC" name="No" sourceRef="sid-04264718-666D-42BF-B361-FA425128BF54" targetRef="sid-03D496F2-4EE9-4AAE-9756-0238B52CB419"></sequenceFlow>
+    <sequenceFlow id="commercial_discount_process_end" sourceRef="sid-90CF979F-E873-4806-B4D3-CA3464B1DFBF" targetRef="quote_stage_end">
+      <extensionElements>
+        <flowable:executionListener event="end" delegateExpression="${ processEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <serviceTask id="reminder-commercial-discount-1" name="C1 Reminder" flowable:delegateExpression="${ notificationDelegate }"></serviceTask>
+    <sequenceFlow id="sid-6E4C2EA3-69E9-4500-90F4-471D783BE1A1" sourceRef="sid-F18893C6-AF30-4FEB-B10B-3CA81220EF6A" targetRef="reminder-commercial-discount-1"></sequenceFlow>
+    <serviceTask id="escalation-commercial-discount-1" name="C1 Escalation" flowable:delegateExpression="${ notificationDelegate }"></serviceTask>
+    <boundaryEvent id="sid-D57F525A-489F-46AD-A437-C36354B09E09" attachedToRef="commercial-discount-1" cancelActivity="false">
+      <timerEventDefinition>
+        <timeCycle>R10/PT48H</timeCycle>
+      </timerEventDefinition>
+    </boundaryEvent>
+    <sequenceFlow id="sid-FA53492F-5CCA-455F-A6C1-0A4C1493E927" sourceRef="sid-D57F525A-489F-46AD-A437-C36354B09E09" targetRef="escalation-commercial-discount-1"></sequenceFlow>
+    <parallelGateway id="sid-073B1842-44AF-433A-980E-491FA1F78CC7"></parallelGateway>
+    <sequenceFlow id="commercial_discount_activity_start" sourceRef="sid-CF5759F7-33AF-4E5B-B895-2E46EE0AA6BC" targetRef="commercial-discount-1">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ activityStartListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="commercial_discount_process_start" sourceRef="sid-073B1842-44AF-433A-980E-491FA1F78CC7" targetRef="sid-CF5759F7-33AF-4E5B-B895-2E46EE0AA6BC">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ processStartListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="quote_stage_start" sourceRef="discount_process_plan" targetRef="sid-073B1842-44AF-433A-980E-491FA1F78CC7">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ stageStartListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="sid-1D957AA3-3CB3-4378-B8D0-A09E640C7907" sourceRef="startEvent1" targetRef="discount_process_plan"></sequenceFlow>
+    <callActivity id="discount_process_plan" name="Plan Estimation" calledElement="plan_commercial_discount_workflow" flowable:calledElementType="key" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false"></callActivity>
+    <boundaryEvent id="sid-F18893C6-AF30-4FEB-B10B-3CA81220EF6A" attachedToRef="commercial-discount-1" cancelActivity="false">
+      <timerEventDefinition>
+        <timeDuration>PT24H</timeDuration>
+      </timerEventDefinition>
+    </boundaryEvent>
+    <boundaryEvent id="sid-23ABB70E-67D6-46EF-A56A-DACE9E16184E" attachedToRef="commercial-discount-2" cancelActivity="false">
+      <timerEventDefinition>
+        <timeCycle>R10/PT24H</timeCycle>
+      </timerEventDefinition>
+    </boundaryEvent>
+    <boundaryEvent id="sid-28388CA2-5FA6-4089-ACB5-F3CDC4BA3E07" attachedToRef="commercial-discount-1" cancelActivity="false">
+      <timerEventDefinition>
+        <timeDuration>PT1S</timeDuration>
+      </timerEventDefinition>
+    </boundaryEvent>
+    <intermediateCatchEvent id="C1-Timer-Delay">
+      <timerEventDefinition>
+        <timeDuration>PT10S</timeDuration>
+      </timerEventDefinition>
+    </intermediateCatchEvent>
+    <sequenceFlow id="sid-072F45D8-FFF2-4008-9084-43BE5AACC6DF" sourceRef="commercial-discount-1" targetRef="sid-ED11C296-D993-4567-8FC6-3E4F784E15AB"></sequenceFlow>
+    <sequenceFlow id="sid-DAA2D956-07DB-4B02-BAD1-705AF68C5349" sourceRef="C1-Timer-Delay" targetRef="commercial-discount-2"></sequenceFlow>
+    <intermediateCatchEvent id="C2-Timer-Delay">
+      <timerEventDefinition>
+        <timeDuration>PT10S</timeDuration>
+      </timerEventDefinition>
+    </intermediateCatchEvent>
+    <sequenceFlow id="sid-0936D0D5-67A0-4F8C-8F4A-932B1D307B3E" sourceRef="commercial-discount-2" targetRef="sid-04264718-666D-42BF-B361-FA425128BF54"></sequenceFlow>
+    <sequenceFlow id="sid-162A0122-A61E-49DA-8C3A-4F117080368B" sourceRef="C2-Timer-Delay" targetRef="commercial-discount-3"></sequenceFlow>
+    <sequenceFlow id="sid-2155DF13-B27D-4F18-8131-746E130C14C1" sourceRef="commercial-discount-3" targetRef="sid-03D496F2-4EE9-4AAE-9756-0238B52CB419"></sequenceFlow>
+    <sequenceFlow id="sid-C1E8CD95-CF71-43DF-A3F0-E72C6F329FCB" name="Yes" sourceRef="sid-04264718-666D-42BF-B361-FA425128BF54" targetRef="C2-Timer-Delay">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ discountApprovalLevel >= 3 }]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="commercial_discount_activity_end" sourceRef="process-commercial-discount" targetRef="sid-90CF979F-E873-4806-B4D3-CA3464B1DFBF">
+      <extensionElements>
+        <flowable:executionListener event="end" delegateExpression="${ activityEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <intermediateCatchEvent id="C3-Timer-Delay">
+      <timerEventDefinition>
+        <timeDuration>PT10S</timeDuration>
+      </timerEventDefinition>
+    </intermediateCatchEvent>
+    <sequenceFlow id="sid-07C7FE8D-ACBB-4452-98AF-8B6DFAD59E33" sourceRef="C3-Timer-Delay" targetRef="process-commercial-discount"></sequenceFlow>
+    <sequenceFlow id="sid-EA1E21B6-40FD-4EFB-A126-A4CE5B1AFA44" sourceRef="sid-03D496F2-4EE9-4AAE-9756-0238B52CB419" targetRef="C3-Timer-Delay"></sequenceFlow>
+    <textAnnotation id="sid-7D913A27-61F4-4CA3-9CA8-10557E7A6755">
+      <text>C2 Approval Required?</text>
+    </textAnnotation>
+    <association id="sid-A7CE2A28-5D04-4075-9B01-6B352D21D4C5" sourceRef="sid-ED11C296-D993-4567-8FC6-3E4F784E15AB" targetRef="sid-7D913A27-61F4-4CA3-9CA8-10557E7A6755" associationDirection="None"></association>
+    <textAnnotation id="sid-B7DBB8ED-5E95-4368-A036-78CF428E92E8">
+      <text>C3 Approval Required?</text>
+    </textAnnotation>
+    <association id="sid-58B74A73-7AA0-4017-A8A1-86F30E8B6AEB" sourceRef="sid-04264718-666D-42BF-B361-FA425128BF54" targetRef="sid-B7DBB8ED-5E95-4368-A036-78CF428E92E8" associationDirection="None"></association>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_commercial_discount_workflow">
+    <bpmndi:BPMNPlane bpmnElement="commercial_discount_workflow" id="BPMNPlane_commercial_discount_workflow">
+      <bpmndi:BPMNShape bpmnElement="startEvent1" id="BPMNShape_startEvent1">
+        <omgdc:Bounds height="30.0" width="30.0" x="60.0" y="129.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="commercial-discount-1" id="BPMNShape_commercial-discount-1">
+        <omgdc:Bounds height="80.0" width="100.0" x="390.0" y="104.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-ED11C296-D993-4567-8FC6-3E4F784E15AB" id="BPMNShape_sid-ED11C296-D993-4567-8FC6-3E4F784E15AB">
+        <omgdc:Bounds height="40.0" width="40.0" x="555.0" y="124.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-04264718-666D-42BF-B361-FA425128BF54" id="BPMNShape_sid-04264718-666D-42BF-B361-FA425128BF54">
+        <omgdc:Bounds height="40.0" width="40.0" x="896.5" y="124.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="commercial-discount-2" id="BPMNShape_commercial-discount-2">
+        <omgdc:Bounds height="80.0" width="100.0" x="735.0" y="104.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="commercial-discount-3" id="BPMNShape_commercial-discount-3">
+        <omgdc:Bounds height="80.0" width="100.0" x="1095.0" y="104.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-03D496F2-4EE9-4AAE-9756-0238B52CB419" id="BPMNShape_sid-03D496F2-4EE9-4AAE-9756-0238B52CB419">
+        <omgdc:Bounds height="40.0" width="40.0" x="1260.0" y="124.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="quote_stage_end" id="BPMNShape_quote_stage_end">
+        <omgdc:Bounds height="28.0" width="28.0" x="1605.0000000000002" y="129.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="commercial-discount-1-assignee-notification" id="BPMNShape_commercial-discount-1-assignee-notification">
+        <omgdc:Bounds height="62.0" width="123.0" x="435.0" y="16.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="reminder-commercial-discount-2" id="BPMNShape_reminder-commercial-discount-2">
+        <omgdc:Bounds height="62.0" width="123.0" x="855.0" y="210.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="reminder-commercial-discount-3" id="BPMNShape_reminder-commercial-discount-3">
+        <omgdc:Bounds height="62.0" width="123.0" x="1155.0" y="223.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-14871232-9B06-45D2-8380-94B8926F6E1D" id="BPMNShape_sid-14871232-9B06-45D2-8380-94B8926F6E1D">
+        <omgdc:Bounds height="31.0" width="31.0" x="1144.2887815226452" y="169.24580745728352"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-CF5759F7-33AF-4E5B-B895-2E46EE0AA6BC" id="BPMNShape_sid-CF5759F7-33AF-4E5B-B895-2E46EE0AA6BC">
+        <omgdc:Bounds height="40.0" width="40.0" x="300.0" y="124.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-90CF979F-E873-4806-B4D3-CA3464B1DFBF" id="BPMNShape_sid-90CF979F-E873-4806-B4D3-CA3464B1DFBF">
+        <omgdc:Bounds height="40.0" width="40.0" x="1545.0000000000002" y="123.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="process-commercial-discount" id="BPMNShape_process-commercial-discount">
+        <omgdc:Bounds height="80.0" width="100.0" x="1425.0000000000002" y="103.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="reminder-commercial-discount-1" id="BPMNShape_reminder-commercial-discount-1">
+        <omgdc:Bounds height="62.0" width="123.0" x="465.0" y="223.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="escalation-commercial-discount-1" id="BPMNShape_escalation-commercial-discount-1">
+        <omgdc:Bounds height="62.0" width="123.0" x="300.0" y="223.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-D57F525A-489F-46AD-A437-C36354B09E09" id="BPMNShape_sid-D57F525A-489F-46AD-A437-C36354B09E09">
+        <omgdc:Bounds height="31.0" width="31.0" x="358.8228555139324" y="138.2298202745239"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-073B1842-44AF-433A-980E-491FA1F78CC7" id="BPMNShape_sid-073B1842-44AF-433A-980E-491FA1F78CC7">
+        <omgdc:Bounds height="40.0" width="40.0" x="225.0" y="124.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="discount_process_plan" id="BPMNShape_discount_process_plan">
+        <omgdc:Bounds height="65.0" width="80.0" x="120.0" y="110.5"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-F18893C6-AF30-4FEB-B10B-3CA81220EF6A" id="BPMNShape_sid-F18893C6-AF30-4FEB-B10B-3CA81220EF6A">
+        <omgdc:Bounds height="31.0" width="31.0" x="446.93579330042644" y="168.65596749874302"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-23ABB70E-67D6-46EF-A56A-DACE9E16184E" id="BPMNShape_sid-23ABB70E-67D6-46EF-A56A-DACE9E16184E">
+        <omgdc:Bounds height="31.0" width="31.0" x="726.1294393906946" y="168.8589060849114"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-28388CA2-5FA6-4089-ACB5-F3CDC4BA3E07" id="BPMNShape_sid-28388CA2-5FA6-4089-ACB5-F3CDC4BA3E07">
+        <omgdc:Bounds height="31.0" width="31.0" x="359.1731945824175" y="72.66401466195704"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="C1-Timer-Delay" id="BPMNShape_C1-Timer-Delay">
+        <omgdc:Bounds height="31.0" width="31.0" x="660.0" y="128.5"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="C2-Timer-Delay" id="BPMNShape_C2-Timer-Delay">
+        <omgdc:Bounds height="31.0" width="31.0" x="1005.0" y="128.5"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-7D913A27-61F4-4CA3-9CA8-10557E7A6755" id="BPMNShape_sid-7D913A27-61F4-4CA3-9CA8-10557E7A6755">
+        <omgdc:Bounds height="36.0" width="144.0" x="603.5" y="29.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-A7CE2A28-5D04-4075-9B01-6B352D21D4C5" id="BPMNShape_sid-A7CE2A28-5D04-4075-9B01-6B352D21D4C5">
+        <omgdc:Bounds height="69.7413807216935" width="88.72162990544552" x="586.7783700945545" y="65.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-B7DBB8ED-5E95-4368-A036-78CF428E92E8" id="BPMNShape_sid-B7DBB8ED-5E95-4368-A036-78CF428E92E8">
+        <omgdc:Bounds height="38.0" width="158.0" x="961.0" y="15.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-58B74A73-7AA0-4017-A8A1-86F30E8B6AEB" id="BPMNShape_sid-58B74A73-7AA0-4017-A8A1-86F30E8B6AEB">
+        <omgdc:Bounds height="82.23101971195015" width="111.5992410376466" x="928.4007589623534" y="53.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="C3-Timer-Delay" id="BPMNShape_C3-Timer-Delay">
+        <omgdc:Bounds height="31.0" width="31.0" x="1350.0000000000002" y="128.50000000000003"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-162A0122-A61E-49DA-8C3A-4F117080368B" id="BPMNEdge_sid-162A0122-A61E-49DA-8C3A-4F117080368B">
+        <omgdi:waypoint x="1035.9499987815473" y="144.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1094.9999999999723" y="144.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-0936D0D5-67A0-4F8C-8F4A-932B1D307B3E" id="BPMNEdge_sid-0936D0D5-67A0-4F8C-8F4A-932B1D307B3E">
+        <omgdi:waypoint x="834.9499999999825" y="144.0"></omgdi:waypoint>
+        <omgdi:waypoint x="896.5" y="144.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-C1E8CD95-CF71-43DF-A3F0-E72C6F329FCB" id="BPMNEdge_sid-C1E8CD95-CF71-43DF-A3F0-E72C6F329FCB">
+        <omgdi:waypoint x="936.4404178674351" y="144.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1005.0" y="144.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-CD67581E-3529-40C3-81A3-FEE569F36284" id="BPMNEdge_sid-CD67581E-3529-40C3-81A3-FEE569F36284">
+        <omgdi:waypoint x="587.1333333333333" y="136.16374269005848"></omgdi:waypoint>
+        <omgdi:waypoint x="679.0" y="77.0"></omgdi:waypoint>
+        <omgdi:waypoint x="878.0" y="77.0"></omgdi:waypoint>
+        <omgdi:waypoint x="909.2014218009479" y="131.2876420454546"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-6B53B45B-CE06-4F66-9B53-945FFA520313" id="BPMNEdge_sid-6B53B45B-CE06-4F66-9B53-945FFA520313">
+        <omgdi:waypoint x="380.065670903222" y="73.6342852272081"></omgdi:waypoint>
+        <omgdi:waypoint x="390.0" y="47.0"></omgdi:waypoint>
+        <omgdi:waypoint x="435.0" y="47.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-E4CB4527-F854-40C2-851B-DD703B61A9D7" id="BPMNEdge_sid-E4CB4527-F854-40C2-851B-DD703B61A9D7">
+        <omgdi:waypoint x="594.9400844930417" y="144.0"></omgdi:waypoint>
+        <omgdi:waypoint x="660.0" y="144.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-072F45D8-FFF2-4008-9084-43BE5AACC6DF" id="BPMNEdge_sid-072F45D8-FFF2-4008-9084-43BE5AACC6DF">
+        <omgdi:waypoint x="489.95000000000005" y="144.0"></omgdi:waypoint>
+        <omgdi:waypoint x="555.0" y="144.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-FA53492F-5CCA-455F-A6C1-0A4C1493E927" id="BPMNEdge_sid-FA53492F-5CCA-455F-A6C1-0A4C1493E927">
+        <omgdi:waypoint x="368.0772759889853" y="167.87430756348598"></omgdi:waypoint>
+        <omgdi:waypoint x="361.0" y="184.0"></omgdi:waypoint>
+        <omgdi:waypoint x="361.2785714285714" y="223.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-EA1E21B6-40FD-4EFB-A126-A4CE5B1AFA44" id="BPMNEdge_sid-EA1E21B6-40FD-4EFB-A126-A4CE5B1AFA44">
+        <omgdi:waypoint x="1299.8232967667436" y="144.11531791907515"></omgdi:waypoint>
+        <omgdi:waypoint x="1350.0000845800448" y="144.40697828406408"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="commercial_discount_process_start" id="BPMNEdge_commercial_discount_process_start">
+        <omgdi:waypoint x="264.93671770970394" y="144.0"></omgdi:waypoint>
+        <omgdi:waypoint x="300.0" y="144.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="commercial_discount_activity_end" id="BPMNEdge_commercial_discount_activity_end">
+        <omgdi:waypoint x="1524.9500000000003" y="143.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1545.0000000000002" y="143.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="commercial_discount_activity_start" id="BPMNEdge_commercial_discount_activity_start">
+        <omgdi:waypoint x="339.941694421308" y="144.0"></omgdi:waypoint>
+        <omgdi:waypoint x="389.99999999997794" y="144.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-DAA2D956-07DB-4B02-BAD1-705AF68C5349" id="BPMNEdge_sid-DAA2D956-07DB-4B02-BAD1-705AF68C5349">
+        <omgdi:waypoint x="690.9499984250365" y="144.0"></omgdi:waypoint>
+        <omgdi:waypoint x="735.0" y="144.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-6E4C2EA3-69E9-4500-90F4-471D783BE1A1" id="BPMNEdge_sid-6E4C2EA3-69E9-4500-90F4-471D783BE1A1">
+        <omgdi:waypoint x="477.8857477325533" y="184.1179352597526"></omgdi:waypoint>
+        <omgdi:waypoint x="526.0" y="184.0"></omgdi:waypoint>
+        <omgdi:waypoint x="526.2785714285715" y="223.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-2155DF13-B27D-4F18-8131-746E130C14C1" id="BPMNEdge_sid-2155DF13-B27D-4F18-8131-746E130C14C1">
+        <omgdi:waypoint x="1194.95" y="144.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1260.0" y="144.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-07C7FE8D-ACBB-4452-98AF-8B6DFAD59E33" id="BPMNEdge_sid-07C7FE8D-ACBB-4452-98AF-8B6DFAD59E33">
+        <omgdi:waypoint x="1381.9489116774757" y="144.31114949609102"></omgdi:waypoint>
+        <omgdi:waypoint x="1424.9999999999986" y="143.80297604872436"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-1D957AA3-3CB3-4378-B8D0-A09E640C7907" id="BPMNEdge_sid-1D957AA3-3CB3-4378-B8D0-A09E640C7907">
+        <omgdi:waypoint x="89.94898680637945" y="143.8235413715553"></omgdi:waypoint>
+        <omgdi:waypoint x="119.99999999999964" y="143.47"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="quote_stage_start" id="BPMNEdge_quote_stage_start">
+        <omgdi:waypoint x="199.94999999999914" y="143.47000000000003"></omgdi:waypoint>
+        <omgdi:waypoint x="225.1951219512194" y="143.76744186046514"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-58B74A73-7AA0-4017-A8A1-86F30E8B6AEB" id="BPMNEdge_sid-58B74A73-7AA0-4017-A8A1-86F30E8B6AEB">
+        <omgdi:waypoint x="927.9863636363636" y="135.5151515151515"></omgdi:waypoint>
+        <omgdi:waypoint x="1040.0" y="53.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-E6E12415-62E0-49D7-9110-5050CEC1C5E9" id="BPMNEdge_sid-E6E12415-62E0-49D7-9110-5050CEC1C5E9">
+        <omgdi:waypoint x="756.3307811179219" y="189.12098402415484"></omgdi:waypoint>
+        <omgdi:waypoint x="855.0" y="221.0799673561944"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-A7CE2A28-5D04-4075-9B01-6B352D21D4C5" id="BPMNEdge_sid-A7CE2A28-5D04-4075-9B01-6B352D21D4C5">
+        <omgdi:waypoint x="586.1697771587743" y="135.19777158774374"></omgdi:waypoint>
+        <omgdi:waypoint x="675.5" y="65.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-4C22CFA6-BE93-43B4-9334-AE25C85B91CB" id="BPMNEdge_sid-4C22CFA6-BE93-43B4-9334-AE25C85B91CB">
+        <omgdi:waypoint x="1169.577630115753" y="196.69891621739256"></omgdi:waypoint>
+        <omgdi:waypoint x="1191.1145654400111" y="223.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="commercial_discount_process_end" id="BPMNEdge_commercial_discount_process_end">
+        <omgdi:waypoint x="1584.9315619223662" y="143.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1605.0000000000002" y="143.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-59FA9C5C-2851-43D2-BA61-C74C126D88FC" id="BPMNEdge_sid-59FA9C5C-2851-43D2-BA61-C74C126D88FC">
+        <omgdi:waypoint x="916.3620689655172" y="124.12430939226522"></omgdi:waypoint>
+        <omgdi:waypoint x="916.0" y="72.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1280.0" y="72.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1280.0" y="124.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

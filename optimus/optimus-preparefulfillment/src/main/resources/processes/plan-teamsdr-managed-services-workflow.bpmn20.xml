@@ -1,0 +1,615 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <process id="plan-teamsdr-managed-services-workflow" name="plan-teamsdr-managed-services-workflow" isExecutable="true">
+    <documentation>plan-teamsdr-managed-services-workflow</documentation>
+    <startEvent id="sid-985A7369-CA4F-4620-8789-27ADAC996C09"></startEvent>
+    <callActivity id="prepare_project_plan_process" name="Prepare Project Plan Process" calledElement="plan_project_plan_workflow" flowable:calledElementType="key" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false">
+      <extensionElements>
+        <flowable:in source="prepare_project_plan_activity_end_plan_endDate" target="prepare_project_plan_activity_end_plan_endDate"></flowable:in>
+        <flowable:in source="customerDelayProcess" target="customerDelayProcess"></flowable:in>
+        <flowable:in source="startTrackingProcess" target="startTrackingProcess"></flowable:in>
+        <flowable:out source="prepare_project_plan_activity_end_plan_endDate" target="prepare_project_plan_activity_end_plan_endDate"></flowable:out>
+        <flowable:out source="customerDelayProcess" target="customerDelayProcess"></flowable:out>
+        <flowable:out source="startTrackingProcess" target="startTrackingProcess"></flowable:out>
+      </extensionElements>
+    </callActivity>
+    <serviceTask id="prepare_project_plan_process_start_plan" name="Prepare Project Plan Process Start" flowable:delegateExpression="${processPlanStartDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[order_enrichment_stage_start_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="prepare_project_plan_process_end_plan" name="Prepare Project Plan Process End" flowable:delegateExpression="${processPlanEndDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[prepare_project_plan_activity_end_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="order_enrichment_stage_start_plan" name="Order Enrichment Stage Start" flowable:delegateExpression="${stagePlanStartDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[root]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="order_enrichment_stage_end_plan" name="Order Enrichment Stage End" flowable:delegateExpression="${stagePlanEndDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[prepare_project_plan_process_end_plan,basic_enrichment_process_end_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="sid-8B4FCC8C-8E57-4A69-97F8-619D3C0D8996" sourceRef="prepare_project_plan_process_start_plan" targetRef="prepare_project_plan_process"></sequenceFlow>
+    <sequenceFlow id="sid-E7608A90-6C01-43E4-92BA-42B2E0042E6B" sourceRef="prepare_project_plan_process" targetRef="prepare_project_plan_process_end_plan"></sequenceFlow>
+    <callActivity id="managed_service_advanced_enrichment_process" name="TeamsDR Managed Services Advanced Enrichment process" calledElement="plan_managed_services_advance_enrichment_teamsdr_workflow" flowable:calledElementType="key" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false">
+      <extensionElements>
+        <flowable:in source="service_implementation_stage_end_plan_endDate" target="service_implementation_stage_end_plan_endDate"></flowable:in>
+        <flowable:in source="customerDelayProcess" target="customerDelayProcess"></flowable:in>
+        <flowable:in source="startTrackingProcess" target="startTrackingProcess"></flowable:in>
+        <flowable:out source="service_implementation_stage_end_plan_endDate" target="service_implementation_stage_end_plan_endDate"></flowable:out>
+        <flowable:out source="customerDelayProcess" target="customerDelayProcess"></flowable:out>
+        <flowable:out source="startTrackingProcess" target="startTrackingProcess"></flowable:out>
+      </extensionElements>
+    </callActivity>
+    <sequenceFlow id="sid-09CC5A6A-C167-4DB4-B432-CA696A79E170" sourceRef="order_enrichment_stage_start_plan" targetRef="prepare_project_plan_process_start_plan"></sequenceFlow>
+    <callActivity id="teamsdr_managed_services_user_mapping_process" name="TeamsDR Managed Services User Mapping process" calledElement="plan_user_mapping_teamsdr_workflow" flowable:calledElementType="key" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false">
+      <extensionElements>
+        <flowable:in source="teamsdr_managed_services_user_mapping_activity_end_plan_endDate" target="teamsdr_managed_services_user_mapping_activity_end_plan_endDate"></flowable:in>
+        <flowable:in source="customerDelayProcess" target="customerDelayProcess"></flowable:in>
+        <flowable:in source="startTrackingProcess" target="startTrackingProcess"></flowable:in>
+        <flowable:out source="teamsdr_managed_services_user_mapping_activity_end_plan_endDate" target="teamsdr_managed_services_user_mapping_activity_end_plan_endDate"></flowable:out>
+        <flowable:out source="customerDelayProcess" target="customerDelayProcess"></flowable:out>
+        <flowable:out source="startTrackingProcess" target="startTrackingProcess"></flowable:out>
+      </extensionElements>
+    </callActivity>
+    <serviceTask id="teamsdr_managed_services_user_mapping_process_start_plan" name="TeamsDR Managed Services User Mapping Process Start" flowable:delegateExpression="${processPlanStartDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[service_implementation_stage_start_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="teamsdr_managed_services_user_mapping_process_end_plan" name="TeamsDR Managed Services User Mapping Process End" flowable:delegateExpression="${processPlanEndDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[teamsdr_managed_services_user_mapping_activity_end_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="sid-E067DA2A-9F3C-4D34-A9C1-F097F1A3B495" sourceRef="sid-985A7369-CA4F-4620-8789-27ADAC996C09" targetRef="order_enrichment_stage_start_plan"></sequenceFlow>
+    <sequenceFlow id="sid-80D70A77-ED87-4958-B0E0-D76EF633EE91" sourceRef="prepare_project_plan_process_end_plan" targetRef="order_enrichment_stage_end_plan"></sequenceFlow>
+    <sequenceFlow id="sid-6AFBD599-7E46-4BEF-B217-391C9AD336B3" sourceRef="teamsdr_managed_services_user_mapping_process_start_plan" targetRef="teamsdr_managed_services_user_mapping_process"></sequenceFlow>
+    <serviceTask id="teamsdr_managed_services_direct_routing_process_start_plan" name="TeamsDR Managed Services Direct Routing Process Start" flowable:delegateExpression="${processPlanStartDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[teamsdr_managed_services_user_mapping_process_end_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <callActivity id="teamsdr_managed_services_direct_routing_process" name="TeamsDR Managed Services Direct Routing process" calledElement="plan_direct_routing_teamsdr_workflow" flowable:calledElementType="key" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false">
+      <extensionElements>
+        <flowable:in source="teamsdr_managed_services_direct_routing_activity_end_plan_endDate" target="teamsdr_managed_services_direct_routing_activity_end_plan_endDate"></flowable:in>
+        <flowable:in source="customerDelayProcess" target="customerDelayProcess"></flowable:in>
+        <flowable:in source="startTrackingProcess" target="startTrackingProcess"></flowable:in>
+        <flowable:out source="teamsdr_managed_services_direct_routing_activity_end_plan_endDate" target="teamsdr_managed_services_direct_routing_activity_end_plan_endDate"></flowable:out>
+        <flowable:out source="customerDelayProcess" target="customerDelayProcess"></flowable:out>
+        <flowable:out source="startTrackingProcess" target="startTrackingProcess"></flowable:out>
+      </extensionElements>
+    </callActivity>
+    <serviceTask id="teamsdr_managed_services_direct_routing_process_end_plan" name="TeamsDR Managed Services Direct Routing Process End" flowable:delegateExpression="${processPlanEndDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[teamsdr_managed_services_direct_routing_activity_end_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="teamsdr_managed_services_perform_uat_process_start_plan" name="TeamsDR Managed Services Perform UAT Process Start" flowable:delegateExpression="${processPlanStartDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[service_activation_stage_start_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <callActivity id="teamsdr_managed_services_perform_uat_process" name="TeamsDR Managed Services Perform UAT process" calledElement="plan_managed_services_perfom_uat_teamsdr_workflow" flowable:calledElementType="key" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false">
+      <extensionElements>
+        <flowable:in source="teamsdr_managed_services_perform_uat_activity_end_plan_endDate" target="teamsdr_managed_services_perform_uat_activity_end_plan_endDate"></flowable:in>
+        <flowable:in source="customerDelayProcess" target="customerDelayProcess"></flowable:in>
+        <flowable:in source="startTrackingProcess" target="startTrackingProcess"></flowable:in>
+        <flowable:out source="teamsdr_managed_services_perform_uat_activity_end_plan_endDate" target="teamsdr_managed_services_perform_uat_activity_end_plan_endDate"></flowable:out>
+        <flowable:out source="customerDelayProcess" target="customerDelayProcess"></flowable:out>
+        <flowable:out source="startTrackingProcess" target="startTrackingProcess"></flowable:out>
+      </extensionElements>
+    </callActivity>
+    <serviceTask id="teamsdr_managed_services_perform_uat_process_end_plan" name="TeamsDR Managed Services Perform UAT Process End" flowable:delegateExpression="${processPlanEndDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[teamsdr_managed_services_perform_uat_activity_end_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="sid-F548BC92-3162-4C73-8C85-36DEF144F27C" sourceRef="teamsdr_managed_services_perform_uat_process_start_plan" targetRef="teamsdr_managed_services_perform_uat_process"></sequenceFlow>
+    <serviceTask id="teamsdr_managed_services_customer_handover_process_start_plan" name="TeamsDR Managed Services Customer Handover Process Start" flowable:delegateExpression="${processPlanStartDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[service_delivery_stage_start_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <callActivity id="teamsdr_managed_services_customer_handover_process" name="TeamsDR Managed Services Customer Handover process" calledElement="plan_teamsdr_managed_services_customer_handover_workflow" flowable:calledElementType="key" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false">
+      <extensionElements>
+        <flowable:in source="teamsdr_managed_services_customer_handover_activity_end_plan_endDate" target="teamsdr_managed_services_customer_handover_activity_end_plan_endDate"></flowable:in>
+        <flowable:in source="customerDelayProcess" target="customerDelayProcess"></flowable:in>
+        <flowable:in source="startTrackingProcess" target="startTrackingProcess"></flowable:in>
+        <flowable:out source="teamsdr_managed_services_customer_handover_activity_end_plan_endDate" target="teamsdr_managed_services_customer_handover_activity_end_plan_endDate"></flowable:out>
+        <flowable:out source="customerDelayProcess" target="customerDelayProcess"></flowable:out>
+        <flowable:out source="startTrackingProcess" target="startTrackingProcess"></flowable:out>
+      </extensionElements>
+    </callActivity>
+    <serviceTask id="teamsdr_managed_services_customer_handover_process_end_plan" name="TeamsDR Managed Services Customer Handover Process End" flowable:delegateExpression="${processPlanEndDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[teamsdr_managed_services_customer_handover_activity_end_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="service_implementation_stage_end_plan" name="Service Implementation Stage End" flowable:delegateExpression="${stagePlanEndDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[teamsdr_managed_services_direct_routing_process_end_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="sid-9767DA05-BC62-45B4-9976-D42E15C31468" sourceRef="teamsdr_managed_services_direct_routing_process_end_plan" targetRef="service_implementation_stage_end_plan"></sequenceFlow>
+    <serviceTask id="service_activation_stage_start_plan" name="Service Activation Stage Start" flowable:delegateExpression="${stagePlanStartDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[service_implementation_stage_end_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="sid-9810142A-04C2-4227-BF6A-88E2DCA61438" sourceRef="service_implementation_stage_end_plan" targetRef="service_activation_stage_start_plan"></sequenceFlow>
+    <sequenceFlow id="sid-40179448-B638-4931-A3A7-B7EE28280178" sourceRef="service_activation_stage_start_plan" targetRef="teamsdr_managed_services_perform_uat_process_start_plan"></sequenceFlow>
+    <sequenceFlow id="sid-C6ED8F62-6A80-4F05-B3D0-65D020556883" sourceRef="teamsdr_managed_services_perform_uat_process" targetRef="teamsdr_managed_services_perform_uat_process_end_plan"></sequenceFlow>
+    <serviceTask id="service_activation_stage_end_plan" name="Service Activation Stage End" flowable:delegateExpression="${stagePlanEndDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[teamsdr_managed_services_perform_uat_process_end_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="sid-6BE26CD7-B349-4B7E-864B-A6D67B0BCEA7" sourceRef="teamsdr_managed_services_perform_uat_process_end_plan" targetRef="service_activation_stage_end_plan"></sequenceFlow>
+    <serviceTask id="service_delivery_stage_start_plan" name="Service Delivery Stage Start" flowable:delegateExpression="${stagePlanStartDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[service_activation_stage_end_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="sid-11723D10-0BD4-4D54-911C-E43079C80ED9" sourceRef="service_activation_stage_end_plan" targetRef="service_delivery_stage_start_plan"></sequenceFlow>
+    <parallelGateway id="sid-1FB93538-5E7F-47A0-8259-393EEE063F53"></parallelGateway>
+    <sequenceFlow id="sid-540409D3-92AB-4B43-8E39-6EE29EFCFABD" sourceRef="service_delivery_stage_start_plan" targetRef="sid-1FB93538-5E7F-47A0-8259-393EEE063F53"></sequenceFlow>
+    <sequenceFlow id="sid-51A53FA5-67B0-48D5-BE64-FEC007B8A394" sourceRef="teamsdr_managed_services_customer_handover_process_start_plan" targetRef="teamsdr_managed_services_customer_handover_process"></sequenceFlow>
+    <sequenceFlow id="sid-9BF9A497-9B88-464E-8CE2-A56F76CC320E" sourceRef="teamsdr_managed_services_customer_handover_process" targetRef="teamsdr_managed_services_customer_handover_process_end_plan"></sequenceFlow>
+    <serviceTask id="teamsdr_managed_services_management_and_monitoring_process_start_plan" name="TeamsDR Managed Services Management And Monitoring Process Start" flowable:delegateExpression="${processPlanStartDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[service_delivery_stage_start_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <callActivity id="teamsdr_managed_services_management_and_monitoring_process" name="TeamsDR Managed Services Management And Monitoring process" calledElement="plan_managed_services_management_and_monitoring_teamsdr_workflow" flowable:calledElementType="key" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false">
+      <extensionElements>
+        <flowable:in source="teamsdr_managed_services_management_and_monitoring_activity_end_plan_endDate" target="teamsdr_managed_services_management_and_monitoring_activity_end_plan_endDate"></flowable:in>
+        <flowable:in source="customerDelayProcess" target="customerDelayProcess"></flowable:in>
+        <flowable:in source="startTrackingProcess" target="startTrackingProcess"></flowable:in>
+        <flowable:out source="teamsdr_managed_services_management_and_monitoring_activity_end_plan_endDate" target="teamsdr_managed_services_management_and_monitoring_activity_end_plan_endDate"></flowable:out>
+        <flowable:out source="customerDelayProcess" target="customerDelayProcess"></flowable:out>
+        <flowable:out source="startTrackingProcess" target="startTrackingProcess"></flowable:out>
+      </extensionElements>
+    </callActivity>
+    <serviceTask id="teamsdr_managed_services_management_and_monitoring_process_end_plan" name="TeamsDR Managed Services Management And Monitoring Process End" flowable:delegateExpression="${processPlanEndDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[teamsdr_managed_services_management_and_monitoring_activity_end_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="sid-1A687B72-88C6-4C95-85D5-59362C837F13" sourceRef="teamsdr_managed_services_management_and_monitoring_process_start_plan" targetRef="teamsdr_managed_services_management_and_monitoring_process"></sequenceFlow>
+    <sequenceFlow id="sid-04CFBA15-D895-4837-9B4E-90887FC1D7F7" sourceRef="teamsdr_managed_services_management_and_monitoring_process" targetRef="teamsdr_managed_services_management_and_monitoring_process_end_plan"></sequenceFlow>
+    <serviceTask id="teamsdr_managed_services_service_assurance_process_end_plan" name="TeamsDR Managed Services Service Assurance Process End" flowable:delegateExpression="${processPlanEndDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[teamsdr_managed_services_service_assurance_activity_end_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <callActivity id="teamsdr_managed_services_service_assurance_process" name="TeamsDR Managed Services Service Assurance process" calledElement="plan_managed_services_service_assurance_teamsdr_workflow" flowable:calledElementType="key" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false">
+      <extensionElements>
+        <flowable:in source="teamsdr_managed_services_service_assurance_activity_end_plan_endDate" target="teamsdr_managed_services_service_assurance_activity_end_plan_endDate"></flowable:in>
+        <flowable:in source="customerDelayProcess" target="customerDelayProcess"></flowable:in>
+        <flowable:in source="startTrackingProcess" target="startTrackingProcess"></flowable:in>
+        <flowable:out source="teamsdr_managed_services_service_assurance_activity_end_plan_endDate" target="teamsdr_managed_services_service_assurance_activity_end_plan_endDate"></flowable:out>
+        <flowable:out source="customerDelayProcess" target="customerDelayProcess"></flowable:out>
+        <flowable:out source="startTrackingProcess" target="startTrackingProcess"></flowable:out>
+      </extensionElements>
+    </callActivity>
+    <serviceTask id="teamsdr_managed_services_service_assurance_process_start_plan" name="TeamsDR Managed Services Service Assurance Process Start" flowable:delegateExpression="${processPlanStartDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[service_delivery_stage_start_plan,teamsdr_managed_services_customer_handover_process_end_plan,teamsdr_managed_services_management_and_monitoring_process_end_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="sid-E83146B9-511E-48EA-9568-2481C9190CC8" sourceRef="teamsdr_managed_services_service_assurance_process_start_plan" targetRef="teamsdr_managed_services_service_assurance_process"></sequenceFlow>
+    <sequenceFlow id="sid-E23B3D84-106C-48AF-941F-779454FBBACE" sourceRef="teamsdr_managed_services_service_assurance_process" targetRef="teamsdr_managed_services_service_assurance_process_end_plan"></sequenceFlow>
+    <serviceTask id="service_delivery_stage_end_plan" name="Service Delivery Stage End" flowable:delegateExpression="${stagePlanEndDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[teamsdr_managed_services_service_assurance_process_end_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="sid-4CA43C30-2224-49B0-BB4D-06DF8FD5305A" sourceRef="teamsdr_managed_services_service_assurance_process_end_plan" targetRef="service_delivery_stage_end_plan"></sequenceFlow>
+    <serviceTask id="create_project_plan" name="Create Project Plan" flowable:delegateExpression="${ createProjectPlanDelegate  }">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[service_delivery_stage_end_plan,service_implementation_stage_end_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <exclusiveGateway id="sid-87E62996-F33A-44F4-88CD-E85BAB08BB7D" default="sid-7A777470-2128-4CAB-98E6-943F4AD471B2"></exclusiveGateway>
+    <sequenceFlow id="sid-AA7AA41A-51B1-49B6-B78E-EC740EFB6F75" sourceRef="sid-1FB93538-5E7F-47A0-8259-393EEE063F53" targetRef="sid-87E62996-F33A-44F4-88CD-E85BAB08BB7D"></sequenceFlow>
+    <parallelGateway id="sid-21F97E41-0CAA-4D37-A671-E8245D212767"></parallelGateway>
+    <callActivity id="teamsdr_managed_services_training_process" name="TeamsDR Managed Services Training process" calledElement="plan_managed_services_training_teamsdr_workflow" flowable:calledElementType="key" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false">
+      <extensionElements>
+        <flowable:in source="teamsdr_managed_services_training_activity_end_plan_endDate" target="teamsdr_managed_services_training_activity_end_plan_endDate"></flowable:in>
+        <flowable:in source="customerDelayProcess" target="customerDelayProcess"></flowable:in>
+        <flowable:in source="startTrackingProcess" target="startTrackingProcess"></flowable:in>
+        <flowable:out source="service_implementation_stage_end_plan_endDate" target="service_implementation_stage_end_plan_endDate"></flowable:out>
+        <flowable:out source="customerDelayProcess" target="customerDelayProcess"></flowable:out>
+        <flowable:out source="startTrackingProcess" target="startTrackingProcess"></flowable:out>
+      </extensionElements>
+    </callActivity>
+    <sequenceFlow id="sid-63B0B695-F23E-4CFE-9DBA-762EC145BE18" sourceRef="teamsdr_managed_services_user_mapping_process_end_plan" targetRef="teamsdr_managed_services_direct_routing_process_start_plan"></sequenceFlow>
+    <sequenceFlow id="sid-C2B00B94-71E1-45A2-8F93-CE1698A8E830" sourceRef="sid-1FB93538-5E7F-47A0-8259-393EEE063F53" targetRef="teamsdr_managed_services_customer_handover_process_start_plan"></sequenceFlow>
+    <sequenceFlow id="sid-D100B68D-318F-43E5-B106-4920A4E505AF" sourceRef="teamsdr_managed_services_management_and_monitoring_process_end_plan" targetRef="sid-FEC4DF35-C1DE-430E-BEBC-D23D28F115A9"></sequenceFlow>
+    <serviceTask id="service_implementation_stage_start_plan" name="Service Implementation Stage Start" flowable:delegateExpression="${stagePlanStartDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[service_implementation_stage_end_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="sid-D2DC98C1-26D3-4E6C-A40B-AD24EB072F03" sourceRef="sid-21F97E41-0CAA-4D37-A671-E8245D212767" targetRef="teamsdr_managed_services_training_process"></sequenceFlow>
+    <sequenceFlow id="sid-EF3DE221-7F11-4690-AD8D-0E9E00CF0744" sourceRef="order_enrichment_stage_end_plan" targetRef="managed_service_advanced_enrichment_process"></sequenceFlow>
+    <sequenceFlow id="sid-87BDDC48-428F-49E4-AAF3-C9629DB20518" sourceRef="managed_service_advanced_enrichment_process" targetRef="sid-21F97E41-0CAA-4D37-A671-E8245D212767"></sequenceFlow>
+    <sequenceFlow id="sid-EB15C01D-6E9D-41A2-948F-BA57A84B2E8C" sourceRef="sid-21F97E41-0CAA-4D37-A671-E8245D212767" targetRef="service_implementation_stage_start_plan"></sequenceFlow>
+    <sequenceFlow id="sid-29B9ABBF-C272-4961-A03C-08AECCF57D45" sourceRef="service_implementation_stage_start_plan" targetRef="teamsdr_managed_services_user_mapping_process_start_plan"></sequenceFlow>
+    <sequenceFlow id="sid-787CA825-1330-480D-9A3F-531D944BF8B6" sourceRef="teamsdr_managed_services_user_mapping_process" targetRef="teamsdr_managed_services_user_mapping_process_end_plan"></sequenceFlow>
+    <sequenceFlow id="sid-723DB545-AD1C-4AFE-A6D3-C90894AE6483" sourceRef="teamsdr_managed_services_direct_routing_process_start_plan" targetRef="teamsdr_managed_services_direct_routing_process"></sequenceFlow>
+    <sequenceFlow id="sid-AD92BB13-89C7-4D26-AFF5-4C9EAFC821B2" sourceRef="teamsdr_managed_services_direct_routing_process" targetRef="teamsdr_managed_services_direct_routing_process_end_plan"></sequenceFlow>
+    <sequenceFlow id="sid-9DD60436-D629-47B6-B311-1B3D09523BDC" sourceRef="sid-87E62996-F33A-44F4-88CD-E85BAB08BB7D" targetRef="teamsdr_managed_services_management_and_monitoring_process_start_plan">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ isManagementMonitoringPresent == "no" }]]></conditionExpression>
+    </sequenceFlow>
+    <exclusiveGateway id="sid-FEC4DF35-C1DE-430E-BEBC-D23D28F115A9" default="sid-BCF24314-2781-4C7E-993C-2E560BBB946D"></exclusiveGateway>
+    <sequenceFlow id="sid-7A777470-2128-4CAB-98E6-943F4AD471B2" sourceRef="sid-87E62996-F33A-44F4-88CD-E85BAB08BB7D" targetRef="sid-FEC4DF35-C1DE-430E-BEBC-D23D28F115A9"></sequenceFlow>
+    <sequenceFlow id="sid-28E13EF7-DD6E-484A-B33F-E04999C6E8F0" sourceRef="teamsdr_managed_services_customer_handover_process_end_plan" targetRef="sid-459591F6-F081-41F7-BB53-CB24BD1E08B0"></sequenceFlow>
+    <parallelGateway id="sid-459591F6-F081-41F7-BB53-CB24BD1E08B0"></parallelGateway>
+    <sequenceFlow id="sid-BCF24314-2781-4C7E-993C-2E560BBB946D" sourceRef="sid-FEC4DF35-C1DE-430E-BEBC-D23D28F115A9" targetRef="sid-459591F6-F081-41F7-BB53-CB24BD1E08B0"></sequenceFlow>
+    <sequenceFlow id="sid-ED547C0F-3DAB-4A6D-AFEB-7B25CB3874EC" sourceRef="sid-459591F6-F081-41F7-BB53-CB24BD1E08B0" targetRef="teamsdr_managed_services_service_assurance_process_start_plan"></sequenceFlow>
+    <endEvent id="sid-5380E17E-1B28-4E64-BD8B-956AE8C202BE"></endEvent>
+    <parallelGateway id="sid-E65E2197-6A6F-4407-8390-2B74485692E9"></parallelGateway>
+    <sequenceFlow id="sid-F9D6DB9B-1208-4367-B298-DA5719761383" sourceRef="teamsdr_managed_services_training_process" targetRef="sid-E65E2197-6A6F-4407-8390-2B74485692E9"></sequenceFlow>
+    <sequenceFlow id="sid-CBE1968A-8FC9-4661-AEBC-E2F3C665364F" sourceRef="service_delivery_stage_end_plan" targetRef="sid-E65E2197-6A6F-4407-8390-2B74485692E9"></sequenceFlow>
+    <sequenceFlow id="sid-749650B5-6A94-4576-B19F-90CF87C2EF42" sourceRef="create_project_plan" targetRef="sid-5380E17E-1B28-4E64-BD8B-956AE8C202BE"></sequenceFlow>
+    <sequenceFlow id="sid-BBE6F556-C0AC-4DE4-9653-86D896F6DFA1" sourceRef="sid-E65E2197-6A6F-4407-8390-2B74485692E9" targetRef="create_project_plan"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_plan-teamsdr-managed-services-workflow">
+    <bpmndi:BPMNPlane bpmnElement="plan-teamsdr-managed-services-workflow" id="BPMNPlane_plan-teamsdr-managed-services-workflow">
+      <bpmndi:BPMNShape bpmnElement="sid-985A7369-CA4F-4620-8789-27ADAC996C09" id="BPMNShape_sid-985A7369-CA4F-4620-8789-27ADAC996C09">
+        <omgdc:Bounds height="30.0" width="30.0" x="165.0" y="15.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="prepare_project_plan_process" id="BPMNShape_prepare_project_plan_process">
+        <omgdc:Bounds height="45.0" width="84.0" x="770.0000000000001" y="7.5"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="prepare_project_plan_process_start_plan" id="BPMNShape_prepare_project_plan_process_start_plan">
+        <omgdc:Bounds height="48.0" width="90.0" x="570.0000000000001" y="6.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="prepare_project_plan_process_end_plan" id="BPMNShape_prepare_project_plan_process_end_plan">
+        <omgdc:Bounds height="58.0" width="84.99999999999989" x="945.0000000000001" y="1.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="order_enrichment_stage_start_plan" id="BPMNShape_order_enrichment_stage_start_plan">
+        <omgdc:Bounds height="47.0" width="81.0" x="375.00000000000006" y="6.5"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="order_enrichment_stage_end_plan" id="BPMNShape_order_enrichment_stage_end_plan">
+        <omgdc:Bounds height="60.0" width="108.0" x="1185.000000000001" y="0.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="managed_service_advanced_enrichment_process" id="BPMNShape_managed_service_advanced_enrichment_process">
+        <omgdc:Bounds height="76.99999999999999" width="102.99999999999977" x="1187.5000000000011" y="101.50000000000001"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="teamsdr_managed_services_user_mapping_process" id="BPMNShape_teamsdr_managed_services_user_mapping_process">
+        <omgdc:Bounds height="75.0" width="104.0" x="120.0" y="180.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="teamsdr_managed_services_user_mapping_process_start_plan" id="BPMNShape_teamsdr_managed_services_user_mapping_process_start_plan">
+        <omgdc:Bounds height="88.00000000000011" width="116.99999999999989" x="270.0000000000001" y="174.49999999999994"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="teamsdr_managed_services_user_mapping_process_end_plan" id="BPMNShape_teamsdr_managed_services_user_mapping_process_end_plan">
+        <omgdc:Bounds height="74.0" width="136.0" x="104.00000000000001" y="315.00000000000006"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="teamsdr_managed_services_direct_routing_process_start_plan" id="BPMNShape_teamsdr_managed_services_direct_routing_process_start_plan">
+        <omgdc:Bounds height="97.0" width="127.99999999999989" x="307.00000000000017" y="303.5000000000001"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="teamsdr_managed_services_direct_routing_process" id="BPMNShape_teamsdr_managed_services_direct_routing_process">
+        <omgdc:Bounds height="77.0" width="103.0" x="533.5000000000002" y="313.5000000000001"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="teamsdr_managed_services_direct_routing_process_end_plan" id="BPMNShape_teamsdr_managed_services_direct_routing_process_end_plan">
+        <omgdc:Bounds height="74.0" width="135.9999999999999" x="728.5000000000001" y="315.0000000000001"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="teamsdr_managed_services_perform_uat_process_start_plan" id="BPMNShape_teamsdr_managed_services_perform_uat_process_start_plan">
+        <omgdc:Bounds height="96.99999999999994" width="127.99999999999977" x="1291.5000000000007" y="420.00000000000006"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="teamsdr_managed_services_perform_uat_process" id="BPMNShape_teamsdr_managed_services_perform_uat_process">
+        <omgdc:Bounds height="77.0" width="103.0" x="1081.5000000000005" y="430.0000000000001"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="teamsdr_managed_services_perform_uat_process_end_plan" id="BPMNShape_teamsdr_managed_services_perform_uat_process_end_plan">
+        <omgdc:Bounds height="74.0" width="135.99999999999977" x="843.0000000000007" y="431.5000000000001"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="teamsdr_managed_services_customer_handover_process_start_plan" id="BPMNShape_teamsdr_managed_services_customer_handover_process_start_plan">
+        <omgdc:Bounds height="97.0" width="128.0" x="270.0" y="540.0000000000002"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="teamsdr_managed_services_customer_handover_process" id="BPMNShape_teamsdr_managed_services_customer_handover_process">
+        <omgdc:Bounds height="77.0" width="103.0" x="465.0" y="550.0000000000002"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="teamsdr_managed_services_customer_handover_process_end_plan" id="BPMNShape_teamsdr_managed_services_customer_handover_process_end_plan">
+        <omgdc:Bounds height="74.00000000000023" width="136.0" x="630.0" y="551.5000000000001"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="service_implementation_stage_end_plan" id="BPMNShape_service_implementation_stage_end_plan">
+        <omgdc:Bounds height="60.0" width="108.99999999999989" x="952.0000000000001" y="322.00000000000017"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="service_activation_stage_start_plan" id="BPMNShape_service_activation_stage_start_plan">
+        <omgdc:Bounds height="63.99999999999994" width="107.0" x="1187.5000000000007" y="320.0000000000001"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="service_activation_stage_end_plan" id="BPMNShape_service_activation_stage_end_plan">
+        <omgdc:Bounds height="59.0" width="109.0" x="594.5000000000005" y="439.0000000000002"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="service_delivery_stage_start_plan" id="BPMNShape_service_delivery_stage_start_plan">
+        <omgdc:Bounds height="56.0" width="99.0" x="399.50000000000045" y="440.50000000000006"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-1FB93538-5E7F-47A0-8259-393EEE063F53" id="BPMNShape_sid-1FB93538-5E7F-47A0-8259-393EEE063F53">
+        <omgdc:Bounds height="40.0" width="40.0" x="189.50000000000045" y="448.5000000000002"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="teamsdr_managed_services_management_and_monitoring_process_start_plan" id="BPMNShape_teamsdr_managed_services_management_and_monitoring_process_start_plan">
+        <omgdc:Bounds height="97.0" width="128.0" x="145.50000000000045" y="795.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="teamsdr_managed_services_management_and_monitoring_process" id="BPMNShape_teamsdr_managed_services_management_and_monitoring_process">
+        <omgdc:Bounds height="77.0" width="102.99999999999994" x="444.5000000000005" y="805.0000000000001"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="teamsdr_managed_services_management_and_monitoring_process_end_plan" id="BPMNShape_teamsdr_managed_services_management_and_monitoring_process_end_plan">
+        <omgdc:Bounds height="74.00000000000023" width="136.0" x="728.5" y="806.4999999999999"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="teamsdr_managed_services_service_assurance_process_end_plan" id="BPMNShape_teamsdr_managed_services_service_assurance_process_end_plan">
+        <omgdc:Bounds height="74.00000000000023" width="136.0" x="1283.000000000001" y="849.0000000000007"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="teamsdr_managed_services_service_assurance_process" id="BPMNShape_teamsdr_managed_services_service_assurance_process">
+        <omgdc:Bounds height="77.0" width="103.0" x="1299.5000000000007" y="697.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="teamsdr_managed_services_service_assurance_process_start_plan" id="BPMNShape_teamsdr_managed_services_service_assurance_process_start_plan">
+        <omgdc:Bounds height="97.0" width="128.0" x="1074.5000000000005" y="687.0000000000002"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="service_delivery_stage_end_plan" id="BPMNShape_service_delivery_stage_end_plan">
+        <omgdc:Bounds height="58.999999999999886" width="109.0" x="1296.500000000001" y="1010.5000000000001"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="create_project_plan" id="BPMNShape_create_project_plan">
+        <omgdc:Bounds height="63.99999999999977" width="92.0" x="539.0000000000002" y="1008.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-87E62996-F33A-44F4-88CD-E85BAB08BB7D" id="BPMNShape_sid-87E62996-F33A-44F4-88CD-E85BAB08BB7D">
+        <omgdc:Bounds height="40.0" width="40.0" x="189.50000000000045" y="690.0000000000001"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-21F97E41-0CAA-4D37-A671-E8245D212767" id="BPMNShape_sid-21F97E41-0CAA-4D37-A671-E8245D212767">
+        <omgdc:Bounds height="39.999999999999986" width="40.0" x="720.0000000000007" y="120.00000000000001"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="teamsdr_managed_services_training_process" id="BPMNShape_teamsdr_managed_services_training_process">
+        <omgdc:Bounds height="77.00000000000023" width="102.99999999999997" x="27.499999999999947" y="825.0000000000001"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="service_implementation_stage_start_plan" id="BPMNShape_service_implementation_stage_start_plan">
+        <omgdc:Bounds height="59.0" width="108.99999999999994" x="450.00000000000006" y="189.00000000000003"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-FEC4DF35-C1DE-430E-BEBC-D23D28F115A9" id="BPMNShape_sid-FEC4DF35-C1DE-430E-BEBC-D23D28F115A9">
+        <omgdc:Bounds height="40.0" width="40.0" x="776.5" y="715.5"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-459591F6-F081-41F7-BB53-CB24BD1E08B0" id="BPMNShape_sid-459591F6-F081-41F7-BB53-CB24BD1E08B0">
+        <omgdc:Bounds height="40.0" width="40.0" x="900.0" y="715.5"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-5380E17E-1B28-4E64-BD8B-956AE8C202BE" id="BPMNShape_sid-5380E17E-1B28-4E64-BD8B-956AE8C202BE">
+        <omgdc:Bounds height="28.0" width="28.0" x="405.0" y="1026.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-E65E2197-6A6F-4407-8390-2B74485692E9" id="BPMNShape_sid-E65E2197-6A6F-4407-8390-2B74485692E9">
+        <omgdc:Bounds height="40.0" width="40.0" x="565.0000000000002" y="930.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-C6ED8F62-6A80-4F05-B3D0-65D020556883" id="BPMNEdge_sid-C6ED8F62-6A80-4F05-B3D0-65D020556883">
+        <omgdi:waypoint x="1081.4999999999595" y="468.5000000000001"></omgdi:waypoint>
+        <omgdi:waypoint x="978.9499999998707" y="468.5000000000001"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-D2DC98C1-26D3-4E6C-A40B-AD24EB072F03" id="BPMNEdge_sid-D2DC98C1-26D3-4E6C-A40B-AD24EB072F03">
+        <omgdi:waypoint x="720.0000000000007" y="140.0"></omgdi:waypoint>
+        <omgdi:waypoint x="78.0" y="140.0"></omgdi:waypoint>
+        <omgdi:waypoint x="78.94678645473387" y="825.0000000000001"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-BCF24314-2781-4C7E-993C-2E560BBB946D" id="BPMNEdge_sid-BCF24314-2781-4C7E-993C-2E560BBB946D">
+        <omgdi:waypoint x="815.94233414209" y="736.0"></omgdi:waypoint>
+        <omgdi:waypoint x="900.5" y="736.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-F9D6DB9B-1208-4367-B298-DA5719761383" id="BPMNEdge_sid-F9D6DB9B-1208-4367-B298-DA5719761383">
+        <omgdi:waypoint x="78.99999999999994" y="901.9500000000003"></omgdi:waypoint>
+        <omgdi:waypoint x="78.99999999999994" y="950.5"></omgdi:waypoint>
+        <omgdi:waypoint x="565.5000000000002" y="950.5"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-E23B3D84-106C-48AF-941F-779454FBBACE" id="BPMNEdge_sid-E23B3D84-106C-48AF-941F-779454FBBACE">
+        <omgdi:waypoint x="1351.0000000000007" y="773.9499999999999"></omgdi:waypoint>
+        <omgdi:waypoint x="1351.000000000001" y="849.0000000000007"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-51A53FA5-67B0-48D5-BE64-FEC007B8A394" id="BPMNEdge_sid-51A53FA5-67B0-48D5-BE64-FEC007B8A394">
+        <omgdi:waypoint x="397.95000000000005" y="588.5000000000002"></omgdi:waypoint>
+        <omgdi:waypoint x="465.0" y="588.5000000000002"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-4CA43C30-2224-49B0-BB4D-06DF8FD5305A" id="BPMNEdge_sid-4CA43C30-2224-49B0-BB4D-06DF8FD5305A">
+        <omgdi:waypoint x="1351.000000000001" y="922.9500000000008"></omgdi:waypoint>
+        <omgdi:waypoint x="1351.000000000001" y="1010.5000000000001"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-E7608A90-6C01-43E4-92BA-42B2E0042E6B" id="BPMNEdge_sid-E7608A90-6C01-43E4-92BA-42B2E0042E6B">
+        <omgdi:waypoint x="853.95" y="30.0"></omgdi:waypoint>
+        <omgdi:waypoint x="944.9999999999936" y="30.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-F548BC92-3162-4C73-8C85-36DEF144F27C" id="BPMNEdge_sid-F548BC92-3162-4C73-8C85-36DEF144F27C">
+        <omgdi:waypoint x="1291.499999999966" y="468.5"></omgdi:waypoint>
+        <omgdi:waypoint x="1184.4499999999032" y="468.5000000000001"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-9767DA05-BC62-45B4-9976-D42E15C31468" id="BPMNEdge_sid-9767DA05-BC62-45B4-9976-D42E15C31468">
+        <omgdi:waypoint x="864.4499999997906" y="352.00000000000017"></omgdi:waypoint>
+        <omgdi:waypoint x="951.999999999602" y="352.00000000000017"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-540409D3-92AB-4B43-8E39-6EE29EFCFABD" id="BPMNEdge_sid-540409D3-92AB-4B43-8E39-6EE29EFCFABD">
+        <omgdi:waypoint x="399.50000000000045" y="468.5000000000001"></omgdi:waypoint>
+        <omgdi:waypoint x="209.50000000000045" y="468.50000000000017"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-E067DA2A-9F3C-4D34-A9C1-F097F1A3B495" id="BPMNEdge_sid-E067DA2A-9F3C-4D34-A9C1-F097F1A3B495">
+        <omgdi:waypoint x="194.94999967038476" y="30.0"></omgdi:waypoint>
+        <omgdi:waypoint x="374.99999999996317" y="30.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-04CFBA15-D895-4837-9B4E-90887FC1D7F7" id="BPMNEdge_sid-04CFBA15-D895-4837-9B4E-90887FC1D7F7">
+        <omgdi:waypoint x="547.4500000000005" y="843.5000000000001"></omgdi:waypoint>
+        <omgdi:waypoint x="728.5" y="843.5000000000001"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-AD92BB13-89C7-4D26-AFF5-4C9EAFC821B2" id="BPMNEdge_sid-AD92BB13-89C7-4D26-AFF5-4C9EAFC821B2">
+        <omgdi:waypoint x="636.4500000000002" y="352.0000000000001"></omgdi:waypoint>
+        <omgdi:waypoint x="728.5000000000001" y="352.0000000000001"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-9DD60436-D629-47B6-B311-1B3D09523BDC" id="BPMNEdge_sid-9DD60436-D629-47B6-B311-1B3D09523BDC">
+        <omgdi:waypoint x="209.50000000000045" y="729.9425336826347"></omgdi:waypoint>
+        <omgdi:waypoint x="209.50000000000045" y="795.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-C2B00B94-71E1-45A2-8F93-CE1698A8E830" id="BPMNEdge_sid-C2B00B94-71E1-45A2-8F93-CE1698A8E830">
+        <omgdi:waypoint x="214.1528753993614" y="483.79372605364006"></omgdi:waypoint>
+        <omgdi:waypoint x="246.0" y="588.5000000000002"></omgdi:waypoint>
+        <omgdi:waypoint x="269.99999999993895" y="588.5000000000002"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-E83146B9-511E-48EA-9568-2481C9190CC8" id="BPMNEdge_sid-E83146B9-511E-48EA-9568-2481C9190CC8">
+        <omgdi:waypoint x="1202.4499999999023" y="735.5000000000002"></omgdi:waypoint>
+        <omgdi:waypoint x="1299.4999999999864" y="735.5"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-6BE26CD7-B349-4B7E-864B-A6D67B0BCEA7" id="BPMNEdge_sid-6BE26CD7-B349-4B7E-864B-A6D67B0BCEA7">
+        <omgdi:waypoint x="843.0000000000007" y="468.50000000000017"></omgdi:waypoint>
+        <omgdi:waypoint x="703.4500000000004" y="468.5000000000002"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-9810142A-04C2-4227-BF6A-88E2DCA61438" id="BPMNEdge_sid-9810142A-04C2-4227-BF6A-88E2DCA61438">
+        <omgdi:waypoint x="1060.9499999999382" y="352.00000000000017"></omgdi:waypoint>
+        <omgdi:waypoint x="1187.4999999999468" y="352.0000000000001"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-ED547C0F-3DAB-4A6D-AFEB-7B25CB3874EC" id="BPMNEdge_sid-ED547C0F-3DAB-4A6D-AFEB-7B25CB3874EC">
+        <omgdi:waypoint x="939.4891888786699" y="735.9563218390804"></omgdi:waypoint>
+        <omgdi:waypoint x="1074.499999999983" y="735.6466743119267"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-723DB545-AD1C-4AFE-A6D3-C90894AE6483" id="BPMNEdge_sid-723DB545-AD1C-4AFE-A6D3-C90894AE6483">
+        <omgdi:waypoint x="434.94999999999243" y="352.0000000000001"></omgdi:waypoint>
+        <omgdi:waypoint x="533.4999999998784" y="352.0000000000001"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-1A687B72-88C6-4C95-85D5-59362C837F13" id="BPMNEdge_sid-1A687B72-88C6-4C95-85D5-59362C837F13">
+        <omgdi:waypoint x="273.44999999949863" y="843.5"></omgdi:waypoint>
+        <omgdi:waypoint x="444.49999999973" y="843.5000000000001"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-749650B5-6A94-4576-B19F-90CF87C2EF42" id="BPMNEdge_sid-749650B5-6A94-4576-B19F-90CF87C2EF42">
+        <omgdi:waypoint x="538.999999999776" y="1040.0"></omgdi:waypoint>
+        <omgdi:waypoint x="494.0000000000002" y="1040.0"></omgdi:waypoint>
+        <omgdi:waypoint x="498.0" y="1040.0"></omgdi:waypoint>
+        <omgdi:waypoint x="432.9499386413768" y="1040.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-EF3DE221-7F11-4690-AD8D-0E9E00CF0744" id="BPMNEdge_sid-EF3DE221-7F11-4690-AD8D-0E9E00CF0744">
+        <omgdi:waypoint x="1239.000000000001" y="59.949999999999996"></omgdi:waypoint>
+        <omgdi:waypoint x="1239.000000000001" y="101.50000000000001"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-80D70A77-ED87-4958-B0E0-D76EF633EE91" id="BPMNEdge_sid-80D70A77-ED87-4958-B0E0-D76EF633EE91">
+        <omgdi:waypoint x="1029.95" y="30.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1184.999999999979" y="30.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-AA7AA41A-51B1-49B6-B78E-EC740EFB6F75" id="BPMNEdge_sid-AA7AA41A-51B1-49B6-B78E-EC740EFB6F75">
+        <omgdi:waypoint x="209.50000000000045" y="488.4458712748347"></omgdi:waypoint>
+        <omgdi:waypoint x="209.50000000000045" y="690.0000000000001"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-63B0B695-F23E-4CFE-9DBA-762EC145BE18" id="BPMNEdge_sid-63B0B695-F23E-4CFE-9DBA-762EC145BE18">
+        <omgdi:waypoint x="239.94999999996372" y="352.0000000000001"></omgdi:waypoint>
+        <omgdi:waypoint x="306.9999999999054" y="352.0000000000001"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-D100B68D-318F-43E5-B106-4920A4E505AF" id="BPMNEdge_sid-D100B68D-318F-43E5-B106-4920A4E505AF">
+        <omgdi:waypoint x="796.6718604651163" y="806.4999999999999"></omgdi:waypoint>
+        <omgdi:waypoint x="796.911214953271" y="754.9969831618334"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-7A777470-2128-4CAB-98E6-943F4AD471B2" id="BPMNEdge_sid-7A777470-2128-4CAB-98E6-943F4AD471B2">
+        <omgdi:waypoint x="218.9712121212124" y="720.4777721774194"></omgdi:waypoint>
+        <omgdi:waypoint x="233.0" y="736.0"></omgdi:waypoint>
+        <omgdi:waypoint x="777.0" y="736.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-BBE6F556-C0AC-4DE4-9653-86D896F6DFA1" id="BPMNEdge_sid-BBE6F556-C0AC-4DE4-9653-86D896F6DFA1">
+        <omgdi:waypoint x="585.3932584269666" y="969.545707070707"></omgdi:waypoint>
+        <omgdi:waypoint x="585.1784916201119" y="1008.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-09CC5A6A-C167-4DB4-B432-CA696A79E170" id="BPMNEdge_sid-09CC5A6A-C167-4DB4-B432-CA696A79E170">
+        <omgdi:waypoint x="455.95000000000005" y="30.0"></omgdi:waypoint>
+        <omgdi:waypoint x="570.0000000000001" y="30.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-40179448-B638-4931-A3A7-B7EE28280178" id="BPMNEdge_sid-40179448-B638-4931-A3A7-B7EE28280178">
+        <omgdi:waypoint x="1294.4499999999664" y="352.00000000000006"></omgdi:waypoint>
+        <omgdi:waypoint x="1355.0" y="352.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1355.2918454935625" y="420.00000000000006"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-8B4FCC8C-8E57-4A69-97F8-619D3C0D8996" id="BPMNEdge_sid-8B4FCC8C-8E57-4A69-97F8-619D3C0D8996">
+        <omgdi:waypoint x="659.95" y="30.0"></omgdi:waypoint>
+        <omgdi:waypoint x="769.999999999992" y="30.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-11723D10-0BD4-4D54-911C-E43079C80ED9" id="BPMNEdge_sid-11723D10-0BD4-4D54-911C-E43079C80ED9">
+        <omgdi:waypoint x="582.3333333333337" y="468.50000000000017"></omgdi:waypoint>
+        <omgdi:waypoint x="498.4499999996317" y="468.5000000000001"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-EB15C01D-6E9D-41A2-948F-BA57A84B2E8C" id="BPMNEdge_sid-EB15C01D-6E9D-41A2-948F-BA57A84B2E8C">
+        <omgdi:waypoint x="740.0000000000005" y="159.93722791293231"></omgdi:waypoint>
+        <omgdi:waypoint x="740.0" y="218.0"></omgdi:waypoint>
+        <omgdi:waypoint x="558.9499999999969" y="218.38428874734606"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-29B9ABBF-C272-4961-A03C-08AECCF57D45" id="BPMNEdge_sid-29B9ABBF-C272-4961-A03C-08AECCF57D45">
+        <omgdi:waypoint x="450.00000000000006" y="218.50000000000003"></omgdi:waypoint>
+        <omgdi:waypoint x="386.95000000000005" y="218.50000000000003"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-787CA825-1330-480D-9A3F-531D944BF8B6" id="BPMNEdge_sid-787CA825-1330-480D-9A3F-531D944BF8B6">
+        <omgdi:waypoint x="172.0" y="254.95000000000002"></omgdi:waypoint>
+        <omgdi:waypoint x="172.0" y="315.00000000000006"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-CBE1968A-8FC9-4661-AEBC-E2F3C665364F" id="BPMNEdge_sid-CBE1968A-8FC9-4661-AEBC-E2F3C665364F">
+        <omgdi:waypoint x="1296.500000000001" y="1040.0"></omgdi:waypoint>
+        <omgdi:waypoint x="728.0" y="1040.0"></omgdi:waypoint>
+        <omgdi:waypoint x="728.0" y="950.0"></omgdi:waypoint>
+        <omgdi:waypoint x="604.9069454163166" y="950.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-6AFBD599-7E46-4BEF-B217-391C9AD336B3" id="BPMNEdge_sid-6AFBD599-7E46-4BEF-B217-391C9AD336B3">
+        <omgdi:waypoint x="270.0000000000001" y="218.5"></omgdi:waypoint>
+        <omgdi:waypoint x="247.00000000000006" y="218.5"></omgdi:waypoint>
+        <omgdi:waypoint x="247.00000000000006" y="217.5"></omgdi:waypoint>
+        <omgdi:waypoint x="223.94999999999519" y="217.5"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-87BDDC48-428F-49E4-AAF3-C9629DB20518" id="BPMNEdge_sid-87BDDC48-428F-49E4-AAF3-C9629DB20518">
+        <omgdi:waypoint x="1187.4999999997608" y="140.0"></omgdi:waypoint>
+        <omgdi:waypoint x="759.9019893766292" y="140.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-28E13EF7-DD6E-484A-B33F-E04999C6E8F0" id="BPMNEdge_sid-28E13EF7-DD6E-484A-B33F-E04999C6E8F0">
+        <omgdi:waypoint x="698.0" y="625.4500000000003"></omgdi:waypoint>
+        <omgdi:waypoint x="698.0" y="670.5000000000002"></omgdi:waypoint>
+        <omgdi:waypoint x="920.5" y="670.5000000000002"></omgdi:waypoint>
+        <omgdi:waypoint x="920.5" y="716.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-9BF9A497-9B88-464E-8CE2-A56F76CC320E" id="BPMNEdge_sid-9BF9A497-9B88-464E-8CE2-A56F76CC320E">
+        <omgdi:waypoint x="567.95" y="588.5000000000002"></omgdi:waypoint>
+        <omgdi:waypoint x="629.9999999999125" y="588.5000000000002"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

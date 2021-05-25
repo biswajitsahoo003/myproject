@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <process id="eor_tx_pro_cramer_status_RIS_workflow" name="eor_tx_pro_cramer_status_RIS_workflow" isExecutable="true">
+    <documentation>eor_tx_pro_cramer_status_RIS_workflow</documentation>
+    <startEvent id="startEvent1"></startEvent>
+    <endEvent id="eor_tx_pro_cramer_status_RIS_activity_end">
+      <extensionElements>
+        <flowable:executionListener event="end" delegateExpression="${activityEndListener}"></flowable:executionListener>
+      </extensionElements>
+    </endEvent>
+    <serviceTask id="eor_tx_pro_cramer_status_RIS_task" name="Cramer Status &quot;Ready In Service&quot;" flowable:delegateExpression="${createDeviceInCramerDelegate}"></serviceTask>
+    <userTask id="eor_tx_pro_cramer_status_RIS_retry_task" name="Cramer Status &quot;Ready In Service&quot; retry">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${taskCreateListener}"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${taskCompleteListener}"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <exclusiveGateway id="sid-0AC9AADD-BF3C-44E2-9679-7C7660488D84"></exclusiveGateway>
+    <sequenceFlow id="sid-79DD055A-D413-43F6-8053-744F8A0309C5" sourceRef="eor_tx_pro_cramer_status_RIS_task" targetRef="sid-0AC9AADD-BF3C-44E2-9679-7C7660488D84"></sequenceFlow>
+    <exclusiveGateway id="sid-0932350C-3761-43F9-8BF1-1A3C9D8DCA27"></exclusiveGateway>
+    <sequenceFlow id="sid-91025FA0-B49E-4B44-8493-3617FD468267" sourceRef="eor_tx_pro_cramer_status_RIS_retry_task" targetRef="sid-0932350C-3761-43F9-8BF1-1A3C9D8DCA27"></sequenceFlow>
+    <sequenceFlow id="sid-68C67958-00D5-4F28-B351-3E65D9ECC38D" sourceRef="sid-0AC9AADD-BF3C-44E2-9679-7C7660488D84" targetRef="eor_tx_pro_cramer_status_RIS_activity_end">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${isError==false}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-73EF7E43-C33D-449A-94F3-E35B4EBCC271" sourceRef="sid-0AC9AADD-BF3C-44E2-9679-7C7660488D84" targetRef="eor_tx_pro_cramer_status_RIS_retry_task">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${isError==true}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-B3606902-5DBF-4D3B-B751-890E9A2205AD" sourceRef="sid-0932350C-3761-43F9-8BF1-1A3C9D8DCA27" targetRef="eor_tx_pro_cramer_status_RIS_task">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${retry==true}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-D2A16E53-9640-4B0E-9D07-1F5E0554E991" sourceRef="sid-0932350C-3761-43F9-8BF1-1A3C9D8DCA27" targetRef="eor_tx_pro_cramer_status_RIS_activity_end">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${retry==false}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="eor_tx_pro_cramer_status_RIS_activity_start" sourceRef="startEvent1" targetRef="eor_tx_pro_cramer_status_RIS_task">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${activityStartListener}"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_eor_tx_pro_cramer_status_RIS_workflow">
+    <bpmndi:BPMNPlane bpmnElement="eor_tx_pro_cramer_status_RIS_workflow" id="BPMNPlane_eor_tx_pro_cramer_status_RIS_workflow">
+      <bpmndi:BPMNShape bpmnElement="startEvent1" id="BPMNShape_startEvent1">
+        <omgdc:Bounds height="30.0" width="30.0" x="100.0" y="163.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="eor_tx_pro_cramer_status_RIS_activity_end" id="BPMNShape_eor_tx_pro_cramer_status_RIS_activity_end">
+        <omgdc:Bounds height="28.0" width="28.0" x="570.0000000000001" y="164.00000000000003"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="eor_tx_pro_cramer_status_RIS_task" id="BPMNShape_eor_tx_pro_cramer_status_RIS_task">
+        <omgdc:Bounds height="80.0" width="100.0" x="175.0" y="138.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="eor_tx_pro_cramer_status_RIS_retry_task" id="BPMNShape_eor_tx_pro_cramer_status_RIS_retry_task">
+        <omgdc:Bounds height="80.0" width="100.0" x="320.00000000000006" y="270.00000000000006"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-0AC9AADD-BF3C-44E2-9679-7C7660488D84" id="BPMNShape_sid-0AC9AADD-BF3C-44E2-9679-7C7660488D84">
+        <omgdc:Bounds height="40.0" width="40.0" x="350.0000000000001" y="158.00000000000003"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-0932350C-3761-43F9-8BF1-1A3C9D8DCA27" id="BPMNShape_sid-0932350C-3761-43F9-8BF1-1A3C9D8DCA27">
+        <omgdc:Bounds height="40.0" width="40.0" x="205.00000000000003" y="290.0000000000001"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-79DD055A-D413-43F6-8053-744F8A0309C5" id="BPMNEdge_sid-79DD055A-D413-43F6-8053-744F8A0309C5">
+        <omgdi:waypoint x="274.94999999996236" y="178.00000000000003"></omgdi:waypoint>
+        <omgdi:waypoint x="350.0000000000001" y="178.00000000000003"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-68C67958-00D5-4F28-B351-3E65D9ECC38D" id="BPMNEdge_sid-68C67958-00D5-4F28-B351-3E65D9ECC38D">
+        <omgdi:waypoint x="389.9453409621673" y="178.00000000000003"></omgdi:waypoint>
+        <omgdi:waypoint x="570.0000000000001" y="178.00000000000003"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="eor_tx_pro_cramer_status_RIS_activity_start" id="BPMNEdge_eor_tx_pro_cramer_status_RIS_activity_start">
+        <omgdi:waypoint x="129.9499984899576" y="178.0"></omgdi:waypoint>
+        <omgdi:waypoint x="174.9999999999917" y="178.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-73EF7E43-C33D-449A-94F3-E35B4EBCC271" id="BPMNEdge_sid-73EF7E43-C33D-449A-94F3-E35B4EBCC271">
+        <omgdi:waypoint x="370.0000000000001" y="197.94244890234677"></omgdi:waypoint>
+        <omgdi:waypoint x="370.00000000000006" y="270.00000000000006"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-91025FA0-B49E-4B44-8493-3617FD468267" id="BPMNEdge_sid-91025FA0-B49E-4B44-8493-3617FD468267">
+        <omgdi:waypoint x="319.99999999996305" y="310.00000000000006"></omgdi:waypoint>
+        <omgdi:waypoint x="244.90684955141484" y="310.00000000000006"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-B3606902-5DBF-4D3B-B751-890E9A2205AD" id="BPMNEdge_sid-B3606902-5DBF-4D3B-B751-890E9A2205AD">
+        <omgdi:waypoint x="225.00000000000003" y="290.0000000000001"></omgdi:waypoint>
+        <omgdi:waypoint x="225.0" y="217.95000000000002"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-D2A16E53-9640-4B0E-9D07-1F5E0554E991" id="BPMNEdge_sid-D2A16E53-9640-4B0E-9D07-1F5E0554E991">
+        <omgdi:waypoint x="225.00000000000003" y="329.9370622568094"></omgdi:waypoint>
+        <omgdi:waypoint x="225.0" y="387.0"></omgdi:waypoint>
+        <omgdi:waypoint x="584.0" y="387.0"></omgdi:waypoint>
+        <omgdi:waypoint x="584.0000000000001" y="191.94992357497821"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

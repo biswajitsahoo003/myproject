@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <signal id="additional-tech-details-signal" name="additional-tech-details-signal" flowable:scope="global"></signal>
+  <signal id="site-readiness-signal" name="site-readiness-signal" flowable:scope="global"></signal>
+  <signal id="reopen-site-readiness-signal" name="reopen-site-readiness-signal" flowable:scope="global"></signal>
+  <process id="plan_managed_services_advance_enrichment_teamsdr_workflow" name="Plan Managed Services Advance Enrichment Teamsdr Workflow" isExecutable="true">
+    <documentation>Managed Services Advance Enrichment Teamsdr Workflow</documentation>
+    <serviceTask id="managed_services_advanced_enrichment_activity_start_plan" name="TeamsDR Managed Services Advanced Enrichment Activity Start" flowable:delegateExpression="${activityPlanStartDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[managed_service_advanced_enrichment_process_start_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="teamsdr-managed-services-advanced-enrichment_plan" name="Teamsdr Managed Services Advanced Enrichment" flowable:delegateExpression="${ taskPlanDelegate }">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[managed_services_advanced_enrichment_activity_start_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="managed_services_advanced_enrichment_activity_end_plan" name="TeamsDR Managed Services Advanced Enrichment Activity End" flowable:delegateExpression="${activityPlanEndDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[teamsdr-managed-services-advanced-enrichment_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="sid-CD32F8DA-BDEF-4B4D-A788-7B4AB6C9C1EC" sourceRef="teamsdr-managed-services-advanced-enrichment_plan" targetRef="managed_services_advanced_enrichment_activity_end_plan"></sequenceFlow>
+    <startEvent id="sid-BED3C988-B697-4629-83BB-44B56E9AF78A"></startEvent>
+    <sequenceFlow id="sid-C9BEDBC7-54D5-4374-B5C7-6CB940CB7A53" sourceRef="managed_services_advanced_enrichment_activity_start_plan" targetRef="teamsdr-managed-services-advanced-enrichment_plan"></sequenceFlow>
+    <serviceTask id="service_implementation_stage_start_plan" name="Service Implementation Stage Start" flowable:delegateExpression="${stagePlanStartDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[order_enrichment_stage_end_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="managed_service_advanced_enrichment_process_start_plan" name="TeamsDR Managed Services Advance Enrichment Process Start" flowable:delegateExpression="${processPlanStartDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[service_implementation_stage_start_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="service_implementation_stage_end_plan" name="Service Implementation Stage End" flowable:delegateExpression="${stagePlanEndDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[managed_service_advanced_enrichment_process_end_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="managed_service_advanced_enrichment_process_end_plan" name="TeamsDR Managed Services Advance Enrichment Process End" flowable:delegateExpression="${processPlanEndDelegate}">
+      <extensionElements>
+        <flowable:field name="preceders">
+          <flowable:string><![CDATA[managed_services_advanced_enrichment_activity_end_plan]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="sid-31FE996C-DBEC-48E3-B1F0-EB7CC0CE0920" sourceRef="service_implementation_stage_start_plan" targetRef="managed_service_advanced_enrichment_process_start_plan"></sequenceFlow>
+    <sequenceFlow id="sid-3E0A8028-33AD-4C5C-BA58-CD072193EB2E" sourceRef="managed_service_advanced_enrichment_process_start_plan" targetRef="managed_services_advanced_enrichment_activity_start_plan"></sequenceFlow>
+    <endEvent id="sid-875D3CE0-0919-445A-BFBE-7C8E64EEFB4A"></endEvent>
+    <sequenceFlow id="sid-03739AF2-CF8D-4D21-9A59-775DA7E0E03A" sourceRef="managed_services_advanced_enrichment_activity_end_plan" targetRef="managed_service_advanced_enrichment_process_end_plan"></sequenceFlow>
+    <sequenceFlow id="sid-B491F3C4-A45C-4D36-A733-E21B1E4A52FC" sourceRef="service_implementation_stage_end_plan" targetRef="sid-875D3CE0-0919-445A-BFBE-7C8E64EEFB4A"></sequenceFlow>
+    <sequenceFlow id="sid-2335BA49-26C9-470B-8419-B1ADA1C4BDF4" sourceRef="managed_service_advanced_enrichment_process_end_plan" targetRef="service_implementation_stage_end_plan"></sequenceFlow>
+    <sequenceFlow id="sid-155DDA5E-8FDB-436A-AA59-9048CED6ACB1" sourceRef="sid-BED3C988-B697-4629-83BB-44B56E9AF78A" targetRef="service_implementation_stage_start_plan"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_plan_managed_services_advance_enrichment_teamsdr_workflow">
+    <bpmndi:BPMNPlane bpmnElement="plan_managed_services_advance_enrichment_teamsdr_workflow" id="BPMNPlane_plan_managed_services_advance_enrichment_teamsdr_workflow">
+      <bpmndi:BPMNShape bpmnElement="managed_services_advanced_enrichment_activity_start_plan" id="BPMNShape_managed_services_advanced_enrichment_activity_start_plan">
+        <omgdc:Bounds height="80.0" width="99.99999999999994" x="360.00000000000006" y="315.0000000000004"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="teamsdr-managed-services-advanced-enrichment_plan" id="BPMNShape_teamsdr-managed-services-advanced-enrichment_plan">
+        <omgdc:Bounds height="80.0" width="116.99999999999994" x="510.00000000000006" y="315.0000000000006"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="managed_services_advanced_enrichment_activity_end_plan" id="BPMNShape_managed_services_advanced_enrichment_activity_end_plan">
+        <omgdc:Bounds height="80.0" width="100.0" x="675.0000000000001" y="315.00000000000045"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-BED3C988-B697-4629-83BB-44B56E9AF78A" id="BPMNShape_sid-BED3C988-B697-4629-83BB-44B56E9AF78A">
+        <omgdc:Bounds height="30.0" width="30.0" x="0.0" y="340.0000000000002"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="service_implementation_stage_start_plan" id="BPMNShape_service_implementation_stage_start_plan">
+        <omgdc:Bounds height="80.0" width="99.99999999999999" x="75.00000000000001" y="315.0000000000003"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="managed_service_advanced_enrichment_process_start_plan" id="BPMNShape_managed_service_advanced_enrichment_process_start_plan">
+        <omgdc:Bounds height="80.0" width="99.99999999999997" x="225.00000000000003" y="315.0000000000007"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="service_implementation_stage_end_plan" id="BPMNShape_service_implementation_stage_end_plan">
+        <omgdc:Bounds height="80.0" width="99.99999999999989" x="990.0000000000001" y="315.0000000000002"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="managed_service_advanced_enrichment_process_end_plan" id="BPMNShape_managed_service_advanced_enrichment_process_end_plan">
+        <omgdc:Bounds height="79.99999999999994" width="99.99999999999989" x="840.0000000000001" y="315.0000000000002"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-875D3CE0-0919-445A-BFBE-7C8E64EEFB4A" id="BPMNShape_sid-875D3CE0-0919-445A-BFBE-7C8E64EEFB4A">
+        <omgdc:Bounds height="28.0" width="28.0" x="1140.0000000000002" y="341.00000000000057"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-31FE996C-DBEC-48E3-B1F0-EB7CC0CE0920" id="BPMNEdge_sid-31FE996C-DBEC-48E3-B1F0-EB7CC0CE0920">
+        <omgdi:waypoint x="167.85714285714286" y="355.0000000000004"></omgdi:waypoint>
+        <omgdi:waypoint x="224.99999999999352" y="355.00000000000057"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-C9BEDBC7-54D5-4374-B5C7-6CB940CB7A53" id="BPMNEdge_sid-C9BEDBC7-54D5-4374-B5C7-6CB940CB7A53">
+        <omgdi:waypoint x="449.625" y="355.00000000000045"></omgdi:waypoint>
+        <omgdi:waypoint x="510.00000000000006" y="355.00000000000057"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-CD32F8DA-BDEF-4B4D-A788-7B4AB6C9C1EC" id="BPMNEdge_sid-CD32F8DA-BDEF-4B4D-A788-7B4AB6C9C1EC">
+        <omgdi:waypoint x="626.95" y="355.0000000000005"></omgdi:waypoint>
+        <omgdi:waypoint x="672.8333333333334" y="355.00000000000045"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-2335BA49-26C9-470B-8419-B1ADA1C4BDF4" id="BPMNEdge_sid-2335BA49-26C9-470B-8419-B1ADA1C4BDF4">
+        <omgdi:waypoint x="939.9499999999999" y="355.0000000000002"></omgdi:waypoint>
+        <omgdi:waypoint x="989.9999999997658" y="355.0000000000002"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-3E0A8028-33AD-4C5C-BA58-CD072193EB2E" id="BPMNEdge_sid-3E0A8028-33AD-4C5C-BA58-CD072193EB2E">
+        <omgdi:waypoint x="324.95000000000005" y="355.00000000000057"></omgdi:waypoint>
+        <omgdi:waypoint x="359.9999999999946" y="355.00000000000045"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-B491F3C4-A45C-4D36-A733-E21B1E4A52FC" id="BPMNEdge_sid-B491F3C4-A45C-4D36-A733-E21B1E4A52FC">
+        <omgdi:waypoint x="1089.95" y="355.0000000000004"></omgdi:waypoint>
+        <omgdi:waypoint x="1140.0000000000002" y="355.0000000000005"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-03739AF2-CF8D-4D21-9A59-775DA7E0E03A" id="BPMNEdge_sid-03739AF2-CF8D-4D21-9A59-775DA7E0E03A">
+        <omgdi:waypoint x="774.9499999999293" y="355.0000000000004"></omgdi:waypoint>
+        <omgdi:waypoint x="839.9999999999447" y="355.0000000000003"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-155DDA5E-8FDB-436A-AA59-9048CED6ACB1" id="BPMNEdge_sid-155DDA5E-8FDB-436A-AA59-9048CED6ACB1">
+        <omgdi:waypoint x="29.949998489957597" y="355.0000000000003"></omgdi:waypoint>
+        <omgdi:waypoint x="75.00000000000001" y="355.0000000000002"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

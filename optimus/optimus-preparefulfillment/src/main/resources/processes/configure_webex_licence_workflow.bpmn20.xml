@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <process id="configure_webex_licence_workflow" name="configure_webex_licence_workflow" isExecutable="true">
+    <documentation>configure_webex_licence_workflow</documentation>
+    <startEvent id="configure_ucaas_webex_licence_activity_start">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ activityStartListener }"></flowable:executionListener>
+      </extensionElements>
+    </startEvent>
+    <endEvent id="configure_ucaas_webex_licence_activity_end">
+      <extensionElements>
+        <flowable:executionListener event="end" delegateExpression="${ activityEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </endEvent>
+    <userTask id="ucwb-activate-microsite" name="Activate Microsite">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <serviceTask id="reminder-ucwb-activate-microsite" name="Reminder" flowable:async="true" flowable:exclusive="false" flowable:delegateExpression="${ notificationDelegate  }"></serviceTask>
+    <userTask id="ucwb-activate-voice-microsite" name="Add Voice to Microsite">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <userTask id="ucwb-hybrid-services-integration" name="Hybrid Service Integration with Webex">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="sid-4D85042E-C3D9-4CAB-A43A-5746C210B702" sourceRef="sid-47DB25F3-74CE-4868-A1DF-840631C7249F" targetRef="reminder-ucwb-activate-microsite"></sequenceFlow>
+    <serviceTask id="reminder-ucwb-activate-voice-microsite" name="Reminder" flowable:async="true" flowable:exclusive="false" flowable:delegateExpression="${ notificationDelegate  }"></serviceTask>
+    <serviceTask id="reminder-ucwb-hybrid-services-integration" name="Reminder" flowable:async="true" flowable:exclusive="false" flowable:delegateExpression="${ notificationDelegate  }"></serviceTask>
+    <sequenceFlow id="sid-533FF413-E4F0-4F2E-BE34-2D13E81958C0" sourceRef="ucwb-hybrid-services-integration" targetRef="reminder-ucwb-hybrid-services-integration"></sequenceFlow>
+    <userTask id="ucwb-adfs-sso-integration" name="ADFS, SSO Intergration">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <serviceTask id="reminder-ucwb-adfs-sso-integration" name="Reminder" flowable:async="true" flowable:exclusive="false" flowable:delegateExpression="${ notificationDelegate  }"></serviceTask>
+    <sequenceFlow id="sid-6B00321C-CBDD-4205-A9C6-61EFF3B69CFF" sourceRef="sid-1B8D1E20-F96A-42C5-9BAC-260D148FF13E" targetRef="reminder-ucwb-adfs-sso-integration"></sequenceFlow>
+    <exclusiveGateway id="sid-8F9188D7-429B-437C-B015-D36F908ED08F" default="sid-D97937D5-45CA-488B-B3AE-005C156E2D15"></exclusiveGateway>
+    <sequenceFlow id="sid-A8D2C456-653A-4107-92FF-7E9460237913" sourceRef="ucwb-activate-microsite" targetRef="sid-49EDD53A-68D6-4E98-B59F-F99CADC07F4C"></sequenceFlow>
+    <sequenceFlow id="sid-6063F909-FB32-4D82-BC17-23F5A452C9D9" name="Adfs" sourceRef="sid-8F9188D7-429B-437C-B015-D36F908ED08F" targetRef="ucwb-adfs-sso-integration">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ var:get(isAdfs) == "yes" }]]></conditionExpression>
+    </sequenceFlow>
+    <exclusiveGateway id="sid-1353699F-9DFA-4B4B-B9D8-93120C92D61A"></exclusiveGateway>
+    <boundaryEvent id="sid-1B8D1E20-F96A-42C5-9BAC-260D148FF13E" attachedToRef="ucwb-adfs-sso-integration" cancelActivity="false">
+      <timerEventDefinition>
+        <timeCycle>${ remainderCycle }</timeCycle>
+      </timerEventDefinition>
+    </boundaryEvent>
+    <boundaryEvent id="sid-C396E888-53C3-46CD-A6A7-8F8D7E998E89" attachedToRef="ucwb-hybrid-services-integration" cancelActivity="false">
+      <timerEventDefinition>
+        <timeCycle>${ remainderCycle }</timeCycle>
+      </timerEventDefinition>
+    </boundaryEvent>
+    <sequenceFlow id="sid-6944C1F1-4900-4822-9FE9-FF39AF2F0A31" sourceRef="ucwb-adfs-sso-integration" targetRef="ucwb-hybrid-services-integration"></sequenceFlow>
+    <parallelGateway id="sid-49EDD53A-68D6-4E98-B59F-F99CADC07F4C"></parallelGateway>
+    <sequenceFlow id="sid-3480DAE4-5194-439B-99F6-FA254C42B300" sourceRef="ucwb-hybrid-services-integration" targetRef="sid-1353699F-9DFA-4B4B-B9D8-93120C92D61A"></sequenceFlow>
+    <boundaryEvent id="sid-E045A88F-E848-4011-BAEB-CC76944185FB" attachedToRef="ucwb-activate-voice-microsite" cancelActivity="false">
+      <timerEventDefinition>
+        <timeCycle>${ remainderCycle }</timeCycle>
+      </timerEventDefinition>
+    </boundaryEvent>
+    <sequenceFlow id="sid-44ABAEF6-9F09-43D0-A133-BB77A122C47E" sourceRef="sid-E045A88F-E848-4011-BAEB-CC76944185FB" targetRef="reminder-ucwb-activate-voice-microsite"></sequenceFlow>
+    <sequenceFlow id="sid-D97937D5-45CA-488B-B3AE-005C156E2D15" sourceRef="sid-8F9188D7-429B-437C-B015-D36F908ED08F" targetRef="sid-1353699F-9DFA-4B4B-B9D8-93120C92D61A"></sequenceFlow>
+    <sequenceFlow id="sid-E2E40631-ABA4-404B-B1FE-CA7FB0A65A3E" sourceRef="sid-49EDD53A-68D6-4E98-B59F-F99CADC07F4C" targetRef="ucwb-activate-voice-microsite"></sequenceFlow>
+    <sequenceFlow id="sid-B40CBFD1-29BC-42B8-9466-336A0650690F" sourceRef="sid-49EDD53A-68D6-4E98-B59F-F99CADC07F4C" targetRef="sid-8F9188D7-429B-437C-B015-D36F908ED08F"></sequenceFlow>
+    <parallelGateway id="sid-E8BC1239-CC3E-44FE-9037-9E72A2C15157"></parallelGateway>
+    <sequenceFlow id="sid-B3E2572B-BF8A-4825-A54C-0B699C9448C4" sourceRef="sid-1353699F-9DFA-4B4B-B9D8-93120C92D61A" targetRef="sid-E8BC1239-CC3E-44FE-9037-9E72A2C15157"></sequenceFlow>
+    <sequenceFlow id="sid-F1DA400F-DBE9-43DD-99E3-0AFEA44C5C35" sourceRef="ucwb-activate-voice-microsite" targetRef="sid-E8BC1239-CC3E-44FE-9037-9E72A2C15157"></sequenceFlow>
+    <sequenceFlow id="sid-4FA8A293-B9A2-4955-981D-9F9AF14376FB" sourceRef="sid-E8BC1239-CC3E-44FE-9037-9E72A2C15157" targetRef="configure_ucaas_webex_licence_activity_end"></sequenceFlow>
+    <boundaryEvent id="sid-47DB25F3-74CE-4868-A1DF-840631C7249F" attachedToRef="ucwb-activate-microsite" cancelActivity="false">
+      <timerEventDefinition>
+        <timeCycle>${ remainderCycle }</timeCycle>
+      </timerEventDefinition>
+    </boundaryEvent>
+    <sequenceFlow id="sid-A097F9A2-BD30-462A-95CD-BA3D204BB90B" sourceRef="configure_ucaas_webex_licence_activity_start" targetRef="ucwb-activate-microsite"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_configure_webex_licence_workflow">
+    <bpmndi:BPMNPlane bpmnElement="configure_webex_licence_workflow" id="BPMNPlane_configure_webex_licence_workflow">
+      <bpmndi:BPMNShape bpmnElement="configure_ucaas_webex_licence_activity_start" id="BPMNShape_configure_ucaas_webex_licence_activity_start">
+        <omgdc:Bounds height="30.0" width="30.0" x="30.0" y="40.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="configure_ucaas_webex_licence_activity_end" id="BPMNShape_configure_ucaas_webex_licence_activity_end">
+        <omgdc:Bounds height="28.0" width="28.0" x="910.0" y="350.3276675830082"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ucwb-activate-microsite" id="BPMNShape_ucwb-activate-microsite">
+        <omgdc:Bounds height="48.0" width="125.0" x="610.0" y="31.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="reminder-ucwb-activate-microsite" id="BPMNShape_reminder-ucwb-activate-microsite">
+        <omgdc:Bounds height="40.0" width="90.00000000000011" x="624.5450027783417" y="130.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ucwb-activate-voice-microsite" id="BPMNShape_ucwb-activate-voice-microsite">
+        <omgdc:Bounds height="55.999999999999915" width="111.99999999999989" x="885.0" y="122.00000000000003"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ucwb-hybrid-services-integration" id="BPMNShape_ucwb-hybrid-services-integration">
+        <omgdc:Bounds height="56.0" width="112.0" x="241.2950281478055" y="290.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="reminder-ucwb-activate-voice-microsite" id="BPMNShape_reminder-ucwb-activate-voice-microsite">
+        <omgdc:Bounds height="40.0" width="90.0" x="896.0" y="35.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="reminder-ucwb-hybrid-services-integration" id="BPMNShape_reminder-ucwb-hybrid-services-integration">
+        <omgdc:Bounds height="40.0" width="90.0" x="269.8850844434164" y="200.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ucwb-adfs-sso-integration" id="BPMNShape_ucwb-adfs-sso-integration">
+        <omgdc:Bounds height="56.0" width="111.99999999999994" x="398.7049718521946" y="290.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="reminder-ucwb-adfs-sso-integration" id="BPMNShape_reminder-ucwb-adfs-sso-integration">
+        <omgdc:Bounds height="40.0" width="90.0" x="413.593955220784" y="200.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-8F9188D7-429B-437C-B015-D36F908ED08F" id="BPMNShape_sid-8F9188D7-429B-437C-B015-D36F908ED08F">
+        <omgdc:Bounds height="40.0" width="40.0" x="720.0" y="298.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-1353699F-9DFA-4B4B-B9D8-93120C92D61A" id="BPMNShape_sid-1353699F-9DFA-4B4B-B9D8-93120C92D61A">
+        <omgdc:Bounds height="40.0" width="40.0" x="160.0" y="298.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-1B8D1E20-F96A-42C5-9BAC-260D148FF13E" id="BPMNShape_sid-1B8D1E20-F96A-42C5-9BAC-260D148FF13E">
+        <omgdc:Bounds height="31.0" width="31.0" x="427.59395522078387" y="258.36309954563217"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-C396E888-53C3-46CD-A6A7-8F8D7E998E89" id="BPMNShape_sid-C396E888-53C3-46CD-A6A7-8F8D7E998E89">
+        <omgdc:Bounds height="31.0" width="31.0" x="283.8850844434164" y="258.28968466211023"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-49EDD53A-68D6-4E98-B59F-F99CADC07F4C" id="BPMNShape_sid-49EDD53A-68D6-4E98-B59F-F99CADC07F4C">
+        <omgdc:Bounds height="40.0" width="40.0" x="780.0" y="130.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-E045A88F-E848-4011-BAEB-CC76944185FB" id="BPMNShape_sid-E045A88F-E848-4011-BAEB-CC76944185FB">
+        <omgdc:Bounds height="31.0" width="31.0" x="912.7103230984851" y="90.32766758300815"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-E8BC1239-CC3E-44FE-9037-9E72A2C15157" id="BPMNShape_sid-E8BC1239-CC3E-44FE-9037-9E72A2C15157">
+        <omgdc:Bounds height="40.0" width="40.0" x="810.0" y="344.3276675830082"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-47DB25F3-74CE-4868-A1DF-840631C7249F" id="BPMNShape_sid-47DB25F3-74CE-4868-A1DF-840631C7249F">
+        <omgdc:Bounds height="31.0" width="31.0" x="607.7864399391478" y="63.83642727353691"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-B40CBFD1-29BC-42B8-9466-336A0650690F" id="BPMNEdge_sid-B40CBFD1-29BC-42B8-9466-336A0650690F">
+        <omgdi:waypoint x="800.0" y="169.94406603212377"></omgdi:waypoint>
+        <omgdi:waypoint x="800.0" y="318.0"></omgdi:waypoint>
+        <omgdi:waypoint x="759.916569282137" y="318.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-D97937D5-45CA-488B-B3AE-005C156E2D15" id="BPMNEdge_sid-D97937D5-45CA-488B-B3AE-005C156E2D15">
+        <omgdi:waypoint x="740.0" y="298.0"></omgdi:waypoint>
+        <omgdi:waypoint x="740.0" y="189.0"></omgdi:waypoint>
+        <omgdi:waypoint x="180.0" y="189.0"></omgdi:waypoint>
+        <omgdi:waypoint x="180.0" y="298.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-E2E40631-ABA4-404B-B1FE-CA7FB0A65A3E" id="BPMNEdge_sid-E2E40631-ABA4-404B-B1FE-CA7FB0A65A3E">
+        <omgdi:waypoint x="819.9429305457122" y="150.0"></omgdi:waypoint>
+        <omgdi:waypoint x="885.0" y="150.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-6944C1F1-4900-4822-9FE9-FF39AF2F0A31" id="BPMNEdge_sid-6944C1F1-4900-4822-9FE9-FF39AF2F0A31">
+        <omgdi:waypoint x="398.7049718521946" y="318.0"></omgdi:waypoint>
+        <omgdi:waypoint x="353.24502814777475" y="318.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-A8D2C456-653A-4107-92FF-7E9460237913" id="BPMNEdge_sid-A8D2C456-653A-4107-92FF-7E9460237913">
+        <omgdi:waypoint x="734.9499999999942" y="55.0"></omgdi:waypoint>
+        <omgdi:waypoint x="757.0" y="55.0"></omgdi:waypoint>
+        <omgdi:waypoint x="757.0" y="150.0"></omgdi:waypoint>
+        <omgdi:waypoint x="780.0" y="150.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-B3E2572B-BF8A-4825-A54C-0B699C9448C4" id="BPMNEdge_sid-B3E2572B-BF8A-4825-A54C-0B699C9448C4">
+        <omgdi:waypoint x="180.0" y="337.92836225596534"></omgdi:waypoint>
+        <omgdi:waypoint x="180.0" y="364.0"></omgdi:waypoint>
+        <omgdi:waypoint x="810.0" y="364.31759058338656"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-F1DA400F-DBE9-43DD-99E3-0AFEA44C5C35" id="BPMNEdge_sid-F1DA400F-DBE9-43DD-99E3-0AFEA44C5C35">
+        <omgdi:waypoint x="941.0" y="177.94999999999993"></omgdi:waypoint>
+        <omgdi:waypoint x="941.0" y="190.0"></omgdi:waypoint>
+        <omgdi:waypoint x="830.0" y="190.0"></omgdi:waypoint>
+        <omgdi:waypoint x="830.0" y="344.3276675830082"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-4D85042E-C3D9-4CAB-A43A-5746C210B702" id="BPMNEdge_sid-4D85042E-C3D9-4CAB-A43A-5746C210B702">
+        <omgdi:waypoint x="631.7495092811706" y="92.26297889855849"></omgdi:waypoint>
+        <omgdi:waypoint x="656.4523834684578" y="130.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-533FF413-E4F0-4F2E-BE34-2D13E81958C0" id="BPMNEdge_sid-533FF413-E4F0-4F2E-BE34-2D13E81958C0">
+        <omgdi:waypoint x="302.3117839994619" y="290.0"></omgdi:waypoint>
+        <omgdi:waypoint x="311.2952770361489" y="239.95000000000002"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-4FA8A293-B9A2-4955-981D-9F9AF14376FB" id="BPMNEdge_sid-4FA8A293-B9A2-4955-981D-9F9AF14376FB">
+        <omgdi:waypoint x="849.9393995749138" y="364.3276675830082"></omgdi:waypoint>
+        <omgdi:waypoint x="910.0" y="364.3276675830082"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-A097F9A2-BD30-462A-95CD-BA3D204BB90B" id="BPMNEdge_sid-A097F9A2-BD30-462A-95CD-BA3D204BB90B">
+        <omgdi:waypoint x="59.949999953561395" y="55.0"></omgdi:waypoint>
+        <omgdi:waypoint x="610.0" y="55.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-6063F909-FB32-4D82-BC17-23F5A452C9D9" id="BPMNEdge_sid-6063F909-FB32-4D82-BC17-23F5A452C9D9">
+        <omgdi:waypoint x="720.0" y="318.0"></omgdi:waypoint>
+        <omgdi:waypoint x="510.65497185219454" y="318.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-3480DAE4-5194-439B-99F6-FA254C42B300" id="BPMNEdge_sid-3480DAE4-5194-439B-99F6-FA254C42B300">
+        <omgdi:waypoint x="241.2950281478055" y="318.0"></omgdi:waypoint>
+        <omgdi:waypoint x="199.90846878929668" y="318.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-44ABAEF6-9F09-43D0-A133-BB77A122C47E" id="BPMNEdge_sid-44ABAEF6-9F09-43D0-A133-BB77A122C47E">
+        <omgdi:waypoint x="931.9813501022735" y="90.79266710671342"></omgdi:waypoint>
+        <omgdi:waypoint x="935.9674350566539" y="74.94999999999999"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-6B00321C-CBDD-4205-A9C6-61EFF3B69CFF" id="BPMNEdge_sid-6B00321C-CBDD-4205-A9C6-61EFF3B69CFF">
+        <omgdi:waypoint x="447.3676640894261" y="258.9637333887263"></omgdi:waypoint>
+        <omgdi:waypoint x="452.83862360015615" y="239.95000000000002"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

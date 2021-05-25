@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <process id="npl-lm-implementation-workflow" name="npl-lm-implementation-workflow" isExecutable="true">
+    <documentation>npl-lm-implementation-workflow</documentation>
+    <startEvent id="lm_impl_process_start">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ processStartListener }"></flowable:executionListener>
+      </extensionElements>
+    </startEvent>
+    <callActivity id="lm_impl_onnet_wireline_near_connect_process" name="LM Implementation Onnet Wireline Near  Connet" calledElement="lm_impl_onnet_wireline_near_connect_workflow" flowable:calledElementType="key" flowable:processInstanceName="LM-Implementation-Onnet-Wireline" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false">
+      <extensionElements>
+        <flowable:out source="isPEInternalCablingRequired" target="isPEInternalCablingRequired"></flowable:out>
+      </extensionElements>
+    </callActivity>
+    <exclusiveGateway id="sid-7DF897BD-9363-40CD-951C-FE3F49320DE9" default="sid-72F126F1-1C34-471D-B4E2-62EC8C7B5171"></exclusiveGateway>
+    <callActivity id="lm_impl_offnet_process" name="LM Implementation Offnet" calledElement="lm_impl_offnet_workflow" flowable:calledElementType="key" flowable:processInstanceName="LM-Implementation-Offnet-Wireless" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false"></callActivity>
+    <exclusiveGateway id="sid-A2FCE7E1-3E19-4229-B1C5-83D2F73D9133"></exclusiveGateway>
+    <exclusiveGateway id="sid-1A5423F5-93D5-4AF2-9249-F4ABD0365C35" default="sid-67892266-22A2-473E-AE0F-745285CD627F"></exclusiveGateway>
+    <callActivity id="npl_lm_impl_onnet_wireline_fast_connect_process" name="Get Mux Info" calledElement="npl_lm_impl_onnet_wireline_fast_connect_workflow" flowable:calledElementType="key" flowable:processInstanceName="LM-Implementation-Onnet-Wireline" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false">
+      <extensionElements>
+        <flowable:out source="isPEInternalCablingRequired" target="isPEInternalCablingRequired"></flowable:out>
+        <flowable:out source="lmConnectionTypeChange" target="lmConnectionTypeChange"></flowable:out>
+        <flowable:out source="isConnectedSite" target="isConnectedSite"></flowable:out>
+        <flowable:out source="prowRequired" target="prowRequired"></flowable:out>
+        <flowable:out source="rowRequired" target="rowRequired"></flowable:out>
+        <flowable:out source="isConnectedBuilding" target="isConnectedBuilding"></flowable:out>
+        <flowable:out source="lmConnectionTypeChange" target="lmConnectionTypeChange"></flowable:out>
+      </extensionElements>
+    </callActivity>
+    <exclusiveGateway id="sid-06A0B478-A01D-41A8-9BD6-B2B00FD704DD"></exclusiveGateway>
+    <sequenceFlow id="sid-E42F8087-7177-48C4-96CC-653EE3C47F62" sourceRef="lm_impl_onnet_wireline_near_connect_process" targetRef="sid-06A0B478-A01D-41A8-9BD6-B2B00FD704DD"></sequenceFlow>
+    <sequenceFlow id="sid-74754863-BB71-455A-BDB9-4A1B7A02CF76" sourceRef="npl_lm_impl_onnet_wireline_fast_connect_process" targetRef="sid-4F3DCC50-E1BA-4E45-93E6-A921478780C3"></sequenceFlow>
+    <sequenceFlow id="sid-506CE1B5-919F-4927-BC2A-9CD8769B0DD9" sourceRef="lm_impl_offnet_process" targetRef="sid-A2FCE7E1-3E19-4229-B1C5-83D2F73D9133"></sequenceFlow>
+    <sequenceFlow id="sid-72F126F1-1C34-471D-B4E2-62EC8C7B5171" name="On-net" sourceRef="sid-7DF897BD-9363-40CD-951C-FE3F49320DE9" targetRef="sid-1A5423F5-93D5-4AF2-9249-F4ABD0365C35"></sequenceFlow>
+    <endEvent id="sid-A9BBDB5D-F267-4F4F-BB4C-D56089C688A3"></endEvent>
+    <sequenceFlow id="sid-2EF91E18-354F-4483-8CF5-F1DFDC11033F" sourceRef="sid-06A0B478-A01D-41A8-9BD6-B2B00FD704DD" targetRef="npl_lm_impl_onnet_wireline_fast_connect_process"></sequenceFlow>
+    <sequenceFlow id="sid-D424F234-87D1-4AB3-93C5-ABD4AE093E50" sourceRef="lm_impl_process_start" targetRef="sid-7DF897BD-9363-40CD-951C-FE3F49320DE9"></sequenceFlow>
+    <sequenceFlow id="lm_impl_process_end" sourceRef="sid-A2FCE7E1-3E19-4229-B1C5-83D2F73D9133" targetRef="sid-A9BBDB5D-F267-4F4F-BB4C-D56089C688A3">
+      <extensionElements>
+        <flowable:executionListener event="end" delegateExpression="${ processEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <exclusiveGateway id="sid-C6FA1C0A-EE6F-4F8F-A2BF-623649D165DF" default="sid-50B22679-E9D9-4594-92FB-B8A79FC0B5AF"></exclusiveGateway>
+    <sequenceFlow id="sid-50B22679-E9D9-4594-92FB-B8A79FC0B5AF" sourceRef="sid-C6FA1C0A-EE6F-4F8F-A2BF-623649D165DF" targetRef="sid-A2FCE7E1-3E19-4229-B1C5-83D2F73D9133"></sequenceFlow>
+    <sequenceFlow id="sid-67892266-22A2-473E-AE0F-745285CD627F" name="Near Connect" sourceRef="sid-1A5423F5-93D5-4AF2-9249-F4ABD0365C35" targetRef="lm_impl_onnet_wireline_near_connect_process"></sequenceFlow>
+    <sequenceFlow id="sid-E1332603-A7D3-47FE-B0C1-851E657F0809" name="Fast Connect" sourceRef="sid-1A5423F5-93D5-4AF2-9249-F4ABD0365C35" targetRef="sid-06A0B478-A01D-41A8-9BD6-B2B00FD704DD">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ isConnectedSite == true }]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-F6486D5E-9A40-491B-968A-E6C990CC7F7D" sourceRef="sid-C6FA1C0A-EE6F-4F8F-A2BF-623649D165DF" targetRef="sid-1A5423F5-93D5-4AF2-9249-F4ABD0365C35">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ var:get(lmConnectionTypeChange) == true}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-D7294C38-9955-4BBF-B217-1F09ADB81474" name="Off-net" sourceRef="sid-7DF897BD-9363-40CD-951C-FE3F49320DE9" targetRef="lm_impl_offnet_process">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ lmType == "offnet" }]]></conditionExpression>
+    </sequenceFlow>
+    <exclusiveGateway id="sid-4F3DCC50-E1BA-4E45-93E6-A921478780C3" default="sid-BEDC4818-D8F1-424E-80E5-03902893219A"></exclusiveGateway>
+    <sequenceFlow id="sid-BEDC4818-D8F1-424E-80E5-03902893219A" sourceRef="sid-4F3DCC50-E1BA-4E45-93E6-A921478780C3" targetRef="sid-C6FA1C0A-EE6F-4F8F-A2BF-623649D165DF"></sequenceFlow>
+    <sequenceFlow id="sid-A5117031-BFBC-4193-A88B-B77FF65C3F56" sourceRef="sid-4F3DCC50-E1BA-4E45-93E6-A921478780C3" targetRef="sid-1A5423F5-93D5-4AF2-9249-F4ABD0365C35">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ var:get(lmConnectionTypeChange) == true}]]></conditionExpression>
+    </sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_npl-lm-implementation-workflow">
+    <bpmndi:BPMNPlane bpmnElement="npl-lm-implementation-workflow" id="BPMNPlane_npl-lm-implementation-workflow">
+      <bpmndi:BPMNShape bpmnElement="lm_impl_process_start" id="BPMNShape_lm_impl_process_start">
+        <omgdc:Bounds height="30.0" width="30.0" x="45.0" y="132.375"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="lm_impl_onnet_wireline_near_connect_process" id="BPMNShape_lm_impl_onnet_wireline_near_connect_process">
+        <omgdc:Bounds height="70.0" width="108.0" x="348.0" y="117.375"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-7DF897BD-9363-40CD-951C-FE3F49320DE9" id="BPMNShape_sid-7DF897BD-9363-40CD-951C-FE3F49320DE9">
+        <omgdc:Bounds height="40.0" width="40.0" x="140.0" y="127.375"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="lm_impl_offnet_process" id="BPMNShape_lm_impl_offnet_process">
+        <omgdc:Bounds height="60.0" width="104.0" x="345.0" y="15.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-A2FCE7E1-3E19-4229-B1C5-83D2F73D9133" id="BPMNShape_sid-A2FCE7E1-3E19-4229-B1C5-83D2F73D9133">
+        <omgdc:Bounds height="40.0" width="40.0" x="855.0" y="215.125"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-1A5423F5-93D5-4AF2-9249-F4ABD0365C35" id="BPMNShape_sid-1A5423F5-93D5-4AF2-9249-F4ABD0365C35">
+        <omgdc:Bounds height="40.0" width="40.0" x="290.0" y="215.125"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="npl_lm_impl_onnet_wireline_fast_connect_process" id="BPMNShape_npl_lm_impl_onnet_wireline_fast_connect_process">
+        <omgdc:Bounds height="68.0" width="111.0" x="540.0" y="201.125"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-06A0B478-A01D-41A8-9BD6-B2B00FD704DD" id="BPMNShape_sid-06A0B478-A01D-41A8-9BD6-B2B00FD704DD">
+        <omgdc:Bounds height="40.0" width="40.0" x="470.0" y="215.125"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-A9BBDB5D-F267-4F4F-BB4C-D56089C688A3" id="BPMNShape_sid-A9BBDB5D-F267-4F4F-BB4C-D56089C688A3">
+        <omgdc:Bounds height="28.0" width="28.0" x="945.0" y="221.125"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-C6FA1C0A-EE6F-4F8F-A2BF-623649D165DF" id="BPMNShape_sid-C6FA1C0A-EE6F-4F8F-A2BF-623649D165DF">
+        <omgdc:Bounds height="40.0" width="40.0" x="765.0" y="215.125"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-4F3DCC50-E1BA-4E45-93E6-A921478780C3" id="BPMNShape_sid-4F3DCC50-E1BA-4E45-93E6-A921478780C3">
+        <omgdc:Bounds height="40.0" width="40.0" x="690.0" y="214.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-D424F234-87D1-4AB3-93C5-ABD4AE093E50" id="BPMNEdge_sid-D424F234-87D1-4AB3-93C5-ABD4AE093E50">
+        <omgdi:waypoint x="74.94978106021482" y="147.44937738149758"></omgdi:waypoint>
+        <omgdi:waypoint x="140.4" y="147.775"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-72F126F1-1C34-471D-B4E2-62EC8C7B5171" id="BPMNEdge_sid-72F126F1-1C34-471D-B4E2-62EC8C7B5171">
+        <omgdi:waypoint x="160.0" y="167.31370967741935"></omgdi:waypoint>
+        <omgdi:waypoint x="160.0" y="235.625"></omgdi:waypoint>
+        <omgdi:waypoint x="290.5" y="235.625"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-F6486D5E-9A40-491B-968A-E6C990CC7F7D" id="BPMNEdge_sid-F6486D5E-9A40-491B-968A-E6C990CC7F7D">
+        <omgdi:waypoint x="785.5" y="254.56464197868277"></omgdi:waypoint>
+        <omgdi:waypoint x="785.5" y="327.0"></omgdi:waypoint>
+        <omgdi:waypoint x="310.0" y="327.0"></omgdi:waypoint>
+        <omgdi:waypoint x="310.0" y="255.03581449196403"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-A5117031-BFBC-4193-A88B-B77FF65C3F56" id="BPMNEdge_sid-A5117031-BFBC-4193-A88B-B77FF65C3F56">
+        <omgdi:waypoint x="710.5" y="214.5"></omgdi:waypoint>
+        <omgdi:waypoint x="710.5" y="100.0"></omgdi:waypoint>
+        <omgdi:waypoint x="230.0" y="100.0"></omgdi:waypoint>
+        <omgdi:waypoint x="302.5624636839047" y="222.5509205482634"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="lm_impl_process_end" id="BPMNEdge_lm_impl_process_end">
+        <omgdi:waypoint x="894.9381391200391" y="235.125"></omgdi:waypoint>
+        <omgdi:waypoint x="945.0" y="235.125"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-506CE1B5-919F-4927-BC2A-9CD8769B0DD9" id="BPMNEdge_sid-506CE1B5-919F-4927-BC2A-9CD8769B0DD9">
+        <omgdi:waypoint x="448.94999999994604" y="45.0"></omgdi:waypoint>
+        <omgdi:waypoint x="875.0" y="45.0"></omgdi:waypoint>
+        <omgdi:waypoint x="875.0" y="215.125"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-74754863-BB71-455A-BDB9-4A1B7A02CF76" id="BPMNEdge_sid-74754863-BB71-455A-BDB9-4A1B7A02CF76">
+        <omgdi:waypoint x="650.9499999999999" y="234.63118149819533"></omgdi:waypoint>
+        <omgdi:waypoint x="690.5439976183263" y="234.54388762428053"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-2EF91E18-354F-4483-8CF5-F1DFDC11033F" id="BPMNEdge_sid-2EF91E18-354F-4483-8CF5-F1DFDC11033F">
+        <omgdi:waypoint x="509.5315248565905" y="235.53409090909088"></omgdi:waypoint>
+        <omgdi:waypoint x="540.0" y="235.38904761904763"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-67892266-22A2-473E-AE0F-745285CD627F" id="BPMNEdge_sid-67892266-22A2-473E-AE0F-745285CD627F">
+        <omgdi:waypoint x="310.0" y="215.125"></omgdi:waypoint>
+        <omgdi:waypoint x="310.0" y="152.375"></omgdi:waypoint>
+        <omgdi:waypoint x="348.0" y="152.375"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-E42F8087-7177-48C4-96CC-653EE3C47F62" id="BPMNEdge_sid-E42F8087-7177-48C4-96CC-653EE3C47F62">
+        <omgdi:waypoint x="455.94999999999806" y="152.375"></omgdi:waypoint>
+        <omgdi:waypoint x="490.5" y="152.375"></omgdi:waypoint>
+        <omgdi:waypoint x="490.5" y="215.625"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-E1332603-A7D3-47FE-B0C1-851E657F0809" id="BPMNEdge_sid-E1332603-A7D3-47FE-B0C1-851E657F0809">
+        <omgdi:waypoint x="329.8894119271079" y="235.1801104972376"></omgdi:waypoint>
+        <omgdi:waypoint x="470.44444444444446" y="235.56944444444446"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-50B22679-E9D9-4594-92FB-B8A79FC0B5AF" id="BPMNEdge_sid-50B22679-E9D9-4594-92FB-B8A79FC0B5AF">
+        <omgdi:waypoint x="804.5457070706977" y="235.5182584269663"></omgdi:waypoint>
+        <omgdi:waypoint x="855.1111111111105" y="235.23583333333335"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-D7294C38-9955-4BBF-B217-1F09ADB81474" id="BPMNEdge_sid-D7294C38-9955-4BBF-B217-1F09ADB81474">
+        <omgdi:waypoint x="160.0" y="127.375"></omgdi:waypoint>
+        <omgdi:waypoint x="160.0" y="45.0"></omgdi:waypoint>
+        <omgdi:waypoint x="344.9999999999956" y="45.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-BEDC4818-D8F1-424E-80E5-03902893219A" id="BPMNEdge_sid-BEDC4818-D8F1-424E-80E5-03902893219A">
+        <omgdi:waypoint x="729.279960119641" y="234.65765391014978"></omgdi:waypoint>
+        <omgdi:waypoint x="765.1303589232251" y="234.95861064891844"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

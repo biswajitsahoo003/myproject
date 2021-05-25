@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <process id="mast-recovery-workflow" name="Mast Recovery Workflow" isExecutable="true">
+    <documentation>Mast Recovery Workflow</documentation>
+    <startEvent id="termination_process_start"></startEvent>
+    <endEvent id="termination_process_end"></endEvent>
+    <userTask id="customer-appointment-mast-recovery" name="Confirm Appointment Mast Recovery">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="sid-CCC5BB16-D577-4659-988B-9A60960790A9" sourceRef="confirm-mast-recovery" targetRef="sid-15B664BD-2D8D-4049-A4B7-F8D670DAB57A"></sequenceFlow>
+    <userTask id="arrange-field-engineer-mast-recovery" name="Mast Arrange Field Engineer" default="sid-9A239764-6512-4D60-80AB-F52D48349003">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <userTask id="confirm-mast-recovery" name="Mast Recovery">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="sid-509CDA1B-81BE-4270-A24A-0FFF3CD7E94A" sourceRef="customer-appointment-mast-recovery" targetRef="arrange-field-engineer-mast-recovery"></sequenceFlow>
+    <exclusiveGateway id="sid-15B664BD-2D8D-4049-A4B7-F8D670DAB57A" default="sid-FEEBF63D-4D3F-45C8-A45C-18580DA7A092"></exclusiveGateway>
+    <sequenceFlow id="sid-FEEBF63D-4D3F-45C8-A45C-18580DA7A092" sourceRef="sid-15B664BD-2D8D-4049-A4B7-F8D670DAB57A" targetRef="termination_process_end"></sequenceFlow>
+    <sequenceFlow id="sid-D24B91E1-DEAE-4954-918F-0A313C6D10F3" sourceRef="termination_process_start" targetRef="customer-appointment-mast-recovery"></sequenceFlow>
+    <sequenceFlow id="sid-7318CA25-B463-42FE-A337-7C34675B7EB5" sourceRef="sid-15B664BD-2D8D-4049-A4B7-F8D670DAB57A" targetRef="customer-appointment-mast-recovery_reopen">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ var:get(action) == "FIELD-OPS-MAST-REAPP" }]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="customer-appointment-mast-recovery_reopen" name="Confirm Appointment Mast Recovery">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <exclusiveGateway id="sid-DE65F60F-D3A6-4AFC-A014-4DDB33E7C1B3"></exclusiveGateway>
+    <sequenceFlow id="sid-24856507-5D99-4891-888E-E512AE6F5856" sourceRef="sid-DE65F60F-D3A6-4AFC-A014-4DDB33E7C1B3" targetRef="confirm-mast-recovery"></sequenceFlow>
+    <sequenceFlow id="sid-347BD590-7FA3-4CB5-A164-FF0B14A7CEFE" sourceRef="customer-appointment-mast-recovery_reopen" targetRef="sid-DE65F60F-D3A6-4AFC-A014-4DDB33E7C1B3"></sequenceFlow>
+    <sequenceFlow id="sid-9A239764-6512-4D60-80AB-F52D48349003" sourceRef="arrange-field-engineer-mast-recovery" targetRef="sid-DE65F60F-D3A6-4AFC-A014-4DDB33E7C1B3"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_mast-recovery-workflow">
+    <bpmndi:BPMNPlane bpmnElement="mast-recovery-workflow" id="BPMNPlane_mast-recovery-workflow">
+      <bpmndi:BPMNShape bpmnElement="termination_process_start" id="BPMNShape_termination_process_start">
+        <omgdc:Bounds height="30.0" width="30.0" x="15.0" y="321.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="termination_process_end" id="BPMNShape_termination_process_end">
+        <omgdc:Bounds height="28.0" width="28.0" x="840.0" y="322.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="customer-appointment-mast-recovery" id="BPMNShape_customer-appointment-mast-recovery">
+        <omgdc:Bounds height="56.0" width="94.0" x="120.0" y="308.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="arrange-field-engineer-mast-recovery" id="BPMNShape_arrange-field-engineer-mast-recovery">
+        <omgdc:Bounds height="56.0" width="94.0" x="270.0" y="308.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="confirm-mast-recovery" id="BPMNShape_confirm-mast-recovery">
+        <omgdc:Bounds height="56.0" width="94.0" x="600.0" y="308.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-15B664BD-2D8D-4049-A4B7-F8D670DAB57A" id="BPMNShape_sid-15B664BD-2D8D-4049-A4B7-F8D670DAB57A">
+        <omgdc:Bounds height="40.0" width="40.0" x="735.0" y="316.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="customer-appointment-mast-recovery_reopen" id="BPMNShape_customer-appointment-mast-recovery_reopen">
+        <omgdc:Bounds height="56.0" width="94.0" x="540.0" y="210.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-DE65F60F-D3A6-4AFC-A014-4DDB33E7C1B3" id="BPMNShape_sid-DE65F60F-D3A6-4AFC-A014-4DDB33E7C1B3">
+        <omgdc:Bounds height="40.0" width="40.0" x="450.0" y="314.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-509CDA1B-81BE-4270-A24A-0FFF3CD7E94A" id="BPMNEdge_sid-509CDA1B-81BE-4270-A24A-0FFF3CD7E94A">
+        <omgdi:waypoint x="213.95" y="336.0"></omgdi:waypoint>
+        <omgdi:waypoint x="269.99999999986113" y="336.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-347BD590-7FA3-4CB5-A164-FF0B14A7CEFE" id="BPMNEdge_sid-347BD590-7FA3-4CB5-A164-FF0B14A7CEFE">
+        <omgdi:waypoint x="539.9999999999417" y="238.0"></omgdi:waypoint>
+        <omgdi:waypoint x="470.0" y="238.0"></omgdi:waypoint>
+        <omgdi:waypoint x="470.0" y="314.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-CCC5BB16-D577-4659-988B-9A60960790A9" id="BPMNEdge_sid-CCC5BB16-D577-4659-988B-9A60960790A9">
+        <omgdi:waypoint x="693.9499999999999" y="336.0"></omgdi:waypoint>
+        <omgdi:waypoint x="735.0" y="336.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-24856507-5D99-4891-888E-E512AE6F5856" id="BPMNEdge_sid-24856507-5D99-4891-888E-E512AE6F5856">
+        <omgdi:waypoint x="489.2850786075214" y="334.659691011236"></omgdi:waypoint>
+        <omgdi:waypoint x="599.9999999999973" y="335.60056657223794"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-FEEBF63D-4D3F-45C8-A45C-18580DA7A092" id="BPMNEdge_sid-FEEBF63D-4D3F-45C8-A45C-18580DA7A092">
+        <omgdi:waypoint x="774.9399344096871" y="336.0"></omgdi:waypoint>
+        <omgdi:waypoint x="840.0" y="336.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-D24B91E1-DEAE-4954-918F-0A313C6D10F3" id="BPMNEdge_sid-D24B91E1-DEAE-4954-918F-0A313C6D10F3">
+        <omgdi:waypoint x="44.94999902632787" y="336.0"></omgdi:waypoint>
+        <omgdi:waypoint x="120.0" y="336.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-9A239764-6512-4D60-80AB-F52D48349003" id="BPMNEdge_sid-9A239764-6512-4D60-80AB-F52D48349003">
+        <omgdi:waypoint x="363.95000000000005" y="336.0"></omgdi:waypoint>
+        <omgdi:waypoint x="452.0" y="336.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-7318CA25-B463-42FE-A337-7C34675B7EB5" id="BPMNEdge_sid-7318CA25-B463-42FE-A337-7C34675B7EB5">
+        <omgdi:waypoint x="755.0" y="316.0"></omgdi:waypoint>
+        <omgdi:waypoint x="755.0" y="229.0"></omgdi:waypoint>
+        <omgdi:waypoint x="633.9499999999692" y="229.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

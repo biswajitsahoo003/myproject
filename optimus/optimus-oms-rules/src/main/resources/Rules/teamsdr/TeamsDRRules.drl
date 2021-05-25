@@ -1,0 +1,50 @@
+package com.tcl.dias.rules.service;
+
+import java.util.HashMap;
+import com.tcl.dias.common.teamsdr.beans.SolutionBean;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import com.tcl.dias.rules.service.TeamsDRRulesService;
+
+global Map<Integer,List<SolutionBean>> ucaasProducts;
+global List<SolutionBean> productSolutions;
+global List<SolutionBean> productSolutions1;
+global List<SolutionBean> productSolutions2;
+
+
+//To segregate based on service
+rule "Segregate license"
+when
+$productSolution : SolutionBean(offeringName == "Microsoft License")
+then
+productSolutions.add($productSolution);
+ucaasProducts.put(1,productSolutions);
+end
+
+//To segregate based on TEAMSDR product
+rule "segregation based on TEAMSDR product"
+when
+$productSolution : SolutionBean(offeringName != "Microsoft License" && productName == "Microsoft Cloud Solutions")
+then
+productSolutions1.add($productSolution);
+ucaasProducts.put(2,productSolutions1);
+end
+
+
+//To segregate based on gsc product and country
+rule "segregation based on gsc product"
+when
+$productSolution : SolutionBean(productName == "GSIP")
+then
+TeamsDRRulesService.gscSegregation(ucaasProducts,$productSolution);
+end
+
+// To segregate based on le
+rule "segregation based on le"
+when
+$productSolution : SolutionBean(leId != null)
+then
+TeamsDRRulesService.leSegregation(ucaasProducts,$productSolution);
+end
+

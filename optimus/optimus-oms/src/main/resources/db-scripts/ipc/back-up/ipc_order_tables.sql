@@ -1,0 +1,35 @@
+CREATE TABLE `order_cloud` (
+	`id` INT(11) NOT NULL AUTO_INCREMENT,
+	`service_id` VARCHAR(100) NULL DEFAULT NULL,
+	`cloud_code` VARCHAR(100) NULL DEFAULT NULL,
+	`parent_cloud_code` VARCHAR(100) NULL DEFAULT NULL,
+	`order_to_le_id` INT(11) NULL DEFAULT NULL,
+	`order_id` INT(11) NULL DEFAULT NULL,
+	`order_product_solutions_id` INT(11) NULL DEFAULT NULL,
+	`dc_location_id` VARCHAR(50) NULL DEFAULT NULL,
+	`resource_display_name` VARCHAR(50) NULL DEFAULT NULL,
+	`arc` DOUBLE NULL DEFAULT NULL,
+	`mrc` DOUBLE NULL DEFAULT NULL,
+	`nrc` DOUBLE NULL DEFAULT NULL,
+	`tcv` DOUBLE NULL DEFAULT NULL,
+	`effective_date` TIMESTAMP NULL DEFAULT NULL,
+	`fp_status` ENUM('P','MP') NULL DEFAULT NULL,
+	`stage` VARCHAR(50) NULL DEFAULT NULL,
+	`is_active` CHAR(1) NULL DEFAULT 'Y',
+	`status` VARCHAR(45) NULL DEFAULT NULL,
+	`is_task_triggered` TINYINT(4) NOT NULL,
+	`created_time` TIMESTAMP NULL DEFAULT NULL,
+	`created_by` INT(11) NULL DEFAULT NULL,
+	`updated_by` INT(11) NULL DEFAULT NULL,
+	`updated_time` TIMESTAMP NULL DEFAULT NULL,
+	PRIMARY KEY (`id`),
+	INDEX `FK_order_cloud_orders` (`order_to_le_id`),
+	INDEX `FK_order_cloud_orders_2` (`order_id`),
+	INDEX `FK_order_cloud_product_solutions` (`order_product_solutions_id`),
+	CONSTRAINT `FK_order_cloud_orders` FOREIGN KEY (`order_to_le_id`) REFERENCES `order_to_le` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION,
+	CONSTRAINT `FK_order_cloud_orders_2` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION,
+	CONSTRAINT `FK_order_cloud_product_solutions` FOREIGN KEY (`order_product_solutions_id`) REFERENCES `order_product_solutions` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+COLLATE='latin1_swedish_ci'
+ENGINE=InnoDB;
+

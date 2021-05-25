@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <process id="commercial_vetting_termination_workflow" name="commercial_vetting_termination_workflow" isExecutable="true">
+    <documentation>commercial_vetting_termination_workflow</documentation>
+    <startEvent id="commercial_vetting_activity_start" flowable:formFieldValidation="true">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ activityStartListener }"></flowable:executionListener>
+      </extensionElements>
+    </startEvent>
+    <userTask id="commercial-vetting-termination" name="Commercial Vetting" flowable:formFieldValidation="true">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <endEvent id="commercial_vetting_activity_end">
+      <extensionElements>
+        <flowable:executionListener event="end" delegateExpression="${ activityEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </endEvent>
+    <sequenceFlow id="sid-6796494D-A005-4FDA-85E0-54D9447B6717" sourceRef="commercial-vetting-termination" targetRef="sid-375C5989-F22B-4760-B3C7-7D183B60A0B7"></sequenceFlow>
+    <callActivity id="validate_supporting_document_process" name="Validate Document Process" calledElement="validate_document_workflow" flowable:calledElementType="key" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ processStartListener }"></flowable:executionListener>
+        <flowable:executionListener event="end" delegateExpression="${ processEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </callActivity>
+    <boundaryEvent id="sid-70234D31-1348-4C95-9C9D-AE54DF17CA06" attachedToRef="commercial-vetting-termination" cancelActivity="false">
+      <timerEventDefinition>
+        <timeCycle>${ remainderCycle }</timeCycle>
+      </timerEventDefinition>
+    </boundaryEvent>
+    <serviceTask id="reminder-commercial-vetting" name="Reminder" flowable:async="true" flowable:delegateExpression="${ notificationDelegate  }"></serviceTask>
+    <sequenceFlow id="sid-B26B844B-1563-4439-97BF-A306A8BF2213" sourceRef="sid-70234D31-1348-4C95-9C9D-AE54DF17CA06" targetRef="reminder-commercial-vetting"></sequenceFlow>
+    <sequenceFlow id="sid-3C392633-33FE-49E4-B6B1-6DE542751D16" sourceRef="validate_supporting_document_process" targetRef="sid-A5063AE8-1262-4ABD-80CC-0210E7E1D79C"></sequenceFlow>
+    <sequenceFlow id="sid-AF43CBD2-F48A-41AD-8FF8-678D0A578DA0" sourceRef="validate-supporting-document-for-termination" targetRef="sid-A5063AE8-1262-4ABD-80CC-0210E7E1D79C"></sequenceFlow>
+    <sequenceFlow id="sid-748C3FF0-0145-4248-81E6-3A5BAAE7665E" sourceRef="sid-A5063AE8-1262-4ABD-80CC-0210E7E1D79C" targetRef="commercial-vetting-termination"></sequenceFlow>
+    <sequenceFlow id="sid-1C3D70E4-889A-40D5-AB33-57C629AA1DEB" name="Sales Assist" sourceRef="sid-375C5989-F22B-4760-B3C7-7D183B60A0B7" targetRef="validate_supporting_document_process">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ var:get(action) == "SALES_ASSIST"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-42B60C40-B3EB-4F50-817A-7E7FF288D566" name="Termination discrepancy" sourceRef="sid-375C5989-F22B-4760-B3C7-7D183B60A0B7" targetRef="validate-supporting-document-for-termination">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ var:get(action) == "TERMINATION_DESK"}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="validate-supporting-document-for-termination" name="Validate Supporting documents for Termination" flowable:formFieldValidation="true">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="sid-1B2AB708-9C43-4353-8BF1-412F157E6F2C" sourceRef="commercial_vetting_activity_start" targetRef="commercial-vetting-termination"></sequenceFlow>
+    <sequenceFlow id="sid-9316382A-72F8-40E5-8FBF-CB47A942CAA0" name="No" sourceRef="sid-375C5989-F22B-4760-B3C7-7D183B60A0B7" targetRef="commercial_vetting_activity_end"></sequenceFlow>
+    <exclusiveGateway id="sid-375C5989-F22B-4760-B3C7-7D183B60A0B7" default="sid-9316382A-72F8-40E5-8FBF-CB47A942CAA0"></exclusiveGateway>
+    <exclusiveGateway id="sid-A5063AE8-1262-4ABD-80CC-0210E7E1D79C"></exclusiveGateway>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_commercial_vetting_termination_workflow">
+    <bpmndi:BPMNPlane bpmnElement="commercial_vetting_termination_workflow" id="BPMNPlane_commercial_vetting_termination_workflow">
+      <bpmndi:BPMNShape bpmnElement="commercial_vetting_activity_start" id="BPMNShape_commercial_vetting_activity_start">
+        <omgdc:Bounds height="30.0" width="30.0" x="277.7777769601558" y="160.04421816382603"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="commercial-vetting-termination" id="BPMNShape_commercial-vetting-termination">
+        <omgdc:Bounds height="80.0" width="100.0" x="360.0" y="135.04421816382603"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="commercial_vetting_activity_end" id="BPMNShape_commercial_vetting_activity_end">
+        <omgdc:Bounds height="28.0" width="28.0" x="720.0" y="161.04421816382603"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="validate_supporting_document_process" id="BPMNShape_validate_supporting_document_process">
+        <omgdc:Bounds height="80.0" width="100.0" x="495.0" y="285.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-70234D31-1348-4C95-9C9D-AE54DF17CA06" id="BPMNShape_sid-70234D31-1348-4C95-9C9D-AE54DF17CA06">
+        <omgdc:Bounds height="31.0" width="31.0" x="348.5" y="118.54421816382603"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="reminder-commercial-vetting" id="BPMNShape_reminder-commercial-vetting">
+        <omgdc:Bounds height="44.0" width="75.0" x="372.5" y="45.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="validate-supporting-document-for-termination" id="BPMNShape_validate-supporting-document-for-termination">
+        <omgdc:Bounds height="80.0" width="100.0" x="690.0" y="315.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-375C5989-F22B-4760-B3C7-7D183B60A0B7" id="BPMNShape_sid-375C5989-F22B-4760-B3C7-7D183B60A0B7">
+        <omgdc:Bounds height="40.0" width="40.0" x="525.0" y="155.04421816382603"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-A5063AE8-1262-4ABD-80CC-0210E7E1D79C" id="BPMNShape_sid-A5063AE8-1262-4ABD-80CC-0210E7E1D79C">
+        <omgdc:Bounds height="40.0" width="40.0" x="390.0" y="270.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-748C3FF0-0145-4248-81E6-3A5BAAE7665E" id="BPMNEdge_sid-748C3FF0-0145-4248-81E6-3A5BAAE7665E">
+        <omgdi:waypoint x="410.4130100301153" y="270.4130100301154"></omgdi:waypoint>
+        <omgdi:waypoint x="410.1730099582916" y="214.99421816382605"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-B26B844B-1563-4439-97BF-A306A8BF2213" id="BPMNEdge_sid-B26B844B-1563-4439-97BF-A306A8BF2213">
+        <omgdi:waypoint x="372.74169882724897" y="121.2621096264083"></omgdi:waypoint>
+        <omgdi:waypoint x="394.90548435471163" y="88.94999999999999"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-AF43CBD2-F48A-41AD-8FF8-678D0A578DA0" id="BPMNEdge_sid-AF43CBD2-F48A-41AD-8FF8-678D0A578DA0">
+        <omgdi:waypoint x="690.0" y="385.0"></omgdi:waypoint>
+        <omgdi:waypoint x="410.5" y="385.0"></omgdi:waypoint>
+        <omgdi:waypoint x="410.5" y="309.4099841101695"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-42B60C40-B3EB-4F50-817A-7E7FF288D566" id="BPMNEdge_sid-42B60C40-B3EB-4F50-817A-7E7FF288D566">
+        <omgdi:waypoint x="555.8649242604764" y="184.12907414497093"></omgdi:waypoint>
+        <omgdi:waypoint x="713.8676021357591" y="315.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-1B2AB708-9C43-4353-8BF1-412F157E6F2C" id="BPMNEdge_sid-1B2AB708-9C43-4353-8BF1-412F157E6F2C">
+        <omgdi:waypoint x="307.727775630377" y="175.04421816382603"></omgdi:waypoint>
+        <omgdi:waypoint x="359.9999999999485" y="175.04421816382603"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-1C3D70E4-889A-40D5-AB33-57C629AA1DEB" id="BPMNEdge_sid-1C3D70E4-889A-40D5-AB33-57C629AA1DEB">
+        <omgdi:waypoint x="545.4362226837864" y="194.55142828942434"></omgdi:waypoint>
+        <omgdi:waypoint x="545.1336515707495" y="285.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-6796494D-A005-4FDA-85E0-54D9447B6717" id="BPMNEdge_sid-6796494D-A005-4FDA-85E0-54D9447B6717">
+        <omgdi:waypoint x="459.9499999999926" y="175.22853550699944"></omgdi:waypoint>
+        <omgdi:waypoint x="525.4259259259177" y="175.47014408975193"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-9316382A-72F8-40E5-8FBF-CB47A942CAA0" id="BPMNEdge_sid-9316382A-72F8-40E5-8FBF-CB47A942CAA0">
+        <omgdi:waypoint x="564.4953349282296" y="175.49368624893242"></omgdi:waypoint>
+        <omgdi:waypoint x="720.0000456197289" y="175.081220713158"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-3C392633-33FE-49E4-B6B1-6DE542751D16" id="BPMNEdge_sid-3C392633-33FE-49E4-B6B1-6DE542751D16">
+        <omgdi:waypoint x="495.0" y="325.0"></omgdi:waypoint>
+        <omgdi:waypoint x="462.5" y="325.0"></omgdi:waypoint>
+        <omgdi:waypoint x="462.5" y="294.04421816382603"></omgdi:waypoint>
+        <omgdi:waypoint x="428.21203100035535" y="291.70917957664665"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

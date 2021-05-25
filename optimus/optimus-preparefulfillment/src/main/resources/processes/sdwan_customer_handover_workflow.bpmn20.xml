@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <process id="sdwan_customer_handover_workflow" name="sdwan_customer_handover_workflow" isExecutable="true">
+    <documentation>sdwan_customer_handover_workflow</documentation>
+    <startEvent id="customer_handover_acceptance_activity_start">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ activityStartListener }"></flowable:executionListener>
+      </extensionElements>
+    </startEvent>
+    <userTask id="sdwan-service-acceptance" name="Service Acceptance">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <endEvent id="customer_handover_acceptance_activity_end">
+      <extensionElements>
+        <flowable:executionListener event="end" delegateExpression="${ activityEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </endEvent>
+    <sequenceFlow id="sid-4F02E84C-4374-4C94-82C5-F003411568BE" sourceRef="sdwan-service-acceptance" targetRef="sid-C4D9DEA0-90A5-4976-9905-91FE75F61F65"></sequenceFlow>
+    <exclusiveGateway id="sid-C4D9DEA0-90A5-4976-9905-91FE75F61F65" default="sid-A0C47CE5-A609-47AB-A4F9-1D97B8992377"></exclusiveGateway>
+    <userTask id="sdwan-billing-issue" name="Billing Issue">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <userTask id="sdwan-raise-turnup-request" name="Raise Turnup">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="sid-BFFA0C26-3FDA-43F1-B103-6A93D64F6EF8" sourceRef="sdwan-raise-turnup-request" targetRef="sid-DC8A1149-03FF-427E-B2A2-6A8163BF770F"></sequenceFlow>
+    <exclusiveGateway id="sid-DC8A1149-03FF-427E-B2A2-6A8163BF770F"></exclusiveGateway>
+    <sequenceFlow id="sid-2471410C-3986-468C-9D67-E7E214FC53B5" sourceRef="customer_handover_acceptance_activity_start" targetRef="sid-DC8A1149-03FF-427E-B2A2-6A8163BF770F"></sequenceFlow>
+    <sequenceFlow id="sid-6D16B150-F13A-48A8-85E8-6A12CFC6A96C" sourceRef="sdwan-billing-issue" targetRef="sid-DC8A1149-03FF-427E-B2A2-6A8163BF770F"></sequenceFlow>
+    <sequenceFlow id="sid-DA9CCC4B-C0E6-4B27-BDE9-5936E948841F" sourceRef="sdwan-provide-handover-note" targetRef="sdwan-service-acceptance"></sequenceFlow>
+    <serviceTask id="sdwan-provide-handover-note" name="Handover Note" flowable:delegateExpression="${ sdwanHandoverNoteDelegate }"></serviceTask>
+    <sequenceFlow id="sid-E164C558-D7FB-41FE-A75D-B041394E61A1" sourceRef="sid-DC8A1149-03FF-427E-B2A2-6A8163BF770F" targetRef="sdwan-provide-handover-note"></sequenceFlow>
+    <serviceTask id="customer-reminder-sdwan-service-acceptance" name="Reminder" flowable:async="true" flowable:delegateExpression="${ notificationDelegate  }"></serviceTask>
+    <boundaryEvent id="sid-A4C1D770-6D4A-48FE-9DF2-2A9B05F4DE60" attachedToRef="sdwan-service-acceptance" cancelActivity="false">
+      <timerEventDefinition>
+        <timeCycle>${ remainderCycle }</timeCycle>
+      </timerEventDefinition>
+    </boundaryEvent>
+    <sequenceFlow id="sid-FB820A89-E84E-4A8F-A547-A362FA6FDD5E" sourceRef="sid-A4C1D770-6D4A-48FE-9DF2-2A9B05F4DE60" targetRef="customer-reminder-sdwan-service-acceptance"></sequenceFlow>
+    <serviceTask id="reminder-sdwan-raise-turnup-request" name="Reminder" flowable:async="true" flowable:delegateExpression="${ notificationDelegate  }"></serviceTask>
+    <sequenceFlow id="sid-EC63FBD2-2711-440D-B22B-D48C7D53A87F" sourceRef="sid-E2B18429-53DB-43F6-AB73-062F08765293" targetRef="reminder-sdwan-raise-turnup-request"></sequenceFlow>
+    <boundaryEvent id="sid-E2B18429-53DB-43F6-AB73-062F08765293" attachedToRef="sdwan-raise-turnup-request" cancelActivity="false">
+      <timerEventDefinition>
+        <timeCycle>${ remainderCycle }</timeCycle>
+      </timerEventDefinition>
+    </boundaryEvent>
+    <serviceTask id="reminder-sdwan-billing-issue" name="Reminder" flowable:async="true" flowable:delegateExpression="${ notificationDelegate  }"></serviceTask>
+    <boundaryEvent id="sid-A7C12DD5-EB11-464F-BBC9-679B79290CFB" attachedToRef="sdwan-billing-issue" cancelActivity="false">
+      <timerEventDefinition>
+        <timeCycle>${ remainderCycle }</timeCycle>
+      </timerEventDefinition>
+    </boundaryEvent>
+    <sequenceFlow id="sid-97BA0170-0754-4AFD-87A0-E05606DC22CD" sourceRef="sid-A7C12DD5-EB11-464F-BBC9-679B79290CFB" targetRef="reminder-sdwan-billing-issue"></sequenceFlow>
+    <userTask id="sdwan-service-issue" name="Service Issue">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <serviceTask id="reminder-sdwan-service-issue" name="Reminder" flowable:async="true" flowable:delegateExpression="${ notificationDelegate  }"></serviceTask>
+    <sequenceFlow id="sid-8C849E72-DB41-4BAB-83D6-FE8627895CFC" sourceRef="sid-CEB82030-4A6A-4D2F-AD04-5F867C9D6F63" targetRef="reminder-sdwan-service-issue"></sequenceFlow>
+    <boundaryEvent id="sid-CEB82030-4A6A-4D2F-AD04-5F867C9D6F63" attachedToRef="sdwan-service-issue" cancelActivity="false">
+      <timerEventDefinition>
+        <timeCycle>${ remainderCycle }</timeCycle>
+      </timerEventDefinition>
+    </boundaryEvent>
+    <sequenceFlow id="sid-A0C47CE5-A609-47AB-A4F9-1D97B8992377" name="Accepted" sourceRef="sid-C4D9DEA0-90A5-4976-9905-91FE75F61F65" targetRef="customer_handover_acceptance_activity_end"></sequenceFlow>
+    <sequenceFlow id="sid-075C175D-33F7-45DB-AC83-95E9777DCFC6" sourceRef="sdwan-service-issue" targetRef="sid-DC8A1149-03FF-427E-B2A2-6A8163BF770F"></sequenceFlow>
+    <sequenceFlow id="sid-29E5D6AA-390A-42D6-8878-2601B5024174" sourceRef="sid-C4D9DEA0-90A5-4976-9905-91FE75F61F65" targetRef="sdwan-billing-issue">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ var:get(serviceAccepted) == false && var:get(serviceAcceptanceIssueType)=="Raise Billing Issue"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-DF0FB2AC-30AA-41D6-A43A-AE9A51854250" sourceRef="sid-C4D9DEA0-90A5-4976-9905-91FE75F61F65" targetRef="sdwan-raise-turnup-request">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ var:get(serviceAccepted) == false && var:contains(serviceAcceptanceIssueType,"Turnup") }]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-CDB1F246-9073-4EB8-BF36-0EE476F184FF" sourceRef="sid-C4D9DEA0-90A5-4976-9905-91FE75F61F65" targetRef="sdwan-service-issue">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ var:get(serviceAccepted) == false && var:get(serviceAcceptanceIssueType)=="Raise Service Issue"}]]></conditionExpression>
+    </sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_sdwan_customer_handover_workflow">
+    <bpmndi:BPMNPlane bpmnElement="sdwan_customer_handover_workflow" id="BPMNPlane_sdwan_customer_handover_workflow">
+      <bpmndi:BPMNShape bpmnElement="customer_handover_acceptance_activity_start" id="BPMNShape_customer_handover_acceptance_activity_start">
+        <omgdc:Bounds height="30.0" width="30.0" x="45.0" y="193.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sdwan-service-acceptance" id="BPMNShape_sdwan-service-acceptance">
+        <omgdc:Bounds height="66.0" width="100.0" x="330.0" y="175.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="customer_handover_acceptance_activity_end" id="BPMNShape_customer_handover_acceptance_activity_end">
+        <omgdc:Bounds height="28.0" width="28.0" x="810.0" y="289.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-C4D9DEA0-90A5-4976-9905-91FE75F61F65" id="BPMNShape_sid-C4D9DEA0-90A5-4976-9905-91FE75F61F65">
+        <omgdc:Bounds height="40.0" width="40.0" x="501.5" y="188.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sdwan-billing-issue" id="BPMNShape_sdwan-billing-issue">
+        <omgdc:Bounds height="80.0" width="100.0" x="435.0" y="48.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sdwan-raise-turnup-request" id="BPMNShape_sdwan-raise-turnup-request">
+        <omgdc:Bounds height="80.0" width="100.0" x="960.0" y="46.75322150903949"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-DC8A1149-03FF-427E-B2A2-6A8163BF770F" id="BPMNShape_sid-DC8A1149-03FF-427E-B2A2-6A8163BF770F">
+        <omgdc:Bounds height="40.0" width="40.0" x="120.0" y="188.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sdwan-provide-handover-note" id="BPMNShape_sdwan-provide-handover-note">
+        <omgdc:Bounds height="61.0" width="100.0" x="194.0" y="177.5"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="customer-reminder-sdwan-service-acceptance" id="BPMNShape_customer-reminder-sdwan-service-acceptance">
+        <omgdc:Bounds height="46.0" width="84.0" x="285.0" y="280.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-A4C1D770-6D4A-48FE-9DF2-2A9B05F4DE60" id="BPMNShape_sid-A4C1D770-6D4A-48FE-9DF2-2A9B05F4DE60">
+        <omgdc:Bounds height="31.0" width="31.0" x="324.92160341345533" y="226.08166983100756"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="reminder-sdwan-raise-turnup-request" id="BPMNShape_reminder-sdwan-raise-turnup-request">
+        <omgdc:Bounds height="46.0" width="84.0" x="1035.0" y="165.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-E2B18429-53DB-43F6-AB73-062F08765293" id="BPMNShape_sid-E2B18429-53DB-43F6-AB73-062F08765293">
+        <omgdc:Bounds height="31.000000000000014" width="31.0" x="1045.1397051899385" y="98.4257462451041"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="reminder-sdwan-billing-issue" id="BPMNShape_reminder-sdwan-billing-issue">
+        <omgdc:Bounds height="46.0" width="84.0" x="315.0" y="80.25322150903949"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-A7C12DD5-EB11-464F-BBC9-679B79290CFB" id="BPMNShape_sid-A7C12DD5-EB11-464F-BBC9-679B79290CFB">
+        <omgdc:Bounds height="31.0" width="31.0" x="418.68332417830266" y="55.79314767505842"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sdwan-service-issue" id="BPMNShape_sdwan-service-issue">
+        <omgdc:Bounds height="47.0" width="99.0" x="630.0" y="60.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="reminder-sdwan-service-issue" id="BPMNShape_reminder-sdwan-service-issue">
+        <omgdc:Bounds height="46.0" width="84.0" x="782.0" y="105.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-CEB82030-4A6A-4D2F-AD04-5F867C9D6F63" id="BPMNShape_sid-CEB82030-4A6A-4D2F-AD04-5F867C9D6F63">
+        <omgdc:Bounds height="30.99999999999997" width="31.0" x="708.5198907845114" y="91.76423249577812"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-EC63FBD2-2711-440D-B22B-D48C7D53A87F" id="BPMNEdge_sid-EC63FBD2-2711-440D-B22B-D48C7D53A87F">
+        <omgdi:waypoint x="1064.501512973261" y="130.01911706430178"></omgdi:waypoint>
+        <omgdi:waypoint x="1072.0419234716717" y="165.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-DF0FB2AC-30AA-41D6-A43A-AE9A51854250" id="BPMNEdge_sid-DF0FB2AC-30AA-41D6-A43A-AE9A51854250">
+        <omgdi:waypoint x="540.9480587994263" y="208.5"></omgdi:waypoint>
+        <omgdi:waypoint x="1010.0" y="208.5"></omgdi:waypoint>
+        <omgdi:waypoint x="1010.0" y="126.7032215090395"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-BFFA0C26-3FDA-43F1-B103-6A93D64F6EF8" id="BPMNEdge_sid-BFFA0C26-3FDA-43F1-B103-6A93D64F6EF8">
+        <omgdi:waypoint x="1010.0" y="46.75322150903949"></omgdi:waypoint>
+        <omgdi:waypoint x="1010.0" y="16.0"></omgdi:waypoint>
+        <omgdi:waypoint x="139.0" y="16.0"></omgdi:waypoint>
+        <omgdi:waypoint x="139.0" y="188.95275805570725"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-CDB1F246-9073-4EB8-BF36-0EE476F184FF" id="BPMNEdge_sid-CDB1F246-9073-4EB8-BF36-0EE476F184FF">
+        <omgdi:waypoint x="532.7370365411585" y="199.26394640717646"></omgdi:waypoint>
+        <omgdi:waypoint x="640.2908424413353" y="106.94999999999999"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-075C175D-33F7-45DB-AC83-95E9777DCFC6" id="BPMNEdge_sid-075C175D-33F7-45DB-AC83-95E9777DCFC6">
+        <omgdi:waypoint x="666.8209752869723" y="60.0"></omgdi:waypoint>
+        <omgdi:waypoint x="650.0" y="15.0"></omgdi:waypoint>
+        <omgdi:waypoint x="142.0" y="15.0"></omgdi:waypoint>
+        <omgdi:waypoint x="142.0" y="190.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-8C849E72-DB41-4BAB-83D6-FE8627895CFC" id="BPMNEdge_sid-8C849E72-DB41-4BAB-83D6-FE8627895CFC">
+        <omgdi:waypoint x="740.1516459949879" y="110.94421680988579"></omgdi:waypoint>
+        <omgdi:waypoint x="782.0" y="119.45656109668812"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-DA9CCC4B-C0E6-4B27-BDE9-5936E948841F" id="BPMNEdge_sid-DA9CCC4B-C0E6-4B27-BDE9-5936E948841F">
+        <omgdi:waypoint x="293.9499999999953" y="208.0"></omgdi:waypoint>
+        <omgdi:waypoint x="330.0" y="208.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-29E5D6AA-390A-42D6-8878-2601B5024174" id="BPMNEdge_sid-29E5D6AA-390A-42D6-8878-2601B5024174">
+        <omgdi:waypoint x="511.13235294117646" y="198.36713286713288"></omgdi:waypoint>
+        <omgdi:waypoint x="485.0" y="174.0"></omgdi:waypoint>
+        <omgdi:waypoint x="485.0" y="127.95"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-A0C47CE5-A609-47AB-A4F9-1D97B8992377" id="BPMNEdge_sid-A0C47CE5-A609-47AB-A4F9-1D97B8992377">
+        <omgdi:waypoint x="522.0" y="227.43998414376324"></omgdi:waypoint>
+        <omgdi:waypoint x="522.0" y="303.0"></omgdi:waypoint>
+        <omgdi:waypoint x="810.0" y="303.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-97BA0170-0754-4AFD-87A0-E05606DC22CD" id="BPMNEdge_sid-97BA0170-0754-4AFD-87A0-E05606DC22CD">
+        <omgdi:waypoint x="419.849369005464" y="77.78180693071488"></omgdi:waypoint>
+        <omgdi:waypoint x="398.95000000000005" y="86.24412573457909"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-6D16B150-F13A-48A8-85E8-6A12CFC6A96C" id="BPMNEdge_sid-6D16B150-F13A-48A8-85E8-6A12CFC6A96C">
+        <omgdi:waypoint x="485.0" y="48.0"></omgdi:waypoint>
+        <omgdi:waypoint x="485.0" y="19.0"></omgdi:waypoint>
+        <omgdi:waypoint x="140.5" y="19.0"></omgdi:waypoint>
+        <omgdi:waypoint x="140.49999999999997" y="188.5"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-4F02E84C-4374-4C94-82C5-F003411568BE" id="BPMNEdge_sid-4F02E84C-4374-4C94-82C5-F003411568BE">
+        <omgdi:waypoint x="429.94999999999595" y="208.17588028169013"></omgdi:waypoint>
+        <omgdi:waypoint x="501.929328621908" y="208.42932862190813"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-2471410C-3986-468C-9D67-E7E214FC53B5" id="BPMNEdge_sid-2471410C-3986-468C-9D67-E7E214FC53B5">
+        <omgdi:waypoint x="74.9496588110467" y="208.09285545292158"></omgdi:waypoint>
+        <omgdi:waypoint x="120.375" y="208.375"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-E164C558-D7FB-41FE-A75D-B041394E61A1" id="BPMNEdge_sid-E164C558-D7FB-41FE-A75D-B041394E61A1">
+        <omgdi:waypoint x="159.53271096023278" y="208.4077669902913"></omgdi:waypoint>
+        <omgdi:waypoint x="194.0" y="208.24130434782606"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-FB820A89-E84E-4A8F-A547-A362FA6FDD5E" id="BPMNEdge_sid-FB820A89-E84E-4A8F-A547-A362FA6FDD5E">
+        <omgdi:waypoint x="337.3562541672441" y="257.63421657153276"></omgdi:waypoint>
+        <omgdi:waypoint x="332.2447399239683" y="280.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

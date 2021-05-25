@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <process id="teamsdr_management_and_monitoring_workflow" name="teamsdr_management_and_monitoring_workflow" isExecutable="true">
+    <documentation>teamsdr_management_and_monitoring_workflow</documentation>
+    <startEvent id="teamsdr_managed_services_management_and_monitoring_activity_start">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ activityStartListener }"></flowable:executionListener>
+      </extensionElements>
+    </startEvent>
+    <userTask id="teamsdr-managed-services-management-and-monitoring" name="TeamsDR Management And Monitoring">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <serviceTask id="reminder-teamsdr-managed-services-management-and-monitoring" name="Reminder" flowable:async="true" flowable:delegateExpression="${ notificationDelegate  }"></serviceTask>
+    <sequenceFlow id="sid-FB820A89-E84E-4A8F-A547-A362FA6FDD5E" sourceRef="sid-A4C1D770-6D4A-48FE-9DF2-2A9B05F4DE60" targetRef="reminder-teamsdr-managed-services-management-and-monitoring"></sequenceFlow>
+    <endEvent id="teamsdr_managed_services_management_and_monitoring_activity_end">
+      <extensionElements>
+        <flowable:executionListener event="start" delegateExpression="${ activityEndListener }"></flowable:executionListener>
+      </extensionElements>
+    </endEvent>
+    <exclusiveGateway id="sid-A0057015-6BAB-4F24-B8FC-2C0CAB2E8552" default="sid-EEFC6A10-7610-4E1E-99D4-069EB7E7DDEA"></exclusiveGateway>
+    <exclusiveGateway id="sid-AFD5907D-6156-4B27-8848-0FE635F2B8CB"></exclusiveGateway>
+    <serviceTask id="check-mm-open" name="Check Management &amp; Monitoring Open" flowable:delegateExpression="${ CheckMMOpenDelegate }"></serviceTask>
+    <boundaryEvent id="sid-A4C1D770-6D4A-48FE-9DF2-2A9B05F4DE60" attachedToRef="teamsdr-managed-services-management-and-monitoring" cancelActivity="false">
+      <timerEventDefinition>
+        <timeCycle>${ remainderCycle }</timeCycle>
+      </timerEventDefinition>
+    </boundaryEvent>
+    <sequenceFlow id="sid-EEFC6A10-7610-4E1E-99D4-069EB7E7DDEA" sourceRef="sid-A0057015-6BAB-4F24-B8FC-2C0CAB2E8552" targetRef="sid-AFD5907D-6156-4B27-8848-0FE635F2B8CB"></sequenceFlow>
+    <sequenceFlow id="sid-8F30FB7C-372A-4C5A-A42F-C3A418EBB798" sourceRef="check-mm-open" targetRef="sid-A0057015-6BAB-4F24-B8FC-2C0CAB2E8552"></sequenceFlow>
+    <sequenceFlow id="sid-81EE3BE1-AE3B-481E-ABC9-033C21FEBA55" sourceRef="sid-A0057015-6BAB-4F24-B8FC-2C0CAB2E8552" targetRef="teamsdr-managed-services-management-and-monitoring">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${var:get(isManagementMonitoringOpen) == 'no'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-6F026D3B-9745-46F6-8988-FBE92CB53F2A" sourceRef="teamsdr_managed_services_management_and_monitoring_activity_start" targetRef="check-mm-open"></sequenceFlow>
+    <sequenceFlow id="sid-8CCA6203-11AA-45AC-915B-6C2783F3BE4C" sourceRef="teamsdr-managed-services-management-and-monitoring" targetRef="sid-AFD5907D-6156-4B27-8848-0FE635F2B8CB"></sequenceFlow>
+    <sequenceFlow id="sid-E8A03DAB-5614-443F-BF3C-B2F618097CA2" sourceRef="sid-AFD5907D-6156-4B27-8848-0FE635F2B8CB" targetRef="teamsdr_managed_services_management_and_monitoring_activity_end"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_teamsdr_management_and_monitoring_workflow">
+    <bpmndi:BPMNPlane bpmnElement="teamsdr_management_and_monitoring_workflow" id="BPMNPlane_teamsdr_management_and_monitoring_workflow">
+      <bpmndi:BPMNShape bpmnElement="teamsdr_managed_services_management_and_monitoring_activity_start" id="BPMNShape_teamsdr_managed_services_management_and_monitoring_activity_start">
+        <omgdc:Bounds height="30.0" width="30.0" x="135.0" y="132.5"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="teamsdr-managed-services-management-and-monitoring" id="BPMNShape_teamsdr-managed-services-management-and-monitoring">
+        <omgdc:Bounds height="66.0" width="100.0" x="525.0" y="114.5"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="reminder-teamsdr-managed-services-management-and-monitoring" id="BPMNShape_reminder-teamsdr-managed-services-management-and-monitoring">
+        <omgdc:Bounds height="46.0" width="84.0" x="537.7432366752472" y="249.5"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="teamsdr_managed_services_management_and_monitoring_activity_end" id="BPMNShape_teamsdr_managed_services_management_and_monitoring_activity_end">
+        <omgdc:Bounds height="28.0" width="28.0" x="825.0" y="133.5"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-A0057015-6BAB-4F24-B8FC-2C0CAB2E8552" id="BPMNShape_sid-A0057015-6BAB-4F24-B8FC-2C0CAB2E8552">
+        <omgdc:Bounds height="40.0" width="40.0" x="420.0" y="127.5"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-AFD5907D-6156-4B27-8848-0FE635F2B8CB" id="BPMNShape_sid-AFD5907D-6156-4B27-8848-0FE635F2B8CB">
+        <omgdc:Bounds height="40.0" width="40.0" x="690.0" y="127.5"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="check-mm-open" id="BPMNShape_check-mm-open">
+        <omgdc:Bounds height="65.0" width="121.0" x="225.0" y="115.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-A4C1D770-6D4A-48FE-9DF2-2A9B05F4DE60" id="BPMNShape_sid-A4C1D770-6D4A-48FE-9DF2-2A9B05F4DE60">
+        <omgdc:Bounds height="31.0" width="31.0" x="564.2432366752472" y="165.79556131113623"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-81EE3BE1-AE3B-481E-ABC9-033C21FEBA55" id="BPMNEdge_sid-81EE3BE1-AE3B-481E-ABC9-033C21FEBA55">
+        <omgdi:waypoint x="459.5135906040264" y="147.92910447761193"></omgdi:waypoint>
+        <omgdi:waypoint x="524.9999999999973" y="147.685687732342"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-8F30FB7C-372A-4C5A-A42F-C3A418EBB798" id="BPMNEdge_sid-8F30FB7C-372A-4C5A-A42F-C3A418EBB798">
+        <omgdi:waypoint x="345.95000000000005" y="147.5"></omgdi:waypoint>
+        <omgdi:waypoint x="420.0" y="147.5"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-EEFC6A10-7610-4E1E-99D4-069EB7E7DDEA" id="BPMNEdge_sid-EEFC6A10-7610-4E1E-99D4-069EB7E7DDEA">
+        <omgdi:waypoint x="440.5" y="128.0"></omgdi:waypoint>
+        <omgdi:waypoint x="440.5" y="54.0"></omgdi:waypoint>
+        <omgdi:waypoint x="710.0" y="54.0"></omgdi:waypoint>
+        <omgdi:waypoint x="710.0" y="127.5"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-E8A03DAB-5614-443F-BF3C-B2F618097CA2" id="BPMNEdge_sid-E8A03DAB-5614-443F-BF3C-B2F618097CA2">
+        <omgdi:waypoint x="729.5165690866404" y="147.92578125"></omgdi:waypoint>
+        <omgdi:waypoint x="825.0001009915921" y="147.554279921789"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-8CCA6203-11AA-45AC-915B-6C2783F3BE4C" id="BPMNEdge_sid-8CCA6203-11AA-45AC-915B-6C2783F3BE4C">
+        <omgdi:waypoint x="624.9499999999992" y="147.68431734317343"></omgdi:waypoint>
+        <omgdi:waypoint x="690.4259259259254" y="147.92592592592592"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-6F026D3B-9745-46F6-8988-FBE92CB53F2A" id="BPMNEdge_sid-6F026D3B-9745-46F6-8988-FBE92CB53F2A">
+        <omgdi:waypoint x="164.94999900465945" y="147.5"></omgdi:waypoint>
+        <omgdi:waypoint x="225.0" y="147.5"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-FB820A89-E84E-4A8F-A547-A362FA6FDD5E" id="BPMNEdge_sid-FB820A89-E84E-4A8F-A547-A362FA6FDD5E">
+        <omgdi:waypoint x="579.7432366752472" y="196.74555904165464"></omgdi:waypoint>
+        <omgdi:waypoint x="579.7432366752472" y="249.5"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

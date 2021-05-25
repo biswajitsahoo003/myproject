@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <process id="gsc-pubip-vas-supplier-newnum-provision" name="gsc-pubip-vas-supplier-newnum-provision" isExecutable="true">
+    <documentation>gsc-pubip-vas-supplier-newnum-provision</documentation>
+    <serviceTask id="gsc-generate-routing-numbers" name="Generate Routing Numbers" flowable:delegateExpression="${GenerateRoutingNumbersDelegate}"></serviceTask>
+    <userTask id="gsc-select-suppliers" name="Select Suppliers" flowable:formFieldValidation="true">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <userTask id="gsc-routing-generation-jeopardy" name="Generate Routing Numbers - Jeopardy" flowable:formFieldValidation="true">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <exclusiveGateway id="sid-EA710B64-5BF7-46D0-A7AF-D56C0846E636" default="sid-92C9BAA9-CF4E-4F0A-BA54-8B846A6A349B"></exclusiveGateway>
+    <sequenceFlow id="sid-288B4FA6-9B17-4B73-B20E-71B78F5C54EC" sourceRef="gsc-routing-generation-jeopardy" targetRef="gsc-generate-routing-numbers"></sequenceFlow>
+    <sequenceFlow id="sid-364B5395-1698-4DF7-892A-01C943DA1077" sourceRef="gsc-select-suppliers" targetRef="gsc-generate-routing-numbers"></sequenceFlow>
+    <sequenceFlow id="sid-1CF7775C-777B-429A-9892-635AA2AE11B6" sourceRef="gsc-generate-routing-numbers" targetRef="sid-EA710B64-5BF7-46D0-A7AF-D56C0846E636"></sequenceFlow>
+    <inclusiveGateway id="sid-B76154CB-AE0D-44F4-BD77-3C57EE021A69"></inclusiveGateway>
+    <userTask id="gsc-order-suppliers" name="Place Supplier Order" flowable:formFieldValidation="true">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${ taskCreateListener }"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${ taskCompleteListener }"></flowable:taskListener>
+      </extensionElements>
+    </userTask>
+    <callActivity id="repc-order-creation-2" name="Order Creation Workflow" calledElement="gsc_order_creation_workflow" flowable:calledElementType="key" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false">
+      <extensionElements>
+        <flowable:in sourceExpression="${'routingNumberRequired'}" target="triggerFor"></flowable:in>
+      </extensionElements>
+    </callActivity>
+    <inclusiveGateway id="sid-64E35E40-6A12-46E2-8A26-AB2F5F44100E"></inclusiveGateway>
+    <sequenceFlow id="sid-BBF63D30-5E70-4687-A344-2DBA7F1AACF7" sourceRef="repc-order-creation-2" targetRef="sid-64E35E40-6A12-46E2-8A26-AB2F5F44100E"></sequenceFlow>
+    <sequenceFlow id="sid-B0CE205D-587B-43F3-A3D3-0EDB80CB008C" sourceRef="sid-F3DE005B-E776-470D-87CD-8A5AEC625154" targetRef="sid-64E35E40-6A12-46E2-8A26-AB2F5F44100E"></sequenceFlow>
+    <sequenceFlow id="sid-D7C5E1DB-0D35-4464-B821-CA0D97E3C623" sourceRef="sid-64E35E40-6A12-46E2-8A26-AB2F5F44100E" targetRef="gsc_update_suppliers_respone"></sequenceFlow>
+    <sequenceFlow id="sid-92C9BAA9-CF4E-4F0A-BA54-8B846A6A349B" sourceRef="sid-EA710B64-5BF7-46D0-A7AF-D56C0846E636" targetRef="gsc-routing-generation-jeopardy"></sequenceFlow>
+    <sequenceFlow id="sid-23E33DF8-9298-4F0F-981A-A3D5141E38A5" sourceRef="sid-EA710B64-5BF7-46D0-A7AF-D56C0846E636" targetRef="sid-B76154CB-AE0D-44F4-BD77-3C57EE021A69">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${var:get(generateRoutingNoStatus) == 'success'}]]></conditionExpression>
+    </sequenceFlow>
+    <serviceTask id="gsc-notification-to-pri-supplier" name="Send email to Primary suppliers" flowable:delegateExpression="${SendNotificationToSupplier}"></serviceTask>
+    <exclusiveGateway id="sid-6145E86B-0DE9-4807-9053-7C1E490EAB6B" default="sid-AA41FE2D-587A-40B8-BE09-1E42E2EE9128"></exclusiveGateway>
+    <exclusiveGateway id="sid-F3DE005B-E776-470D-87CD-8A5AEC625154"></exclusiveGateway>
+    <sequenceFlow id="sid-AD06E0AA-6BC4-42CC-A5C2-0C28AAF25B48" sourceRef="gsc-notification-to-pri-supplier" targetRef="sid-F3DE005B-E776-470D-87CD-8A5AEC625154"></sequenceFlow>
+    <sequenceFlow id="sid-AA41FE2D-587A-40B8-BE09-1E42E2EE9128" sourceRef="sid-6145E86B-0DE9-4807-9053-7C1E490EAB6B" targetRef="sid-F3DE005B-E776-470D-87CD-8A5AEC625154"></sequenceFlow>
+    <callActivity id="gsc_update_suppliers_respone" name="Update Suppliers Response" calledElement="gsc_pubip_update_supplier_response" flowable:calledElementType="key" flowable:inheritVariables="true" flowable:fallbackToDefaultTenant="false"></callActivity>
+    <sequenceFlow id="sid-B3A6BFE8-19CB-446F-B882-304361543801" sourceRef="gsc-process-supplier-order" targetRef="sid-6145E86B-0DE9-4807-9053-7C1E490EAB6B"></sequenceFlow>
+    <sequenceFlow id="sid-C117B539-5BD9-400B-B159-0C08EC8204EB" sourceRef="gsc-order-suppliers" targetRef="gsc-process-supplier-order"></sequenceFlow>
+    <serviceTask id="gsc-process-supplier-order" name="Process Supplier Order" flowable:delegateExpression="${ProcessSupplierOrderDelegate}"></serviceTask>
+    <sequenceFlow id="sid-1F45F26B-AD65-47D1-8B33-AAD21575F3DA" sourceRef="sid-6145E86B-0DE9-4807-9053-7C1E490EAB6B" targetRef="gsc-notification-to-pri-supplier">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${var:get(sendPriSupplierNotification) == 'yes'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-1A29B090-BBCF-40EF-B9AC-A02F2608ED11" sourceRef="sid-B76154CB-AE0D-44F4-BD77-3C57EE021A69" targetRef="gsc-order-suppliers">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${var:get(isSupplierFlowReq) == 'yes'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-456C8392-66DF-44F5-A0BF-3F0CE8351D96" sourceRef="sid-0EA1B0E6-D24F-48FA-8B7B-B0CF6CC762C2" targetRef="gsc-select-suppliers"></sequenceFlow>
+    <startEvent id="sid-0EA1B0E6-D24F-48FA-8B7B-B0CF6CC762C2" flowable:formFieldValidation="true"></startEvent>
+    <endEvent id="sid-ABE16115-0152-4FFF-9DAB-D1B5C1E23B82"></endEvent>
+    <sequenceFlow id="sid-7CA210FA-1EBB-4932-89E6-8E4B32F724B8" sourceRef="gsc_update_suppliers_respone" targetRef="sid-ABE16115-0152-4FFF-9DAB-D1B5C1E23B82"></sequenceFlow>
+    <sequenceFlow id="sid-9DECF3D9-484A-41F2-9C32-CC78D5608164" sourceRef="sid-B76154CB-AE0D-44F4-BD77-3C57EE021A69" targetRef="repc-order-creation-2">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ var:get(isRoutingNumRequired) == "yes"&& (var:get(tempOutPulsePresent) == "Yes" || var:get(orderType ) == "MACD")}]]></conditionExpression>
+    </sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_gsc-pubip-vas-supplier-newnum-provision">
+    <bpmndi:BPMNPlane bpmnElement="gsc-pubip-vas-supplier-newnum-provision" id="BPMNPlane_gsc-pubip-vas-supplier-newnum-provision">
+      <bpmndi:BPMNShape bpmnElement="gsc-generate-routing-numbers" id="BPMNShape_gsc-generate-routing-numbers">
+        <omgdc:Bounds height="80.0" width="100.0" x="585.0" y="475.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="gsc-select-suppliers" id="BPMNShape_gsc-select-suppliers">
+        <omgdc:Bounds height="80.0" width="100.0" x="585.0" y="300.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="gsc-routing-generation-jeopardy" id="BPMNShape_gsc-routing-generation-jeopardy">
+        <omgdc:Bounds height="80.0" width="100.0" x="705.0" y="585.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-EA710B64-5BF7-46D0-A7AF-D56C0846E636" id="BPMNShape_sid-EA710B64-5BF7-46D0-A7AF-D56C0846E636">
+        <omgdc:Bounds height="40.0" width="40.0" x="735.0" y="495.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-B76154CB-AE0D-44F4-BD77-3C57EE021A69" id="BPMNShape_sid-B76154CB-AE0D-44F4-BD77-3C57EE021A69">
+        <omgdc:Bounds height="40.0" width="40.0" x="855.0" y="495.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="gsc-order-suppliers" id="BPMNShape_gsc-order-suppliers">
+        <omgdc:Bounds height="80.0" width="100.0" x="825.0" y="585.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="repc-order-creation-2" id="BPMNShape_repc-order-creation-2">
+        <omgdc:Bounds height="80.0" width="100.0" x="825.0" y="300.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-64E35E40-6A12-46E2-8A26-AB2F5F44100E" id="BPMNShape_sid-64E35E40-6A12-46E2-8A26-AB2F5F44100E">
+        <omgdc:Bounds height="40.0" width="40.0" x="1020.0" y="320.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="gsc-notification-to-pri-supplier" id="BPMNShape_gsc-notification-to-pri-supplier">
+        <omgdc:Bounds height="80.0" width="100.0" x="1145.0" y="475.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-6145E86B-0DE9-4807-9053-7C1E490EAB6B" id="BPMNShape_sid-6145E86B-0DE9-4807-9053-7C1E490EAB6B">
+        <omgdc:Bounds height="40.0" width="40.0" x="1020.0" y="495.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-F3DE005B-E776-470D-87CD-8A5AEC625154" id="BPMNShape_sid-F3DE005B-E776-470D-87CD-8A5AEC625154">
+        <omgdc:Bounds height="40.0" width="40.0" x="1020.0" y="405.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="gsc_update_suppliers_respone" id="BPMNShape_gsc_update_suppliers_respone">
+        <omgdc:Bounds height="80.0" width="100.0" x="1140.0" y="300.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="gsc-process-supplier-order" id="BPMNShape_gsc-process-supplier-order">
+        <omgdc:Bounds height="80.0" width="100.0" x="990.0" y="585.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-0EA1B0E6-D24F-48FA-8B7B-B0CF6CC762C2" id="BPMNShape_sid-0EA1B0E6-D24F-48FA-8B7B-B0CF6CC762C2">
+        <omgdc:Bounds height="30.0" width="30.0" x="465.0" y="325.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-ABE16115-0152-4FFF-9DAB-D1B5C1E23B82" id="BPMNShape_sid-ABE16115-0152-4FFF-9DAB-D1B5C1E23B82">
+        <omgdc:Bounds height="28.0" width="28.0" x="1285.0" y="326.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-1A29B090-BBCF-40EF-B9AC-A02F2608ED11" id="BPMNEdge_sid-1A29B090-BBCF-40EF-B9AC-A02F2608ED11">
+        <omgdi:waypoint x="875.0" y="534.9409400544959"></omgdi:waypoint>
+        <omgdi:waypoint x="875.0" y="585.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-AA41FE2D-587A-40B8-BE09-1E42E2EE9128" id="BPMNEdge_sid-AA41FE2D-587A-40B8-BE09-1E42E2EE9128">
+        <omgdi:waypoint x="1040.0" y="495.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1040.0" y="444.911040044494"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-364B5395-1698-4DF7-892A-01C943DA1077" id="BPMNEdge_sid-364B5395-1698-4DF7-892A-01C943DA1077">
+        <omgdi:waypoint x="635.0" y="379.95000000000005"></omgdi:waypoint>
+        <omgdi:waypoint x="635.0" y="475.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-AD06E0AA-6BC4-42CC-A5C2-0C28AAF25B48" id="BPMNEdge_sid-AD06E0AA-6BC4-42CC-A5C2-0C28AAF25B48">
+        <omgdi:waypoint x="1195.0" y="475.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1195.0" y="425.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1059.906407359408" y="425.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-B3A6BFE8-19CB-446F-B882-304361543801" id="BPMNEdge_sid-B3A6BFE8-19CB-446F-B882-304361543801">
+        <omgdi:waypoint x="1040.0" y="585.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1040.0" y="534.9090309372158"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-7CA210FA-1EBB-4932-89E6-8E4B32F724B8" id="BPMNEdge_sid-7CA210FA-1EBB-4932-89E6-8E4B32F724B8">
+        <omgdi:waypoint x="1239.95" y="340.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1285.0" y="340.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-9DECF3D9-484A-41F2-9C32-CC78D5608164" id="BPMNEdge_sid-9DECF3D9-484A-41F2-9C32-CC78D5608164">
+        <omgdi:waypoint x="875.0" y="495.0"></omgdi:waypoint>
+        <omgdi:waypoint x="875.0" y="379.95000000000005"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-1CF7775C-777B-429A-9892-635AA2AE11B6" id="BPMNEdge_sid-1CF7775C-777B-429A-9892-635AA2AE11B6">
+        <omgdi:waypoint x="684.9499999999999" y="515.0"></omgdi:waypoint>
+        <omgdi:waypoint x="735.0" y="515.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-D7C5E1DB-0D35-4464-B821-CA0D97E3C623" id="BPMNEdge_sid-D7C5E1DB-0D35-4464-B821-CA0D97E3C623">
+        <omgdi:waypoint x="1059.9433544302708" y="340.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1140.0" y="340.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-B0CE205D-587B-43F3-A3D3-0EDB80CB008C" id="BPMNEdge_sid-B0CE205D-587B-43F3-A3D3-0EDB80CB008C">
+        <omgdi:waypoint x="1040.0" y="405.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1040.0" y="359.91169022379273"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-C117B539-5BD9-400B-B159-0C08EC8204EB" id="BPMNEdge_sid-C117B539-5BD9-400B-B159-0C08EC8204EB">
+        <omgdi:waypoint x="924.9499999999999" y="625.0"></omgdi:waypoint>
+        <omgdi:waypoint x="990.0" y="625.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-456C8392-66DF-44F5-A0BF-3F0CE8351D96" id="BPMNEdge_sid-456C8392-66DF-44F5-A0BF-3F0CE8351D96">
+        <omgdi:waypoint x="494.94999492849877" y="340.0"></omgdi:waypoint>
+        <omgdi:waypoint x="540.0" y="340.0"></omgdi:waypoint>
+        <omgdi:waypoint x="585.0" y="340.6617647058824"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-1F45F26B-AD65-47D1-8B33-AAD21575F3DA" id="BPMNEdge_sid-1F45F26B-AD65-47D1-8B33-AAD21575F3DA">
+        <omgdi:waypoint x="1059.943568665287" y="515.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1145.0" y="515.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-BBF63D30-5E70-4687-A344-2DBA7F1AACF7" id="BPMNEdge_sid-BBF63D30-5E70-4687-A344-2DBA7F1AACF7">
+        <omgdi:waypoint x="924.9499999999999" y="340.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1020.0" y="340.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-92C9BAA9-CF4E-4F0A-BA54-8B846A6A349B" id="BPMNEdge_sid-92C9BAA9-CF4E-4F0A-BA54-8B846A6A349B">
+        <omgdi:waypoint x="755.0" y="534.9409400544959"></omgdi:waypoint>
+        <omgdi:waypoint x="755.0" y="585.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-288B4FA6-9B17-4B73-B20E-71B78F5C54EC" id="BPMNEdge_sid-288B4FA6-9B17-4B73-B20E-71B78F5C54EC">
+        <omgdi:waypoint x="705.0" y="625.0"></omgdi:waypoint>
+        <omgdi:waypoint x="635.0" y="625.0"></omgdi:waypoint>
+        <omgdi:waypoint x="635.0" y="554.95"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-23E33DF8-9298-4F0F-981A-A3D5141E38A5" id="BPMNEdge_sid-23E33DF8-9298-4F0F-981A-A3D5141E38A5">
+        <omgdi:waypoint x="774.9416944213154" y="515.0"></omgdi:waypoint>
+        <omgdi:waypoint x="855.0" y="515.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>
